@@ -1,3 +1,6 @@
 .vscode/*
 ref/*
 
+*.o
+*.d
+raycasting
