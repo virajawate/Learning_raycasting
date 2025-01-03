@@ -10,6 +10,8 @@
  */
 Map::Map(float cellsize, int width, int height) : cellSize(cellsize), grid(height, std::vector(width, 0)){}
 
+Map::Map(float cellsize, std::vector<std::vector<int>> Grid) : cellSize(cellsize), grid(Grid) {}
+
 void Map::draw(sf::RenderTarget &target){
   // vector grid defines the dimensions for the win
   if (grid.empty()){return;}
