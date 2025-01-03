@@ -7,10 +7,15 @@
 
 class Map{
 public:
+  //Constructor with grid and cell dimensions
   Map(float cellsize, int width, int height);
+
+  // Draw cells
   void draw(sf::RenderTarget& target);
 private:
-  std::vector<std::vector<int>> grid; // ROW<COL>
+  // ROW<COL>
+  std::vector<std::vector<int>> grid; 
+  // Cell Size in pixels
   float cellSize;
 
 };
