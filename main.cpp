@@ -10,6 +10,7 @@ int main() {
   int Width = 30;
 
   sf::RenderWindow win(sf::VideoMode(640,640), "Raycasting");
+  sf::Clock Gametime;
 
   // The Maze map grid
   std::vector<std::vector<int>> Maze = {
@@ -31,14 +32,15 @@ int main() {
   // Map map(Cell_size, Length, Width); // Backgroud is [num_cellsxLength,num_cellsxWidth]
   Map maze_map(Cell_size, Maze);
   while(win.isOpen()){
+    float deltatime = Gametime.restart().asSeconds();
     sf::Event buffer_event;
     while(win.pollEvent(buffer_event)){
       if(buffer_event.type == sf::Event::Closed){win.close();}
     }
-  win.clear();    // Clear the Window
-  // map.draw(win);  // Draw the Map
-  maze_map.draw(win);  // Draw the Map
-  win.display();  // Display in frame
+    win.clear();    // Clear the Window
+    // map.draw(win);  // Draw the Map
+    maze_map.draw(win);  // Draw the Map
+    win.display();  // Display in frame
   }
 
   return 0;
