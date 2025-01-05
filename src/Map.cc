@@ -33,7 +33,7 @@ void Map::draw(sf::RenderTarget &target){
   // 0 = Black and 1 = White
   for(size_t r=0; r<grid.size(); r++){
     for(size_t c=0; c<grid[r].size(); c++){
-      if(grid[r][c] == 0){cell.setFillColor(sf::Color::White);}
+      if(grid[r][c] == 0){cell.setFillColor(sf::Color(150,150,150));}
       else if(grid[r][c] == 1){cell.setFillColor(sf::Color::Black);}
       cell.setPosition(c*cellSize, r*cellSize);
       target.draw(cell);
