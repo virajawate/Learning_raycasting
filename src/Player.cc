@@ -24,12 +24,12 @@ std::vector<float> Player::get_player_pose(){
 }
 
 void Player::draw(sf::RenderTarget &target){
-    sf::CircleShape circle(5.0f);
-    circle.setPosition(position);
+    sf::CircleShape circle(player_size);
+    circle.setPosition(position[0]-player_size, position[1]-player_size);
     circle.setFillColor(sf::Color::Blue);
     sf::RectangleShape line(sf::Vector2f(150.0f, 150.0f));
     line.setPosition(position);
-    line.setRotation(angle);
+    line.setRotation(angle-45);
     line.setFillColor(sf::Color::Green);
     target.draw(line);
     target.draw(circle);
@@ -56,4 +56,8 @@ void Player::update(float deltaTime){
 void Player::set_player_pose(sf::Vector2f pose){
     position.x = pose.x;
     position.y = pose.y;
+}
+
+void Player::set_player_size(float size){
+    player_size = size;
 }
