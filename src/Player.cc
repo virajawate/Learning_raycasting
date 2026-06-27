@@ -5,7 +5,7 @@
 #include <SFML/Graphics/CircleShape.hpp>
 #include <SFML/Window/Keyboard.hpp>
 #include <SFML/Graphics/RectangleShape.hpp>
-constexpr float PI = M_PI;
+constexpr float PI = 3.1427;
 constexpr float TURN_SPEED = 50.0f;
 constexpr float MOVE_SPEED = 50.0f;
 
@@ -36,17 +36,17 @@ void Player::draw(sf::RenderTarget &target){
 }
 
 void Player::update(float deltaTime){
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)){
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D)){
         angle += TURN_SPEED * deltaTime;
         // std::cout<<angle<<std::endl;
-    } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)){
+    } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A)){
         angle -= TURN_SPEED * deltaTime;
         // std::cout<<angle<<std::endl;
-    } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)){
+    } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W)){
         float radians = angle * PI / 180.0f;
         position.x += MOVE_SPEED * cos(radians) * deltaTime;
         position.y += MOVE_SPEED * sin(radians) * deltaTime;
-    } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)){
+    } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S)){
         float radians = angle * PI / 180.0f;
         position.x -= MOVE_SPEED * cos(radians) * deltaTime;
         position.y -= MOVE_SPEED * sin(radians) * deltaTime;
