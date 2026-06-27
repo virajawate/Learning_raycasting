@@ -4,6 +4,7 @@
 
 #include "Map.h"
 #include "Player.h"
+float PLAYER_SIZE = 25.0;
 
 int main() {
   float Cell_size = 50.0;
@@ -33,14 +34,15 @@ int main() {
   // Map map(Cell_size, Length, Width); // Backgroud is [num_cellsxLength,num_cellsxWidth]
   Map maze_map(Cell_size, Maze);
   Player player;
+  player.set_player_size(PLAYER_SIZE);
   player.set_player_pose(sf::Vector2f(55,55));
 
   while(win.isOpen()){
     float deltatime = Gametime.restart().asSeconds();
-    sf::Event buffer_event;
-
-    while(win.pollEvent(buffer_event)){
-      if(buffer_event.type == sf::Event::Closed){win.close();}
+    while(const std::optional event = win.pollEvent()){
+      if(event->is<sf::Event::Closed>()){
+        win.close();
+      }
     }
 
     player.update(deltatime);

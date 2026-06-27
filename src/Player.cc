@@ -5,7 +5,7 @@
 #include <SFML/Graphics/CircleShape.hpp>
 #include <SFML/Window/Keyboard.hpp>
 #include <SFML/Graphics/RectangleShape.hpp>
-constexpr float PI = M_PI;
+constexpr float PI = 3.1427;
 constexpr float TURN_SPEED = 50.0f;
 constexpr float MOVE_SPEED = 50.0f;
 
@@ -24,29 +24,27 @@ std::vector<float> Player::get_player_pose(){
 }
 
 void Player::draw(sf::RenderTarget &target){
-    sf::CircleShape circle(5.0f);
-    circle.setPosition(position);
+    sf::CircleShape circle(player_size);
+    circle.setPosition(position[0]-player_size, position[1]-player_size);
     circle.setFillColor(sf::Color::Blue);
     sf::RectangleShape line(sf::Vector2f(150.0f, 150.0f));
     line.setPosition(position);
-    line.setRotation(angle);
+    line.setRotation(angle-45);
     line.setFillColor(sf::Color::Green);
     target.draw(line);
     target.draw(circle);
 }
 
 void Player::update(float deltaTime){
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)){
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D)){
         angle += TURN_SPEED * deltaTime;
-        // std::cout<<angle<<std::endl;
-    } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)){
+    } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A)){
         angle -= TURN_SPEED * deltaTime;
-        // std::cout<<angle<<std::endl;
-    } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)){
+    } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W)){
         float radians = angle * PI / 180.0f;
         position.x += MOVE_SPEED * cos(radians) * deltaTime;
         position.y += MOVE_SPEED * sin(radians) * deltaTime;
-    } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)){
+    } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S)){
         float radians = angle * PI / 180.0f;
         position.x -= MOVE_SPEED * cos(radians) * deltaTime;
         position.y -= MOVE_SPEED * sin(radians) * deltaTime;
@@ -56,4 +54,8 @@ void Player::update(float deltaTime){
 void Player::set_player_pose(sf::Vector2f pose){
     position.x = pose.x;
     position.y = pose.y;
+}
+
+void Player::set_player_size(float size){
+    player_size = size;
 }
