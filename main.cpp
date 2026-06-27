@@ -39,10 +39,10 @@ int main() {
 
   while(win.isOpen()){
     float deltatime = Gametime.restart().asSeconds();
-    sf::Event buffer_event;
-
-    while(win.pollEvent(buffer_event)){
-      if(buffer_event.type == sf::Event::Closed){win.close();}
+    while(const std::optional event = win.pollEvent()){
+      if(event->is<sf::Event::Closed>()){
+        win.close();
+      }
     }
 
     player.update(deltatime);
