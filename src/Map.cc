@@ -35,7 +35,7 @@ void Map::draw(sf::RenderTarget &target){
     for(size_t c=0; c<grid[r].size(); c++){
       if(grid[r][c] == 0){cell.setFillColor(sf::Color(150,150,150));}
       else if(grid[r][c] == 1){cell.setFillColor(sf::Color::Black);}
-      cell.setPosition(c*cellSize, r*cellSize);
+      cell.setPosition(sf::Vector2f{static_cast<float>(c*cellSize), static_cast<float>(r*cellSize)});
       target.draw(cell);
     }
   }

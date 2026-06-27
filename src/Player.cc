@@ -38,10 +38,8 @@ void Player::draw(sf::RenderTarget &target){
 void Player::update(float deltaTime){
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D)){
         angle += TURN_SPEED * deltaTime;
-        // std::cout<<angle<<std::endl;
     } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A)){
         angle -= TURN_SPEED * deltaTime;
-        // std::cout<<angle<<std::endl;
     } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W)){
         float radians = angle * PI / 180.0f;
         position.x += MOVE_SPEED * cos(radians) * deltaTime;
