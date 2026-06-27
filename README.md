@@ -2,6 +2,7 @@
 
 For windows build
 ```
+mkdir build
 mingw32-make
 ```
 
