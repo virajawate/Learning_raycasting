@@ -25,11 +25,11 @@ std::vector<float> Player::get_player_pose(){
 
 void Player::draw(sf::RenderTarget &target){
     sf::CircleShape circle(player_size);
-    circle.setPosition(position[0]-player_size, position[1]-player_size);
+    circle.setPosition({position.x-player_size, position.y-player_size});
     circle.setFillColor(sf::Color::Blue);
     sf::RectangleShape line(sf::Vector2f(150.0f, 150.0f));
     line.setPosition(position);
-    line.setRotation(angle-45);
+    line.setRotation(sf::degrees(angle-45));
     line.setFillColor(sf::Color::Green);
     target.draw(line);
     target.draw(circle);
