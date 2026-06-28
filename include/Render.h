@@ -7,7 +7,7 @@
 
 class Renderer{
 public:
-    void drawRays(sf::RenderTarget &target, Player &player, Map map);
+    void drawRays(sf::RenderTarget &target, Player &player,const Map &map);
 
 private:
     const float PI = 3.1427;
