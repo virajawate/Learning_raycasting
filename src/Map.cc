@@ -5,9 +5,9 @@
 #include <SFML/System/Vector2.hpp>
 
 /* Constructor
-  1 - Call the constructor with Cell Size, Height Grid and Width Grid
-  2 - Call the constructor with Cell Size and the Grid vector
- */
+1 - Call the constructor with Cell Size, Height Grid and Width Grid
+2 - Call the constructor with Cell Size and the Grid vector
+*/
 Map::Map(float cell_size, int width, int height) : cellSize(cell_size), grid(height, std::vector(width, 0)){}
 
 Map::Map(float cell_size, std::vector<std::vector<int>> Grid) : cellSize(cell_size), grid(Grid) {}
@@ -15,13 +15,13 @@ Map::Map(float cell_size, std::vector<std::vector<int>> Grid) : cellSize(cell_si
 void Map::draw(sf::RenderTarget &target){
   // vector grid defines the dimensions for the win
   if (grid.empty()){return;}
-
   // Text Variable Formate
   // Create a backgroud with grid size [Row, Col]
   sf::RectangleShape background(sf::Vector2f(
     static_cast<float>(grid[0].size()) * cellSize,
-    static_cast<float>(grid.size()) * cellSize));
-
+    static_cast<float>(grid.size()) * cellSize)
+  );
+    
   // Set backgroud color to [white]
   background.setFillColor(sf::Color::White);
   target.draw(background);
@@ -40,3 +40,7 @@ void Map::draw(sf::RenderTarget &target){
     }
   }
 }
+
+const std::vector<std::vector<int>> Map::getGrid() const { return grid; }
+
+float Map::getCellsize() const { return cellSize; }

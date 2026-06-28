@@ -13,6 +13,8 @@ public:
 
   // Draw cells
   void draw(sf::RenderTarget& target);
+  const std::vector<std::vector<int>> getGrid() const;
+  float getCellsize() const;
 private:
   // Mapping Grid ROW<COL>
   std::vector<std::vector<int>> grid;
