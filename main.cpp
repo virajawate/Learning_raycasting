@@ -3,6 +3,7 @@
 #include <SFML/Window/VideoMode.hpp>
 
 #include "Map.h"
+#include "Render.h"
 #include "Player.h"
 float PLAYER_SIZE = 25.0;
 
@@ -33,6 +34,7 @@ int main() {
 
   // Map map(Cell_size, Length, Width); // Backgroud is [num_cellsxLength,num_cellsxWidth]
   Map maze_map(Cell_size, Maze);
+  Renderer render;
   Player player;
   player.set_player_size(PLAYER_SIZE);
   player.set_player_pose(sf::Vector2f(55,55));
@@ -55,6 +57,9 @@ int main() {
 
     // Draw the Map
     maze_map.draw(win);
+
+    //Draw the rays
+    render.drawRays(win, player, Cell_size);
 
     //Draw the player
     player.draw(win);
