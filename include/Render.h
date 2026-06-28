@@ -3,13 +3,15 @@
 
 #include <SFML/Graphics/RenderTarget.hpp>
 #include "Player.h"
+#include "Map.h"
 
 class Renderer{
 public:
-    void drawRays(sf::RenderTarget &target, Player &player, float cellSize);
+    void drawRays(sf::RenderTarget &target, Player &player, Map map);
 
 private:
-    float PI = 3.1427;
+    const float PI = 3.1427;
+    const size_t MaxRayCastingDepth = 32;
 };
 
 #endif // !_RENDERER_H

@@ -59,7 +59,7 @@ int main() {
     maze_map.draw(win);
 
     //Draw the rays
-    render.drawRays(win, player, Cell_size);
+    render.drawRays(win, player, maze_map);
 
     //Draw the player
     player.draw(win);
