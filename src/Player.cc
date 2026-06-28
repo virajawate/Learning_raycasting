@@ -30,7 +30,7 @@ void Player::draw(sf::RenderTarget &target){
     sf::RectangleShape line(sf::Vector2f(150.0f, 150.0f));
     line.setPosition(position);
     line.setRotation(sf::degrees(angle-45));
-    line.setFillColor(sf::Color::Green);
+    line.setFillColor(sf::Color(0, 255, 0, 125));
     target.draw(line);
     target.draw(circle);
 }
