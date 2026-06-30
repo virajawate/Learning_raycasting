@@ -82,13 +82,15 @@ void Renderer::drawRays(sf::RenderTarget &target, Player &player, const Map &map
     try{
         auto player_pos = player.get_player_pose();
         sf::Vector2f player_pos_sf = {player_pos[0], player_pos[1]};
-        Ray ray = castRay(player_pos_sf, player_pos[2], map);
-        if (ray.hit){
-            sf::Vertex line[] = {
-                {player_pos_sf},
-                {ray.hitPosition}
-            };
-            target.draw(line, 2, sf::PrimitiveType::Lines);
+        for(float angle = player_pos[2] - player_fov/2.0f; angle < player_pos[2] + player_fov; angle += 1){
+            Ray ray = castRay(player_pos_sf, angle, map);
+            if (ray.hit){
+                sf::Vertex line[] = {
+                    {player_pos_sf},
+                    {ray.hitPosition}
+                };
+                target.draw(line, 2, sf::PrimitiveType::Lines);
+            }
         }
         
     } catch (std::exception &e){

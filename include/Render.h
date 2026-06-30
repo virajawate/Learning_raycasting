@@ -19,6 +19,8 @@ public:
 private:
     const float PI = 3.1427;
     const size_t MaxRayCastingDepth = 32;
+    const size_t player_fov = 60;
+    
 };
 
 #endif // !_RENDERER_H
