@@ -12,7 +12,11 @@ int main() {
   int Length = 25;
   int Width = 30;
 
-  sf::RenderWindow win(sf::VideoMode({1280, 720}), "Raycasting");
+  sf::RenderWindow win(
+                        sf::VideoMode({ScreenW, ScreenH}), 
+                        "Raycasting",
+                        sf::Style::Close | sf::Style::Titlebar
+                      );
   sf::Clock Gametime;
 
   // The Maze map grid
