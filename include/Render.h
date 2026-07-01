@@ -5,6 +5,11 @@
 #include "Player.h"
 #include "Map.h"
 
+constexpr unsigned int ScreenW = 1280;
+constexpr unsigned int ScreenH = 720;
+constexpr unsigned int NUM_RAYS = 240;
+constexpr float COLUMN_WIDTH = ScreenW / (float)NUM_RAYS;
+
 struct Ray {
     sf::Vector2f hitPosition;
     float distance;
@@ -21,6 +26,7 @@ private:
     const float PI = 3.1427;
     const size_t MaxRayCastingDepth = 32;
     const size_t player_fov = 60;
+
     
 };
 
