@@ -12,7 +12,7 @@ int main() {
   int Length = 25;
   int Width = 30;
 
-  sf::RenderWindow win(sf::VideoMode({640,640}), "Raycasting");
+  sf::RenderWindow win(sf::VideoMode({1280, 720}), "Raycasting");
   sf::Clock Gametime;
 
   // The Maze map grid
@@ -56,13 +56,16 @@ int main() {
     // map.draw(win);
 
     // Draw the Map
-    maze_map.draw(win);
+    // maze_map.draw(win);
 
     //Draw the rays
-    render.drawRays(win, player, maze_map);
+    // render.drawRays(win, player, maze_map);
+
+    //Render 3D view
+    render.draw3dview(win, player, maze_map);
 
     //Draw the player
-    player.draw(win);
+    // player.draw(win);
 
     // Display in frame
     win.display();
