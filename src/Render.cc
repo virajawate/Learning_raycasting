@@ -88,6 +88,7 @@ void Renderer::draw3dview(sf::RenderTarget &target, Player &player, const Map &m
         for(size_t i =0; i < NUM_RAYS; i++, angle += angleIncrement){
             Ray ray = castRay(player_pos_sf, angle, map);
             if (ray.hit){
+                ray.distance *= std::cos((player_pos[2] - angle) * PI / 180.0f);
                 float wallHeight = (map.getCellsize() * ScreenH) / ray.distance;
                 if(wallHeight > ScreenH){
                     wallHeight = ScreenH;
