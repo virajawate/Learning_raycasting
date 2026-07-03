@@ -34,7 +34,7 @@ Ray Renderer::castRay(sf::Vector2f start, float angleInDegrees, const Map &map){
         vdof = MaxRayCastingDepth;
     }
     vrayPos.y = (start.x - vrayPos.x) * vTan + start.y;
-    offset.y = -offset.x * vTan;
+    offset.y = -(offset.x * vTan);
 
     for(;vdof<MaxRayCastingDepth; vdof++){
         int mapX = (int)(vrayPos.x / cellsize);
