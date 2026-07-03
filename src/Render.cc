@@ -10,7 +10,6 @@
 #include "Render.h"
 
 Ray Renderer::castRay(sf::Vector2f start, float angleInDegrees, const Map &map){
-    
     const auto &grid = map.getGrid();
     auto cellsize = map.getCellsize();
     const int rows = grid.size();
@@ -23,7 +22,7 @@ Ray Renderer::castRay(sf::Vector2f start, float angleInDegrees, const Map &map){
     bool vHit = false, hHit = false;
     float hdist = std::numeric_limits<float>::max();
     float vdist = std::numeric_limits<float>::max();
-    
+
     sf::Vector2f vrayPos, hrayPos, offset;
     if (cos(angle) > 0.001f){
         vrayPos.x = std::floor(start.x / cellsize) * cellsize + cellsize;
