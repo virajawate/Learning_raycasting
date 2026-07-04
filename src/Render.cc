@@ -81,6 +81,11 @@ void Renderer::draw3dview(sf::RenderTarget &target, Player &player, const Map &m
         sf::RectangleShape rectangle(sf::Vector2f(ScreenW, ScreenH / 2.0f));
         rectangle.setFillColor(sf::Color(100, 170, 250));
         target.draw(rectangle);
+
+        rectangle.setPosition({0.0f, ScreenH / 2.0f});
+        rectangle.setFillColor(sf::Color(70, 70, 70));
+        target.draw(rectangle);
+
         auto player_pos = player.get_player_pose();
         sf::Vector2f player_pos_sf = {player_pos[0], player_pos[1]};
         float angle = player_pos[2] - player_fov/2.0f;
