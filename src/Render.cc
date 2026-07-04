@@ -78,6 +78,9 @@ Ray Renderer::castRay(sf::Vector2f start, float angleInDegrees, const Map &map){
 
 void Renderer::draw3dview(sf::RenderTarget &target, Player &player, const Map &map){
     try{
+        sf::RectangleShape rectangle(sf::Vector2f(ScreenW, ScreenH / 2.0f));
+        rectangle.setFillColor(sf::Color(100, 170, 250));
+        target.draw(rectangle);
         auto player_pos = player.get_player_pose();
         sf::Vector2f player_pos_sf = {player_pos[0], player_pos[1]};
         float angle = player_pos[2] - player_fov/2.0f;
