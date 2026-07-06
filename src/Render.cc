@@ -10,7 +10,6 @@
 #include "Render.h"
 
 Ray Renderer::castRay(sf::Vector2f start, float angleInDegrees, const Map &map){
-    
     const auto &grid = map.getGrid();
     auto cellsize = map.getCellsize();
     const int rows = grid.size();
@@ -23,8 +22,6 @@ Ray Renderer::castRay(sf::Vector2f start, float angleInDegrees, const Map &map){
     bool vHit = false, hHit = false;
     float hdist = std::numeric_limits<float>::max();
     float vdist = std::numeric_limits<float>::max();
-    
-
 
     sf::Vector2f vrayPos, hrayPos, offset;
     if (cos(angle) > 0.001f){
@@ -37,7 +34,7 @@ Ray Renderer::castRay(sf::Vector2f start, float angleInDegrees, const Map &map){
         vdof = MaxRayCastingDepth;
     }
     vrayPos.y = (start.x - vrayPos.x) * vTan + start.y;
-    offset.y = -offset.x * vTan;
+    offset.y = -(offset.x * vTan);
 
     for(;vdof<MaxRayCastingDepth; vdof++){
         int mapX = (int)(vrayPos.x / cellsize);
@@ -81,6 +78,14 @@ Ray Renderer::castRay(sf::Vector2f start, float angleInDegrees, const Map &map){
 
 void Renderer::draw3dview(sf::RenderTarget &target, Player &player, const Map &map){
     try{
+        sf::RectangleShape rectangle(sf::Vector2f(ScreenW, ScreenH / 2.0f));
+        rectangle.setFillColor(sf::Color(100, 170, 250));
+        target.draw(rectangle);
+
+        rectangle.setPosition({0.0f, ScreenH / 2.0f});
+        rectangle.setFillColor(sf::Color(70, 70, 70));
+        target.draw(rectangle);
+
         auto player_pos = player.get_player_pose();
         sf::Vector2f player_pos_sf = {player_pos[0], player_pos[1]};
         float angle = player_pos[2] - player_fov/2.0f;
