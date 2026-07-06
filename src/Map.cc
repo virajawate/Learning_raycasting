@@ -44,5 +44,6 @@ void Map::draw(sf::RenderTarget &target){
 }
 
 const std::vector<std::vector<int>> Map::getGrid() const { return grid; }
+const std::vector<std::vector<sf::Color>> Map::getGridColor() const { return gridColor; }
 
 float Map::getCellsize() const { return cellSize; }

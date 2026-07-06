@@ -18,7 +18,7 @@ public:
   // Draw cells
   void draw(sf::RenderTarget& target);
   const std::vector<std::vector<int>> getGrid() const;
-  const std::vector<std::vector<sf::Color>> getGrid_color() const;
+  const std::vector<std::vector<sf::Color>> getGridColor() const;
   float getCellsize() const;
 private:
   // Mapping Grid ROW<COL>
