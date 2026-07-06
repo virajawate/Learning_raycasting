@@ -12,6 +12,8 @@ Map::Map(float cell_size, int width, int height) : cellSize(cell_size), grid(hei
 
 Map::Map(float cell_size, std::vector<std::vector<int>> Grid) : cellSize(cell_size), grid(Grid) {}
 
+Map::Map(float cell_size, const std::string &filename) : cellSize(cell_size){}
+
 void Map::draw(sf::RenderTarget &target){
   // vector grid defines the dimensions for the win
   if (grid.empty()){return;}
@@ -43,4 +45,5 @@ void Map::draw(sf::RenderTarget &target){
 
 const std::vector<std::vector<int>> Map::getGrid() const { return grid; }
 
+const std::vector<std::vector<sf::Color>> Map::getGridColor() const {}
 float Map::getCellsize() const { return cellSize; }
