@@ -1,11 +1,13 @@
 #ifndef _MAP_H
 #define _MAP_H
 
+#include <iostream>
 #include <string>
 #include <vector>
-#include <string>
+#include <cstddef>
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/Graphics/Color.hpp>
+#include <SFML/Graphics/Image.hpp>
 
 
 class Map{
@@ -17,6 +19,7 @@ public:
 
   // Draw cells
   void draw(sf::RenderTarget& target);
+  void drawColorGrid(sf::RenderTarget& target);
   const std::vector<std::vector<int>> getGrid() const;
   const std::vector<std::vector<sf::Color>> getGridColor() const;
   float getCellsize() const;

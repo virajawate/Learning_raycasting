@@ -20,7 +20,7 @@ class Renderer{
 public:
     void draw3dview(sf::RenderTarget &target, Player &player, const Map &map);
     void drawRays(sf::RenderTarget &target, Player &player, const Map &map);
-    Ray castRay(sf::Vector2f start, float angleInDegrees, const Map &map);
+    Ray castRay(sf::Vector2f start, float angleInDegrees, const Map &map, bool fps_mode);
 
 private:
     const float PI = 3.1427;

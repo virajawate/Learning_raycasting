@@ -37,11 +37,12 @@ int main() {
   };
 
   // Map map(Cell_size, Length, Width); // Backgroud is [num_cellsxLength,num_cellsxWidth]
-  Map maze_map(Cell_size, Maze);
+  // Map maze_map(Cell_size, Maze);
+  Map Color_map(Cell_size, "map/map.png");
   Renderer render;
   Player player;
   player.set_player_size(PLAYER_SIZE);
-  player.set_player_pose(sf::Vector2f(55,55));
+  player.set_player_pose(sf::Vector2f(65,65));
 
   while(win.isOpen()){
     float deltatime = Gametime.restart().asSeconds();
@@ -52,19 +53,19 @@ int main() {
     }
 
     player.update(deltatime);
-
+    
     // Clear the Window
     win.clear();
-
+    
     // Draw the Map
     // map.draw(win);
-
+    
     // Draw the Map
     // maze_map.draw(win);
-
+    
     //Draw the rays
     // render.drawRays(win, player, maze_map);
-
+    
     //Render 3D view
     render.draw3dview(win, player, maze_map);
 

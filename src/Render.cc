@@ -9,8 +9,11 @@
 
 #include "Render.h"
 
-Ray Renderer::castRay(sf::Vector2f start, float angleInDegrees, const Map &map){
-    const auto &grid = map.getGrid();
+Ray Renderer::castRay(sf::Vector2f start, float angleInDegrees, const Map &map, bool fps_mode = false){
+    
+    if(fps_mode)
+        printf("grid color");
+    const auto &grid = map.getGridColor();
     auto cellsize = map.getCellsize();
     const int rows = grid.size();
     const int cols = grid[0].size();
@@ -39,7 +42,7 @@ Ray Renderer::castRay(sf::Vector2f start, float angleInDegrees, const Map &map){
     for(;vdof<MaxRayCastingDepth; vdof++){
         int mapX = (int)(vrayPos.x / cellsize);
         int mapY = (int)(vrayPos.y / cellsize);
-        if (mapY < rows && mapX < cols && grid[mapY][mapX] && mapX >= 0 && mapY >= 0){
+        if (mapX >= 0 && mapY >= 0 && mapY < rows && mapX < cols && grid[mapY][mapX] == sf::Color::Black){
             vHit = true;
             auto det_x = vrayPos.x - start.x;
             auto det_y = vrayPos.y - start.y;
@@ -64,7 +67,7 @@ Ray Renderer::castRay(sf::Vector2f start, float angleInDegrees, const Map &map){
     for(; hdof<MaxRayCastingDepth; hdof++){
         int mapX = (int)(hrayPos.x / cellsize);
         int mapY = (int)(hrayPos.y / cellsize);
-        if (mapY < rows && mapX < cols && grid[mapY][mapX] && mapX >= 0 && mapY >= 0){
+        if (mapX >= 0 && mapY >= 0 && mapY < rows && mapX < cols && grid[mapY][mapX] == sf::Color::Black){
             hHit = true;
             auto det_x = hrayPos.x - start.x;
             auto det_y = hrayPos.y - start.y;
@@ -91,7 +94,7 @@ void Renderer::draw3dview(sf::RenderTarget &target, Player &player, const Map &m
         float angle = player_pos[2] - player_fov/2.0f;
         float angleIncrement = player_fov / (float)NUM_RAYS;
         for(size_t i =0; i < NUM_RAYS; i++, angle += angleIncrement){
-            Ray ray = castRay(player_pos_sf, angle, map);
+            Ray ray = castRay(player_pos_sf, angle, map, true);
             if (ray.hit){
                 ray.distance *= std::cos((player_pos[2] - angle) * PI / 180.0f);
                 float wallHeight = (map.getCellsize() * ScreenH) / ray.distance;
@@ -115,7 +118,7 @@ void Renderer::drawRays(sf::RenderTarget &target, Player &player, const Map &map
         auto player_pos = player.get_player_pose();
         sf::Vector2f player_pos_sf = {player_pos[0], player_pos[1]};
         for(float angle = player_pos[2] - player_fov/2.0f; angle < player_pos[2] + player_fov; angle += 1){
-            Ray ray = castRay(player_pos_sf, angle, map);
+            Ray ray = castRay(player_pos_sf, angle, map, false);
             if (ray.hit){
                 sf::Vertex line[] = {
                     {player_pos_sf},
