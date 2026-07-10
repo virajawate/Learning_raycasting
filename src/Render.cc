@@ -10,9 +10,7 @@
 #include "Render.h"
 
 Ray Renderer::castRay(sf::Vector2f start, float angleInDegrees, const Map &map, bool fps_mode = false){
-    
-    if(fps_mode)
-        printf("grid color");
+
     const auto &grid = map.getGridColor();
     auto cellsize = map.getCellsize();
     const int rows = grid.size();
