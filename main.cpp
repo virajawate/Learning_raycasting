@@ -67,7 +67,7 @@ int main() {
     // render.drawRays(win, player, maze_map);
     
     //Render 3D view
-    render.draw3dview(win, player, maze_map);
+    render.draw3dview(win, player, Color_map);
 
     //Draw the player
     // player.draw(win);
