@@ -7,13 +7,15 @@
 
 constexpr unsigned int ScreenW = 1280;
 constexpr unsigned int ScreenH = 720;
-constexpr unsigned int NUM_RAYS = 240;
+constexpr unsigned int NUM_RAYS = 600;
 constexpr float COLUMN_WIDTH = ScreenW / (float)NUM_RAYS;
 
 struct Ray {
     sf::Vector2f hitPosition;
+    sf::Vector2u mapPosition;
     float distance;
     bool hit;
+    bool isHitVertical;
 };
 
 class Renderer{
@@ -24,7 +26,7 @@ public:
 
 private:
     const float PI = 3.1427;
-    const size_t MaxRayCastingDepth = 32;
+    const size_t MaxRayCastingDepth = 64;
     const size_t player_fov = 60;
 };
 
