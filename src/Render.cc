@@ -105,7 +105,7 @@ void Renderer::draw3dview(sf::RenderTarget &target, Player &player, const Map &m
                 float walloffset = ScreenH / 2.0f - wallHeight / 2.0f;
                 sf::RectangleShape column(sf::Vector2f(COLUMN_WIDTH, wallHeight));
                 column.setPosition({i*COLUMN_WIDTH, walloffset});
-                column.setFillColor(map.getGridColor()[ray.hitPosition.y][ray.hitPosition.x]);
+                column.setFillColor(map.getGridColor()[ray.mapPosition.y][ray.mapPosition.x]);
                 target.draw(column);
             }
         }

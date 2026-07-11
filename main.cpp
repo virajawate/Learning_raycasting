@@ -38,7 +38,7 @@ int main() {
 
   // Map map(Cell_size, Length, Width); // Backgroud is [num_cellsxLength,num_cellsxWidth]
   // Map maze_map(Cell_size, Maze);
-  Map Color_map(Cell_size, "map/map.png");
+  Map Color_map(Cell_size, "map/map_1.png");
   Renderer render;
   Player player;
   player.set_player_size(PLAYER_SIZE);
