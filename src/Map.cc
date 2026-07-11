@@ -44,10 +44,7 @@ void Map::drawColorGrid(sf::RenderTarget& target){
       cell.setPosition(sf::Vector2f(x,y)*cellSize + sf::Vector2f(0.025f*cellSize,0.025f*cellSize));
       target.draw(cell);
     }
-    // std::cout << "DoneMap" << std::endl;
   }
-  
-  // std::cout << "Done" << std::endl;
 }
 
 void Map::draw(sf::RenderTarget &target){

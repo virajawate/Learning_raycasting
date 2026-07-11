@@ -10,7 +10,6 @@
 #include "Render.h"
 
 Ray Renderer::castRay(sf::Vector2f start, float angleInDegrees, const Map &map, bool fps_mode = false){
-
     const auto &grid = map.getGridColor();
     auto cellsize = map.getCellsize();
     const int rows = grid.size();
@@ -20,61 +19,65 @@ Ray Renderer::castRay(sf::Vector2f start, float angleInDegrees, const Map &map, 
     float vTan = -tan(angle);
     float hTan = -1.0f / tan(angle);
     size_t vdof = 0, hdof = 0;
-    bool vHit = false, hHit = false;
+    bool hit = false;
     float hdist = std::numeric_limits<float>::max();
     float vdist = std::numeric_limits<float>::max();
 
-    sf::Vector2f vrayPos, hrayPos, offset;
+    sf::Vector2u vMapPos, hMapPos;
+    sf::Vector2f vRayPos, hRayPos, offset;
     if (cos(angle) > 0.001f){
-        vrayPos.x = std::floor(start.x / cellsize) * cellsize + cellsize;
+        vRayPos.x = std::floor(start.x / cellsize) * cellsize + cellsize;
         offset.x = cellsize;
     } else if (cos(angle) < -0.001f){
-        vrayPos.x = std::floor(start.x / cellsize) * cellsize - 0.01f;
+        vRayPos.x = std::floor(start.x / cellsize) * cellsize - 0.01f;
         offset.x = -cellsize;
     } else {
         vdof = MaxRayCastingDepth;
     }
-    vrayPos.y = (start.x - vrayPos.x) * vTan + start.y;
+    vRayPos.y = (start.x - vRayPos.x) * vTan + start.y;
     offset.y = -(offset.x * vTan);
+    unsigned int mapX = ( unsigned int )(vRayPos.x / cellsize);
+    unsigned int mapY = ( unsigned int )(vRayPos.y / cellsize);
 
     for(;vdof<MaxRayCastingDepth; vdof++){
-        int mapX = (int)(vrayPos.x / cellsize);
-        int mapY = (int)(vrayPos.y / cellsize);
-        if (mapX >= 0 && mapY >= 0 && mapY < rows && mapX < cols && grid[mapY][mapX] == sf::Color::Black){
-            vHit = true;
-            auto det_x = vrayPos.x - start.x;
-            auto det_y = vrayPos.y - start.y;
+        if (mapX >= 0 && mapY >= 0 && mapY < rows && mapX < cols && grid[mapY][mapX] != sf::Color::Black){
+            hit = true;
+            auto det_x = vRayPos.x - start.x;
+            auto det_y = vRayPos.y - start.y;
             vdist = std::hypotf(det_x, det_y);
+            vMapPos = sf::Vector2u({mapX, mapY});
             break;
         }
-        vrayPos += offset;
+        vRayPos += offset;
     }
 
     if (sin(angle) < -0.001f){
-        hrayPos.y = std::floor(start.y / cellsize) * cellsize - 0.01f;
+        hRayPos.y = std::floor(start.y / cellsize) * cellsize - 0.01f;
         offset.y = -cellsize;
     } else if (sin(angle) > 0.001f){
-        hrayPos.y = std::floor(start.y / cellsize) * cellsize + cellsize;
+        hRayPos.y = std::floor(start.y / cellsize) * cellsize + cellsize;
         offset.y = cellsize;
     } else {
         hdof = MaxRayCastingDepth;
     }
-    hrayPos.x = (start.y - hrayPos.y) * hTan + start.x;
+    hRayPos.x = (start.y - hRayPos.y) * hTan + start.x;
     offset.x = -offset.y * hTan;
+    mapX = (unsigned int)(hRayPos.x / cellsize);
+    mapY = (unsigned int)(hRayPos.y / cellsize);
 
     for(; hdof<MaxRayCastingDepth; hdof++){
-        int mapX = (int)(hrayPos.x / cellsize);
-        int mapY = (int)(hrayPos.y / cellsize);
-        if (mapX >= 0 && mapY >= 0 && mapY < rows && mapX < cols && grid[mapY][mapX] == sf::Color::Black){
-            hHit = true;
-            auto det_x = hrayPos.x - start.x;
-            auto det_y = hrayPos.y - start.y;
+
+        if (mapX >= 0 && mapY >= 0 && mapY < rows && mapX < cols && grid[mapY][mapX] != sf::Color::Black){
+            hit = true;
+            auto det_x = hRayPos.x - start.x;
+            auto det_y = hRayPos.y - start.y;
             hdist = std::hypotf(det_x, det_y);
+            hMapPos = sf::Vector2u({mapX, mapY});
             break;
         }
-        hrayPos += offset;
+        hRayPos += offset;
     }
-    return Ray{(hdist < vdist ? hrayPos : vrayPos), std::min(hdist, vdist), vHit || hHit};
+    return Ray{(hdist < vdist ? hRayPos : vRayPos), (hdist < vdist ? hMapPos : vMapPos),  std::min(hdist, vdist), hit};
 }
 
 void Renderer::draw3dview(sf::RenderTarget &target, Player &player, const Map &map){
@@ -102,6 +105,7 @@ void Renderer::draw3dview(sf::RenderTarget &target, Player &player, const Map &m
                 float walloffset = ScreenH / 2.0f - wallHeight / 2.0f;
                 sf::RectangleShape column(sf::Vector2f(COLUMN_WIDTH, wallHeight));
                 column.setPosition({i*COLUMN_WIDTH, walloffset});
+                column.setFillColor(map.getGridColor()[ray.hitPosition.y][ray.hitPosition.x]);
                 target.draw(column);
             }
         }
