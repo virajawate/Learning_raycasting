@@ -40,6 +40,8 @@ Ray Renderer::castRay(sf::Vector2f start, float angleInDegrees, const Map &map, 
     unsigned int mapY = ( unsigned int )(vRayPos.y / cellsize);
 
     for(;vdof<MaxRayCastingDepth; vdof++){
+        mapX = (unsigned int)(vRayPos.x / cellsize);
+        mapY = (unsigned int)(vRayPos.y / cellsize);
         if (mapX >= 0 && mapY >= 0 && mapY < rows && mapX < cols && grid[mapY][mapX] != sf::Color::Black){
             hit = true;
             auto det_x = vRayPos.x - start.x;
@@ -64,8 +66,10 @@ Ray Renderer::castRay(sf::Vector2f start, float angleInDegrees, const Map &map, 
     offset.x = -offset.y * hTan;
     mapX = (unsigned int)(hRayPos.x / cellsize);
     mapY = (unsigned int)(hRayPos.y / cellsize);
-
+    
     for(; hdof<MaxRayCastingDepth; hdof++){
+        mapX = (unsigned int)(hRayPos.x / cellsize);
+        mapY = (unsigned int)(hRayPos.y / cellsize);
 
         if (mapX >= 0 && mapY >= 0 && mapY < rows && mapX < cols && grid[mapY][mapX] != sf::Color::Black){
             hit = true;
