@@ -35,10 +35,11 @@ int main() {
     {1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1}, //11
     {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}  //12
   };
-
   // Map map(Cell_size, Length, Width); // Backgroud is [num_cellsxLength,num_cellsxWidth]
   // Map maze_map(Cell_size, Maze);
+
   Map Color_map(Cell_size, "map/map_1.png");
+  
   Renderer render;
   Player player;
   player.set_player_size(PLAYER_SIZE);
@@ -66,11 +67,11 @@ int main() {
     //Draw the rays
     // render.drawRays(win, player, maze_map);
     
-    //Render 3D view
-    render.draw3dview(win, player, Color_map);
-
     //Draw the player
     // player.draw(win);
+    
+    //Render 3D view
+    render.draw3dview(win, player, Color_map);
 
     // Display in frame
     win.display();

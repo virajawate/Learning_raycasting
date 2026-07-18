@@ -7,7 +7,7 @@
 
 constexpr unsigned int ScreenW = 1280;
 constexpr unsigned int ScreenH = 720;
-constexpr unsigned int NUM_RAYS = 600;
+constexpr unsigned int NUM_RAYS = 800;
 constexpr float COLUMN_WIDTH = ScreenW / (float)NUM_RAYS;
 
 struct Ray {
@@ -25,9 +25,11 @@ public:
     Ray castRay(sf::Vector2f start, float angleInDegrees, const Map &map, bool fps_mode);
 
 private:
+    float fogAlpha = 0.6;
     const float PI = 3.1427;
-    const size_t MaxRayCastingDepth = 64;
+    const size_t MaxRayCastingDepth = 128;
     const size_t player_fov = 60;
+    sf::Color fogColor = sf::Color(0, 0, 0);
 };
 
 #endif // !_RENDERER_H

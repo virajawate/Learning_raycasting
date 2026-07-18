@@ -98,6 +98,8 @@ void Renderer::draw3dview(sf::RenderTarget &target, Player &player, const Map &m
         sf::Vector2f player_pos_sf = {player_pos[0], player_pos[1]};
         float angle = player_pos[2] - player_fov/2.0f;
         float angleIncrement = player_fov / (float)NUM_RAYS;
+        const float maxRenderDistance = MaxRayCastingDepth * map.getCellsize();
+        const float maxFogDistance = maxRenderDistance / 1.5f;
         for(size_t i =0; i < NUM_RAYS; i++, angle += angleIncrement){
             Ray ray = castRay(player_pos_sf, angle, map, true);
             if (ray.hit){
@@ -106,10 +108,24 @@ void Renderer::draw3dview(sf::RenderTarget &target, Player &player, const Map &m
                 if(wallHeight > ScreenH){
                     wallHeight = ScreenH;
                 }
+                float brightness = 1.0f - (ray.distance / maxRenderDistance);
+                if(brightness < 0.0f){
+                    brightness = 0.0f;
+                }
+                float shade = (ray.isHitVertical ? 0.8f : 1.0f) * brightness;
                 float walloffset = ScreenH / 2.0f - wallHeight / 2.0f;
                 sf::RectangleShape column(sf::Vector2f(COLUMN_WIDTH, wallHeight));
                 column.setPosition({i*COLUMN_WIDTH, walloffset});
-                column.setFillColor(map.getGridColor()[ray.mapPosition.y][ray.mapPosition.x]);
+                fogAlpha = 3.5 * (ray.distance / maxRenderDistance);
+                sf::Color color = map.getGridColor()[ray.mapPosition.y][ray.mapPosition.x];
+                color = sf::Color(color.r * shade, color.g * shade, color.b * shade);
+                column.setFillColor(
+                    sf::Color(
+                        ((1.0f - fogAlpha) * color.r + fogAlpha * fogColor.r),
+                        ((1.0f - fogAlpha) * color.b + fogAlpha * fogColor.b),
+                        ((1.0f - fogAlpha) * color.g + fogAlpha * fogColor.g)
+                    )
+                );
                 target.draw(column);
             }
         }
@@ -123,7 +139,7 @@ void Renderer::drawRays(sf::RenderTarget &target, Player &player, const Map &map
     try{
         auto player_pos = player.get_player_pose();
         sf::Vector2f player_pos_sf = {player_pos[0], player_pos[1]};
-        for(float angle = player_pos[2] - player_fov/2.0f; angle < player_pos[2] + player_fov; angle += 1){
+        for(float angle = player_pos[2] - player_fov/2.0f; angle < player_pos[2] + player_fov/2.0; angle += 1){
             Ray ray = castRay(player_pos_sf, angle, map, false);
             if (ray.hit){
                 sf::Vertex line[] = {
