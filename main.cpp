@@ -72,6 +72,7 @@ int main() {
     
     //Render 3D view
     render.draw3dview(win, player, Color_map);
+    // render.init();
 
     // Display in frame
     win.display();

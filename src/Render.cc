@@ -9,6 +9,23 @@
 
 #include "Render.h"
 
+Renderer::Renderer() : wall_texture(), wall_sprite(wall_texture){}
+
+void Renderer::init(){
+    if(!wall_texture.loadFromFile(texture_file)){
+        std::cerr << "Texture file NOT LOADED." << texture_file << std::endl;
+        return;
+    } else {
+        std::cout << "Texture File Loaded" << std::endl;
+    }
+
+    if(wall_texture.getSize().x != wall_texture.getSize().y){
+        std::cerr << "ERROR : Texture is not square" << std::endl;
+        return;
+    }
+    wall_sprite = sf::Sprite(wall_texture);
+}
+
 Ray Renderer::castRay(sf::Vector2f start, float angleInDegrees, const Map &map, bool fps_mode = false){
     const auto &grid = map.getGridColor();
     auto cellsize = map.getCellsize();
