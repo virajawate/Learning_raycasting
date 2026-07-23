@@ -122,31 +122,44 @@ void Renderer::draw3dview(sf::RenderTarget &target, Player &player, const Map &m
             if (ray.hit){
                 ray.distance *= std::cos((player_pos[2] - angle) * PI / 180.0f);
                 float wallHeight = (map.getCellsize() * ScreenH) / ray.distance;
-                if(wallHeight > ScreenH){
-                    wallHeight = ScreenH;
-                }
+                float walloffset = ScreenH / 2.0f - wallHeight / 2.0f;
+                
+                float wallX;
+                if (ray.isHitVertical)
+                    wallX = std::fmod(ray.hitPosition.y, map.getCellsize());
+                else
+                    wallX = std::fmod(ray.hitPosition.x, map.getCellsize());
+                if (wallX < 0)
+                    wallX += map.getCellsize();
+                
+                float textureX = wallX * wall_texture.getSize().x / map.getCellsize();
+                int texX = static_cast<int>(textureX);
+                // texX = std::clamp(texX,0,static_cast<int>(wall_texture.getSize().x)   - 1);
+                wall_sprite.setPosition({i*COLUMN_WIDTH, walloffset});
+                wall_sprite.setTextureRect(sf::IntRect(
+                    { texX, 0}, 
+                    { 1, wall_texture.getSize().y}));
+                    // { wall_texture.getSize().x / map.getCellsize(), wall_texture.getSize().y}));
+                auto rect = wall_sprite.getTextureRect();
+                printf("rect=(%d,%d,%d,%d)\n",
+                    rect.position.x,
+                    rect.position.y,
+                    rect.size.x,
+                    rect.size.y);
+                wall_sprite.setScale({COLUMN_WIDTH, wallHeight / wall_texture.getSize().y});
+
                 float brightness = 1.0f - (ray.distance / maxRenderDistance);
                 if(brightness < 0.0f){
                     brightness = 0.0f;
                 }
+                if(wallHeight > ScreenH){
+                    wallHeight = ScreenH;
+                }
                 float shade = (ray.isHitVertical ? 0.8f : 1.0f) * brightness;
-                float walloffset = ScreenH / 2.0f - wallHeight / 2.0f;
-                sf::RectangleShape column(sf::Vector2f(COLUMN_WIDTH, wallHeight));
-                column.setPosition({i*COLUMN_WIDTH, walloffset});
                 fogAlpha = 3.5 * (ray.distance / maxRenderDistance);
-                sf::Color color = map.getGridColor()[ray.mapPosition.y][ray.mapPosition.x];
-                color = sf::Color(color.r * shade, color.g * shade, color.b * shade);
-                column.setFillColor(
-                    sf::Color(
-                        ((1.0f - fogAlpha) * color.r + fogAlpha * fogColor.r),
-                        ((1.0f - fogAlpha) * color.b + fogAlpha * fogColor.b),
-                        ((1.0f - fogAlpha) * color.g + fogAlpha * fogColor.g)
-                    )
-                );
-                target.draw(column);
+                target.draw(wall_sprite);
             }
         }
-        
     } catch (std::exception &e){
         printf("%s", e.what());
     }

@@ -37,7 +37,7 @@ private:
 
     sf::Texture wall_texture;
     sf::Sprite wall_sprite;
-    std::string texture_file = "texture/textures.png";
+    std::string texture_file = "texture/wall_texture.png";
     
 };
 

@@ -41,6 +41,7 @@ int main() {
   Map Color_map(Cell_size, "map/map_1.png");
   
   Renderer render;
+  render.init();
   Player player;
   player.set_player_size(PLAYER_SIZE);
   player.set_player_pose(sf::Vector2f(65,65));
