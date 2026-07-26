@@ -178,15 +178,6 @@ void Renderer::draw3dview(sf::RenderTarget &target, Player &player, const Map &m
 
                 sf::RectangleShape column(sf::Vector2f(COLUMN_WIDTH, wallHeight));
                 fogAlpha = 3.5 * (ray.distance / maxRenderDistance);
-                // sf::Color color = map.getGridColor()[ray.mapPosition.y][ray.mapPosition.x];
-                // color = sf::Color(color.r * shade, color.g * shade, color.b * shade);
-                // column.setFillColor(
-                //     sf::Color(
-                //         ((1.0f - fogAlpha) * color.r + fogAlpha * fogColor.r),
-                //         ((1.0f - fogAlpha) * color.b + fogAlpha * fogColor.b),
-                //         ((1.0f - fogAlpha) * color.g + fogAlpha * fogColor.g)
-                //     )
-                // );
                 target.draw(wall_sprite);
             }
         }
