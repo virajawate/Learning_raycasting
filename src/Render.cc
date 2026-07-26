@@ -99,8 +99,8 @@ Ray Renderer::castRay(sf::Vector2f start, float angleInDegrees, const Map &map, 
     }
     hRayPos.x = (start.y - hRayPos.y) * hTan + start.x;
     offset.x = -offset.y * hTan;
-    mapX = (unsigned int)(hRayPos.x / cellsize);
-    mapY = (unsigned int)(hRayPos.y / cellsize);
+    mapX = (unsigned int)std::floor(vRayPos.x / cellsize);
+    mapY = (unsigned int)std::floor(hRayPos.y / cellsize);
 
     for (; hdof < MaxRayCastingDepth; hdof++)
     {
@@ -118,7 +118,8 @@ Ray Renderer::castRay(sf::Vector2f start, float angleInDegrees, const Map &map, 
         }
         hRayPos += offset;
     }
-    return Ray{(hdist < vdist ? hRayPos : vRayPos), (hdist < vdist ? hMapPos : vMapPos), std::min(hdist, vdist), hit};
+    bool vertical = (vdist < hdist);
+    return Ray{(vertical ? vRayPos : hRayPos), (vertical ? hMapPos : vMapPos), std::min(vdist, hdist), hit, vertical};
 }
 
 void Renderer::draw3dview(sf::RenderTarget &target, Player &player, const Map &map)
@@ -152,7 +153,6 @@ void Renderer::draw3dview(sf::RenderTarget &target, Player &player, const Map &m
                 float textureX;
                 if (ray.isHitVertical)
                 {
-                    
                     textureX = ray.hitPosition.y - wall_texture.getSize().x * std::floor(ray.hitPosition.y / wall_texture.getSize().x);
                 }
                 else
