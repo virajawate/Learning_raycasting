@@ -164,15 +164,11 @@ void Renderer::draw3dview(sf::RenderTarget &target, Player &player, const Map &m
                     {(int)(wall_texture.getSize().x / map.getCellsize()), (int)wall_texture.getSize().y}));
                 wall_sprite.setScale({COLUMN_WIDTH, wallHeight / wall_texture.getSize().y});
                         
-                if (wallHeight > ScreenH)
-                {
-                    wallHeight = ScreenH;
-                }
+                if (wallHeight > ScreenH) wallHeight = ScreenH;
+                
                 float brightness = 1.0f - (ray.distance / maxRenderDistance);
-                if (brightness < 0.0f)
-                {
-                    brightness = 0.01f;
-                }
+                if (brightness < 0.0f) brightness = 0.01f;
+                
                 float shade = (ray.isHitVertical ? 0.8f : 1.0f) * brightness;
                 fogAlpha = (ray.distance / maxFogDistance);
                 if(fogAlpha > 1.0f){
