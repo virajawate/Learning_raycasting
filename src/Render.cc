@@ -188,7 +188,14 @@ void Renderer::draw3dview(sf::RenderTarget &target, Player &player, const Map &m
     }
 }
 
-Ray Renderer::castNewRay(){}
+Ray Renderer::castNewRay(){
+     sf::RectangleShape rectangle(sf::Vector2f(ScreenW, ScreenH / 2.0f));
+    rectangle.setFillColor(sf::Color(100, 170, 250));
+    target.draw(rectangle);
+    rectangle.setPosition({0.0f, ScreenH / 2.0f});
+    rectangle.setFillColor(sf::Color(70, 70, 70));
+    target.draw(rectangle);
+}
 
 void Renderer::drawRays(sf::RenderTarget &target, Player &player, const Map &map)
 {
