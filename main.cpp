@@ -72,7 +72,8 @@ int main() {
     // player.draw(win);
     
     //Render 3D view
-    render.draw3dview(win, player, Color_map);
+    // render.draw3dview(win, player, Color_map);
+    render.castNewRay(win, player, Color_map);
     // render.init();
 
     // Display in frame

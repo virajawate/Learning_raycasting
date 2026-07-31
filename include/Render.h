@@ -4,6 +4,7 @@
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/Graphics/Texture.hpp>
 #include <SFML/Graphics/Sprite.hpp>
+#include <SFML/Graphics/VertexArray.hpp>
 #include "Player.h"
 #include "Map.h"
 
@@ -25,7 +26,7 @@ public:
     void draw3dview(sf::RenderTarget &target, Player &player, const Map &map);
     void drawRays(sf::RenderTarget &target, Player &player, const Map &map);
     Ray castRay(sf::Vector2f start, float angleInDegrees, const Map &map, bool fps_mode);
-    Ray castNewRay(sf::RenderTarget &target, Player &player, const Map &map);
+    void castNewRay(sf::RenderTarget &target, Player &player, const Map &map);
     void init();
     Renderer();
 

@@ -188,7 +188,7 @@ void Renderer::draw3dview(sf::RenderTarget &target, Player &player, const Map &m
     }
 }
 
-Ray Renderer::castNewRay(sf::RenderTarget &target, Player &player, const Map &map){
+void Renderer::castNewRay(sf::RenderTarget &target, Player &player, const Map &map){
     sf::RectangleShape rectangle(sf::Vector2f(ScreenW, ScreenH / 2.0f));
     rectangle.setFillColor(sf::Color(100, 170, 250));
     target.draw(rectangle);
@@ -202,9 +202,78 @@ Ray Renderer::castNewRay(sf::RenderTarget &target, Player &player, const Map &ma
     auto player_pos = player.get_player_pose();
     sf::Vector2f player_pos_sf = {player_pos[0], player_pos[1]};
     float radians =  player_pos[2] * PI / 180.0f;
-    sf::Vector2f direction{std::cos(radians), std::sin(radians)};
-    sf::Vector2f plane{-direction.y, direction.x};
+    sf::Vector2f direction{std::cos(radians), std::sin(radians)};   
+    float planeScale = tan(60.0f * PI / 360.0f);
+    sf::Vector2f plane{-direction.y*planeScale, direction.x*planeScale};
+    sf::VertexArray walls{sf::PrimitiveType::Lines};
+    for(size_t i=0; i < ScreenW; i++){
+        float cam_x = i * 2.0f / ScreenW - 1.0f;
+        sf::Vector2f rayPose = player_pos_sf / map.getCellsize();
+        sf::Vector2f rayDir = direction + plane * cam_x;
+        // std::cout<<cam_x<<"|"<<i<<"|"<<rayDir.x<<"|"<<rayDir.y<<"|"<<std::endl;
 
+        sf::Vector2f deltaDist { 
+            std::abs(1.0f / rayDir.x),
+            std::abs(1.0f / rayDir.y),
+        };
+
+        sf::Vector2i mapPose{rayPose}; // Int Map Pose
+        sf::Vector2i step; // 1 / -1
+        sf::Vector2f sideDist; // 
+
+        if(rayDir.x < 0.0f){
+            step.x = -1;
+            sideDist.x = (-mapPose.x + rayPose.x) * deltaDist.x;
+        } else {
+            step.x = 1;
+            sideDist.x = (mapPose.x - rayPose.x + 1.0f) * deltaDist.x;
+        }
+        if(rayDir.y < 0.0f){
+            step.y = -1;
+            sideDist.y = (-mapPose.y + rayPose.y) * deltaDist.y;
+        } else {
+            step.y = 1;
+            sideDist.y = (mapPose.y - rayPose.y + 1.0f) * deltaDist.y;
+        }
+        bool didHit{}, isHitVerticle{};
+        size_t depth = 0;
+        while(!didHit &&  depth < MaxRayCastingDepth){
+            if(sideDist.x < sideDist.y){
+                sideDist.x += deltaDist.x;
+                mapPose.x += step.x;
+                isHitVerticle = true;
+            } else {
+                sideDist.y += deltaDist.y;
+                mapPose.y += step.y;
+                isHitVerticle = false;
+            }
+            int x = mapPose.x, y = mapPose.y;
+            const auto &grid = map.getGridColor();
+            if(y >= 0 && y < grid.size() && x >= 0 && x < grid[y].size() && grid[y][x] != sf::Color::Black){
+                didHit = true;
+            }
+            depth++;
+        }
+        float perpWallDist = isHitVerticle ? sideDist.x - deltaDist.x : sideDist.y - deltaDist.y;
+        
+        float wallHeight = ScreenH / perpWallDist;
+        float wallStart = (-wallHeight + ScreenH) / 2.0f;
+        float wallEnd = (wallHeight + ScreenH) / 2.0f;
+        float textureSize = wall_texture.getSize().x;
+        float wallX = isHitVerticle ? rayPose.x + perpWallDist * rayDir.x : rayPose.y + perpWallDist * rayDir.y;
+        wallX -= std::floor(wallX);
+        float textureX = textureSize * wallX;
+        float brightness = perpWallDist / maxRenderDistance;
+        brightness -= 1.0f;
+        if(isHitVerticle) brightness *= 0.5f;
+        sf::Color color  = sf::Color(255* brightness, 255* brightness, 255* brightness);
+        // walls.append({{static_cast<float>(i), wallStart}});
+        // walls.append({{static_cast<float>(i), wallEnd}, {textureX, textureSize}});
+        walls.append({{static_cast<float>(i), wallStart}, color, {textureX, 0.0f}});
+        walls.append({{static_cast<float>(i), wallEnd},   color, {textureX, textureSize}});
+    }
+    sf::RenderStates states{&wall_texture};
+    target.draw(walls, states);
 }
 
 void Renderer::drawRays(sf::RenderTarget &target, Player &player, const Map &map)
