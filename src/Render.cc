@@ -188,13 +188,23 @@ void Renderer::draw3dview(sf::RenderTarget &target, Player &player, const Map &m
     }
 }
 
-Ray Renderer::castNewRay(){
+Ray Renderer::castNewRay(sf::RenderTarget &target, Player &player, const Map &map){
     sf::RectangleShape rectangle(sf::Vector2f(ScreenW, ScreenH / 2.0f));
     rectangle.setFillColor(sf::Color(100, 170, 250));
     target.draw(rectangle);
     rectangle.setPosition({0.0f, ScreenH / 2.0f});
     rectangle.setFillColor(sf::Color(70, 70, 70));
     target.draw(rectangle);
+
+    const sf::Color fogColor = sf::Color(100, 170, 250);
+    const float maxRenderDistance = MaxRayCastingDepth * map.getCellsize();
+    const float maxFogDistance = maxRenderDistance / 4.0f;
+    auto player_pos = player.get_player_pose();
+    sf::Vector2f player_pos_sf = {player_pos[0], player_pos[1]};
+    float radians =  player_pos[2] * PI / 180.0f;
+    sf::Vector2f direction{std::cos(radians), std::sin(radians)};
+    sf::Vector2f plane{-direction.y, direction.x};
+
 }
 
 void Renderer::drawRays(sf::RenderTarget &target, Player &player, const Map &map)
