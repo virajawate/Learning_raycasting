@@ -1,10 +1,21 @@
 #ifndef _RENDERER_H
 #define _RENDERER_H
 
+#include <cstdio>
+#include <cstddef>
+#include <cstdint>
+#include <cmath>
+#include <limits>
+#include <algorithm>
+#include <SFML/Graphics/PrimitiveType.hpp>
+#include <SFML/Graphics/RectangleShape.hpp>
 #include <SFML/Graphics/RenderTarget.hpp>
-#include <SFML/Graphics/Texture.hpp>
 #include <SFML/Graphics/Sprite.hpp>
+#include <SFML/Graphics/Texture.hpp>
+#include <SFML/Graphics/Vertex.hpp>
 #include <SFML/Graphics/VertexArray.hpp>
+#include <SFML/System/Vector2.hpp>
+#include <SFML/Network/Packet.hpp>
 #include "Player.h"
 #include "Map.h"
 
@@ -26,7 +37,7 @@ public:
     void draw3dview(sf::RenderTarget &target, Player &player, const Map &map);
     void drawRays(sf::RenderTarget &target, Player &player, const Map &map);
     Ray castRay(sf::Vector2f start, float angleInDegrees, const Map &map, bool fps_mode);
-    void castNewRay(sf::RenderTarget &target, Player &player, const Map &map);
+    void cast3DNewRay(sf::RenderTarget &target, Player &player, const Map &map);
     void init();
     Renderer();
 
