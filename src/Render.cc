@@ -4,9 +4,9 @@ Renderer::Renderer() : wall_texture(), wall_sprite(wall_texture) {}
 
 void Renderer::init()
 {
-    if (!wall_texture.loadFromFile(texture_file))
+    if (!wall_texture.loadFromFile(wall_texture_file) && !floor_texture.loadFromFile(floor_texture_file))
     {
-        std::cerr << "Texture file NOT LOADED." << texture_file << std::endl;
+        std::cerr << "Texture file NOT LOADED." << wall_texture_file << std::endl;
         return;
     }
     else
@@ -16,7 +16,12 @@ void Renderer::init()
 
     if (wall_texture.getSize().x != wall_texture.getSize().y)
     {
-        std::cerr << "ERROR : Texture is not square" << std::endl;
+        std::cerr << "ERROR : Wall Texture is not square" << std::endl;
+        return;
+    }
+    if (floor_texture.getSize().x != floor_texture.getSize().y)
+    {
+        std::cerr << "ERROR : Floor Texture is not square" << std::endl;
         return;
     }
     wall_sprite = sf::Sprite(wall_texture);
