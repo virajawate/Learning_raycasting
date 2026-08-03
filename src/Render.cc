@@ -186,31 +186,27 @@ void Renderer::draw3dview(sf::RenderTarget &target, Player &player, const Map &m
 
 void Renderer::cast3DNewRay(sf::RenderTarget &target, Player &player, const Map &map)
 {
+    // Player Info
+    auto player_pose = player.get_player_pose();
+    sf::Vector2f playerPos(player_pose[0], player_pose[1]);
+    float angle = player_pose[2] * PI / 180.0f;
+    sf::Vector2f direction(std::cos(angle), std::sin(angle));
+    const float fov = 60.0f;
+    const float planeScale = std::tan(fov * PI / 360.0f);
+    sf::Vector2f plane(
+        -direction.y * planeScale,
+        direction.x * planeScale
+    );
+
     // Sky
     sf::RectangleShape rectangle(sf::Vector2f(ScreenW, ScreenH / 2.0f));
     rectangle.setFillColor(sf::Color(100, 170, 250));
     target.draw(rectangle);
 
     // Floor
-    rectangle.setPosition({0.0f, ScreenH / 2.0f});
-    rectangle.setFillColor(sf::Color(70, 70, 70));
-    target.draw(rectangle);
-
-    auto player_pose = player.get_player_pose();
-    sf::Vector2f playerPos(player_pose[0], player_pose[1]);
-
-    float angle = player_pose[2] * PI / 180.0f;
-
-    sf::Vector2f direction(std::cos(angle), std::sin(angle));
-
-    const float fov = 60.0f;
-    const float planeScale = std::tan(fov * PI / 360.0f);
-
-    sf::Vector2f plane(-direction.y * planeScale,
-                        direction.x * planeScale);
+   
 
     sf::VertexArray walls(sf::PrimitiveType::Triangles);
-
     const auto &grid = map.getGridColor();
     const float cellSize = map.getCellsize();
     const float texSize = static_cast<float>(wall_texture.getSize().x);
