@@ -4,9 +4,13 @@ Renderer::Renderer() : wall_texture(), wall_sprite(wall_texture) {}
 
 void Renderer::init()
 {
-    if (!wall_texture.loadFromFile(wall_texture_file) && !floor_texture.loadFromFile(floor_texture_file))
+    if (!wall_texture.loadFromFile(wall_texture_file))
     {
-        std::cerr << "Texture file NOT LOADED." << wall_texture_file << std::endl;
+        std::cerr << "Wall Texture file NOT LOADED." << wall_texture_file << std::endl;
+        return;
+    }
+    else if (!floor_texture.loadFromFile(floor_texture_file)){
+        std::cerr << "Floor Texture file NOT LOADED." << wall_texture_file << std::endl;
         return;
     }
     else
@@ -43,79 +47,79 @@ Ray Renderer::castRay(sf::Vector2f start, float angleInDegrees, const Map &map, 
     float vdist = std::numeric_limits<float>::max();
 
     sf::Vector2u vMapPos, hMapPos;
-    sf::Vector2f vRayPos, hRayPos, offset;
+    sf::Vector2f vplayer_loc, hplayer_loc, offset;
     if (cos(angle) > 0.001f)
     {
-        vRayPos.x = std::floor(start.x / cellsize) * cellsize + cellsize;
+        vplayer_loc.x = std::floor(start.x / cellsize) * cellsize + cellsize;
         offset.x = cellsize;
     }
     else if (cos(angle) < -0.001f)
     {
-        vRayPos.x = std::floor(start.x / cellsize) * cellsize - 0.01f;
+        vplayer_loc.x = std::floor(start.x / cellsize) * cellsize - 0.01f;
         offset.x = -cellsize;
     }
     else
     {
         vdof = MaxRayCastingDepth;
     }
-    vRayPos.y = (start.x - vRayPos.x) * vTan + start.y;
+    vplayer_loc.y = (start.x - vplayer_loc.x) * vTan + start.y;
     offset.y = -(offset.x * vTan);
-    unsigned int mapX = (unsigned int)(vRayPos.x / cellsize);
-    unsigned int mapY = (unsigned int)(vRayPos.y / cellsize);
+    unsigned int mapX = (unsigned int)(vplayer_loc.x / cellsize);
+    unsigned int mapY = (unsigned int)(vplayer_loc.y / cellsize);
 
     for (; vdof < MaxRayCastingDepth; vdof++)
     {
-        mapX = (unsigned int)(vRayPos.x / cellsize);
-        mapY = (unsigned int)(vRayPos.y / cellsize);
+        mapX = (unsigned int)(vplayer_loc.x / cellsize);
+        mapY = (unsigned int)(vplayer_loc.y / cellsize);
         if (mapY < rows && mapX < cols && grid[mapY][mapX] != sf::Color::Black)
         {
             hit = true;
-            auto det_x = vRayPos.x - start.x;
-            auto det_y = vRayPos.y - start.y;
+            auto det_x = vplayer_loc.x - start.x;
+            auto det_y = vplayer_loc.y - start.y;
             vdist = std::hypotf(det_x, det_y);
             vMapPos = sf::Vector2u({mapX, mapY});
             break;
         }
-        vRayPos += offset;
+        vplayer_loc += offset;
     }
 
     if (sin(angle) < -0.001f)
     {
-        hRayPos.y = std::floor(start.y / cellsize) * cellsize - 0.01f;
+        hplayer_loc.y = std::floor(start.y / cellsize) * cellsize - 0.01f;
         offset.y = -cellsize;
     }
     else if (sin(angle) > 0.001f)
     {
-        hRayPos.y = std::floor(start.y / cellsize) * cellsize + cellsize;
+        hplayer_loc.y = std::floor(start.y / cellsize) * cellsize + cellsize;
         offset.y = cellsize;
     }
     else
     {
         hdof = MaxRayCastingDepth;
     }
-    hRayPos.x = (start.y - hRayPos.y) * hTan + start.x;
+    hplayer_loc.x = (start.y - hplayer_loc.y) * hTan + start.x;
     offset.x = -offset.y * hTan;
-    mapX = (unsigned int)std::floor(vRayPos.x / cellsize);
-    mapY = (unsigned int)std::floor(hRayPos.y / cellsize);
+    mapX = (unsigned int)std::floor(vplayer_loc.x / cellsize);
+    mapY = (unsigned int)std::floor(hplayer_loc.y / cellsize);
 
     for (; hdof < MaxRayCastingDepth; hdof++)
     {
-        mapX = (unsigned int)(hRayPos.x / cellsize);
-        mapY = (unsigned int)(hRayPos.y / cellsize);
+        mapX = (unsigned int)(hplayer_loc.x / cellsize);
+        mapY = (unsigned int)(hplayer_loc.y / cellsize);
 
         if (mapY < rows && mapX < cols && grid[mapY][mapX] != sf::Color::Black)
         {
             hit = true;
-            auto det_x = hRayPos.x - start.x;
-            auto det_y = hRayPos.y - start.y;
+            auto det_x = hplayer_loc.x - start.x;
+            auto det_y = hplayer_loc.y - start.y;
             hdist = std::hypotf(det_x, det_y);
             hMapPos = sf::Vector2u({mapX, mapY});
             break;
         }
-        hRayPos += offset;
+        hplayer_loc += offset;
     }
     bool vertical = (vdist < hdist);
-    return Ray{(vertical ? vRayPos : hRayPos), (vertical ? hMapPos : vMapPos), std::min(vdist, hdist), hit, vertical};
+    return Ray{(vertical ? vplayer_loc : hplayer_loc), (vertical ? hMapPos : vMapPos), std::min(vdist, hdist), hit, vertical};
 }
 
 void Renderer::draw3dview(sf::RenderTarget &target, Player &player, const Map &map)
@@ -186,6 +190,12 @@ void Renderer::draw3dview(sf::RenderTarget &target, Player &player, const Map &m
 
 void Renderer::cast3DNewRay(sf::RenderTarget &target, Player &player, const Map &map)
 {
+    // Map Info
+    const auto &grid = map.getGridColor();
+    const float cellSize = map.getCellsize();
+    const float texSize = static_cast<float>(wall_texture.getSize().x);
+    const float maxDistance = MaxRayCastingDepth * cellSize;
+    
     // Player Info
     auto player_pose = player.get_player_pose();
     sf::Vector2f playerPos(player_pose[0], player_pose[1]);
@@ -197,6 +207,7 @@ void Renderer::cast3DNewRay(sf::RenderTarget &target, Player &player, const Map 
         -direction.y * planeScale,
         direction.x * planeScale
     );
+    sf::Vector2f player_loc = playerPos / cellSize;
 
     // Sky
     sf::RectangleShape rectangle(sf::Vector2f(ScreenW, ScreenH / 2.0f));
@@ -204,21 +215,28 @@ void Renderer::cast3DNewRay(sf::RenderTarget &target, Player &player, const Map 
     target.draw(rectangle);
 
     // Floor
+    sf::VertexArray floorPixel{sf::PrimitiveType::Points};
+    for(size_t y= ScreenH / 2; y < ScreenH; y++){
+        if(y == ScreenH / 2) continue;
+        sf::Vector2f rayDirLeft{direction - plane}, rayDirRight{direction + plane};
+        float rowDistance = CAMERA_Z / ((float)y - ScreenH / 2);
+        sf::Vector2f floorStep = {rowDistance * (rayDirRight - rayDirLeft) / static_cast<float>(ScreenW)};
+        sf::Vector2f floor = player_loc + rowDistance * rayDirLeft;
+        for (size_t x = 0; x<ScreenW; x++){
+            sf::Vector2i cell{floor};
+            float textureSize = floor_texture.getSize().x;
+            sf::Vector2f texCoords{textureSize * (floor - (sf::Vector2f)cell)};
+            floorPixel.append(sf::Vertex({sf::Vector2f(x, y), sf::Color::White, texCoords}));
+            floor += floorStep;
+        }
+    }
    
-
+   
     sf::VertexArray walls(sf::PrimitiveType::Triangles);
-    const auto &grid = map.getGridColor();
-    const float cellSize = map.getCellsize();
-    const float texSize = static_cast<float>(wall_texture.getSize().x);
-    const float maxDistance = MaxRayCastingDepth * cellSize;
-
     for (int x = 0; x < ScreenW; x++)
     {
         float cameraX = 2.0f * x / float(ScreenW) - 1.0f;
-
-        sf::Vector2f rayPos = playerPos / cellSize;
         sf::Vector2f rayDir = direction + plane * cameraX;
-
         sf::Vector2f deltaDist;
 
         deltaDist.x = (rayDir.x == 0.0f)
@@ -230,8 +248,8 @@ void Renderer::cast3DNewRay(sf::RenderTarget &target, Player &player, const Map 
                           : std::abs(1.0f / rayDir.y);
 
         sf::Vector2i mapPos(
-            (int)rayPos.x,
-            (int)rayPos.y);
+            (int)player_loc.x,
+            (int)player_loc.y);
 
         sf::Vector2i step;
         sf::Vector2f sideDist;
@@ -239,23 +257,23 @@ void Renderer::cast3DNewRay(sf::RenderTarget &target, Player &player, const Map 
         if (rayDir.x < 0)
         {
             step.x = -1;
-            sideDist.x = (rayPos.x - mapPos.x) * deltaDist.x;
+            sideDist.x = (player_loc.x - mapPos.x) * deltaDist.x;
         }
         else
         {
             step.x = 1;
-            sideDist.x = (mapPos.x + 1.0f - rayPos.x) * deltaDist.x;
+            sideDist.x = (mapPos.x + 1.0f - player_loc.x) * deltaDist.x;
         }
 
         if (rayDir.y < 0)
         {
             step.y = -1;
-            sideDist.y = (rayPos.y - mapPos.y) * deltaDist.y;
+            sideDist.y = (player_loc.y - mapPos.y) * deltaDist.y;
         }
         else
         {
             step.y = 1;
-            sideDist.y = (mapPos.y + 1.0f - rayPos.y) * deltaDist.y;
+            sideDist.y = (mapPos.y + 1.0f - player_loc.y) * deltaDist.y;
         }
 
         bool hit = false;
@@ -306,9 +324,9 @@ void Renderer::cast3DNewRay(sf::RenderTarget &target, Player &player, const Map 
         float wallX;
 
         if (vertical)
-            wallX = rayPos.y + perpWallDist * rayDir.y;
+            wallX = player_loc.y + perpWallDist * rayDir.y;
         else
-            wallX = rayPos.x + perpWallDist * rayDir.x;
+            wallX = player_loc.x + perpWallDist * rayDir.x;
 
         wallX -= std::floor(wallX);
 
@@ -349,7 +367,8 @@ void Renderer::cast3DNewRay(sf::RenderTarget &target, Player &player, const Map 
         walls.append({{x1, drawEnd}, color, t3});
         walls.append({{x0, drawEnd}, color, t2});
     }
-
+    
+    target.draw(floorPixel, &floor_texture);
     target.draw(walls, &wall_texture);
 }
 

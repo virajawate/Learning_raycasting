@@ -22,6 +22,7 @@
 constexpr unsigned int ScreenW = 1280;
 constexpr unsigned int ScreenH = 720;
 constexpr unsigned int NUM_RAYS = 800;
+constexpr float CAMERA_Z = 0.5f * ScreenH;
 constexpr float COLUMN_WIDTH = ScreenW / (float)NUM_RAYS;
 
 struct Ray {
