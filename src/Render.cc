@@ -234,8 +234,7 @@ void Renderer::cast3DNewRay(sf::RenderTarget &target, Player &player, const Map 
             // floorPixel.append(sf::Vertex({sf::Vector2f(x, y), sf::Color::White, texCoords}));
             texCoords.x &= (unsigned)textureSize - 1;
             texCoords.y &= (unsigned)textureSize - 1;
-            std::cout<<texCoords.x<<texCoords.y<<std::endl;
-
+            
             sf::Color color= floor_texture.getPixel(texCoords);
             floorPixel[(x + y * (size_t)ScreenW) * 4 + 0] = color.r;
             floorPixel[(x + y * (size_t)ScreenW) * 4 + 1] = color.g;
