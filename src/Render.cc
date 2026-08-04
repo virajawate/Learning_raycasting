@@ -15,7 +15,7 @@ void Renderer::init()
     }
     else
     {
-        std::cout << "Texture File Loaded" << std::endl;
+        std::cout << "Texture Files Loaded" << std::endl;
     }
 
     if (wall_texture.getSize().x != wall_texture.getSize().y)
@@ -23,10 +23,14 @@ void Renderer::init()
         std::cerr << "ERROR : Wall Texture is not square" << std::endl;
         return;
     }
-    if (floor_texture.getSize().x != floor_texture.getSize().y)
+    else if (floor_texture.getSize().x != floor_texture.getSize().y)
     {
         std::cerr << "ERROR : Floor Texture is not square" << std::endl;
         return;
+    }
+    else 
+    {
+        std::cout << "Initialization Complete." << std::endl;
     }
     wall_sprite = sf::Sprite(wall_texture);
 }
@@ -195,7 +199,7 @@ void Renderer::cast3DNewRay(sf::RenderTarget &target, Player &player, const Map 
     const float cellSize = map.getCellsize();
     const float texSize = static_cast<float>(wall_texture.getSize().x);
     const float maxDistance = MaxRayCastingDepth * cellSize;
-    
+
     // Player Info
     auto player_pose = player.get_player_pose();
     sf::Vector2f playerPos(player_pose[0], player_pose[1]);
@@ -215,7 +219,8 @@ void Renderer::cast3DNewRay(sf::RenderTarget &target, Player &player, const Map 
     target.draw(rectangle);
 
     // Floor
-    sf::VertexArray floorPixel{sf::PrimitiveType::Points};
+    // sf::VertexArray floorPixel{sf::PrimitiveType::Points};
+    std::vector<uint8_t> floorPixel(ScreenW * ScreenH * 4);
     for(size_t y= ScreenH / 2; y < ScreenH; y++){
         if(y == ScreenH / 2) continue;
         sf::Vector2f rayDirLeft{direction - plane}, rayDirRight{direction + plane};
@@ -225,13 +230,27 @@ void Renderer::cast3DNewRay(sf::RenderTarget &target, Player &player, const Map 
         for (size_t x = 0; x<ScreenW; x++){
             sf::Vector2i cell{floor};
             float textureSize = floor_texture.getSize().x;
-            sf::Vector2f texCoords{textureSize * (floor - (sf::Vector2f)cell)};
-            floorPixel.append(sf::Vertex({sf::Vector2f(x, y), sf::Color::White, texCoords}));
+            sf::Vector2u texCoords{textureSize * (floor - (sf::Vector2f)cell)};
+            // floorPixel.append(sf::Vertex({sf::Vector2f(x, y), sf::Color::White, texCoords}));
+            texCoords.x &= (unsigned)textureSize - 1;
+            texCoords.y &= (unsigned)textureSize - 1;
+            std::cout<<texCoords.x<<texCoords.y<<std::endl;
+
+            sf::Color color= floor_texture.getPixel(texCoords);
+            floorPixel[(x + y * (size_t)ScreenW) * 4 + 0] = color.r;
+            floorPixel[(x + y * (size_t)ScreenW) * 4 + 1] = color.g;
+            floorPixel[(x + y * (size_t)ScreenW) * 4 + 2] = color.b;
+            floorPixel[(x + y * (size_t)ScreenW) * 4 + 3] = color.a;
             floor += floorStep;
         }
     }
-   
-   
+    
+    sf::Image img;
+    img.resize({static_cast<unsigned> (ScreenW), static_cast<unsigned> (ScreenH)}, {floorPixel.data()});
+    sf::Texture texture;
+    texture.loadFromImage(img);
+    sf::Sprite sprite{texture};
+    target.draw(sprite);
     sf::VertexArray walls(sf::PrimitiveType::Triangles);
     for (int x = 0; x < ScreenW; x++)
     {
@@ -368,7 +387,7 @@ void Renderer::cast3DNewRay(sf::RenderTarget &target, Player &player, const Map 
         walls.append({{x0, drawEnd}, color, t2});
     }
     
-    target.draw(floorPixel, &floor_texture);
+    // target.draw(floorPixel, &floor_texture);
     target.draw(walls, &wall_texture);
 }
 
