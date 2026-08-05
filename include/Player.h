@@ -3,6 +3,9 @@
 
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <vector>
+
+constexpr float PLAYER_TURN_SPEED = 100.0f;
+
 class Player {
     public:
     std::vector<float> get_player_pose();

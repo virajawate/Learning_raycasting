@@ -9,6 +9,10 @@ void Renderer::init()
         std::cerr << "Wall Texture file NOT LOADED." << wall_texture_file << std::endl;
         return;
     }
+    else if (!sky_texture.loadFromFile(sky_texture_file)){
+        std::cerr << "Floor Texture file NOT LOADED." << wall_texture_file << std::endl;
+        return;
+    }
     else if (!floor_texture.loadFromFile(floor_texture_file)){
         std::cerr << "Floor Texture file NOT LOADED." << wall_texture_file << std::endl;
         return;
@@ -17,10 +21,15 @@ void Renderer::init()
     {
         std::cout << "Texture Files Loaded" << std::endl;
     }
-
+    sky_texture.setRepeated(true);
     if (wall_texture.getSize().x != wall_texture.getSize().y)
     {
         std::cerr << "ERROR : Wall Texture is not square" << std::endl;
+        return;
+    }
+    else if (sky_texture.getSize().x != sky_texture.getSize().y)
+    {
+        std::cerr << "ERROR : Sky Texture is not square" << std::endl;
         return;
     }
     else if (floor_texture.getSize().x != floor_texture.getSize().y)
@@ -214,9 +223,18 @@ void Renderer::cast3DNewRay(sf::RenderTarget &target, Player &player, const Map 
     sf::Vector2f player_loc = playerPos / cellSize;
 
     // Sky
-    sf::RectangleShape rectangle(sf::Vector2f(ScreenW, ScreenH / 2.0f));
-    rectangle.setFillColor(sf::Color(100, 170, 250));
-    target.draw(rectangle);
+    int xOffset = ScreenW / PLAYER_TURN_SPEED * player_pose[2];
+    while(xOffset < 0){
+        xOffset += sky_texture.getSize().x;
+    }
+
+    sf::Vertex sky[] = {
+        sf::Vertex({sf::Vector2f{0.0f, 0.0f}, sf::Color::Transparent, sf::Vector2f{static_cast<float>(xOffset), 0.0f}}),
+        sf::Vertex({sf::Vector2f{0.0f, ScreenH}, sf::Color::Transparent, sf::Vector2f{static_cast<float>(xOffset), static_cast<float>(sky_texture.getSize().y)}}),
+        sf::Vertex({sf::Vector2f{ScreenW, ScreenH}, sf::Color::Transparent, sf::Vector2f{static_cast<float>(xOffset) + sky_texture.getSize().x, static_cast<float>(sky_texture.getSize().y)}}),
+        sf::Vertex({sf::Vector2f{ScreenW, 0.0f}, sf::Color::Transparent, sf::Vector2f{static_cast<float>(xOffset) + sky_texture.getSize().x, 0.0f}}),
+    };
+    target.draw(sky, 6, sf::PrimitiveType::Triangles, sf::RenderStates(&sky_texture));
 
     // Floor
     // sf::VertexArray floorPixel{sf::PrimitiveType::Points};

@@ -49,12 +49,13 @@ private:
     const size_t MaxRayCastingDepth = 128;
     
 
-    sf::Texture wall_texture;
+    sf::Texture wall_texture, sky_texture;
     // sf::Texture floor_texture;
     sf::Image floor_texture;
     sf::Sprite wall_sprite;
     std::string wall_texture_file = "texture/wall_texture.png";
     std::string floor_texture_file = "texture/floor_texture.png";
+    std::string sky_texture_file = "texture/floor_texture.png";
 
     
 };
