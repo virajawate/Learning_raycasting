@@ -27,11 +27,6 @@ void Renderer::init()
         std::cerr << "ERROR : Wall Texture is not square" << std::endl;
         return;
     }
-    else if (sky_texture.getSize().x != sky_texture.getSize().y)
-    {
-        std::cerr << "ERROR : Sky Texture is not square" << std::endl;
-        return;
-    }
     else if (floor_texture.getSize().x != floor_texture.getSize().y)
     {
         std::cerr << "ERROR : Floor Texture is not square" << std::endl;
@@ -229,15 +224,14 @@ void Renderer::cast3DNewRay(sf::RenderTarget &target, Player &player, const Map 
     }
 
     sf::Vertex sky[] = {
-        sf::Vertex({sf::Vector2f{0.0f, 0.0f}, sf::Color::Transparent, sf::Vector2f{static_cast<float>(xOffset), 0.0f}}),
-        sf::Vertex({sf::Vector2f{0.0f, ScreenH}, sf::Color::Transparent, sf::Vector2f{static_cast<float>(xOffset), static_cast<float>(sky_texture.getSize().y)}}),
-        sf::Vertex({sf::Vector2f{ScreenW, ScreenH}, sf::Color::Transparent, sf::Vector2f{static_cast<float>(xOffset) + sky_texture.getSize().x, static_cast<float>(sky_texture.getSize().y)}}),
-        sf::Vertex({sf::Vector2f{ScreenW, 0.0f}, sf::Color::Transparent, sf::Vector2f{static_cast<float>(xOffset) + sky_texture.getSize().x, 0.0f}}),
+        sf::Vertex({sf::Vector2f{0.0f, 0.0f}, sf::Color::White, sf::Vector2f{static_cast<float>(xOffset), 0.0f}}),
+        sf::Vertex({sf::Vector2f{0.0f, ScreenH}, sf::Color::White, sf::Vector2f{static_cast<float>(xOffset), static_cast<float>(sky_texture.getSize().y)}}),
+        sf::Vertex({sf::Vector2f{ScreenW, ScreenH}, sf::Color::White, sf::Vector2f{static_cast<float>(xOffset + sky_texture.getSize().x), static_cast<float>(sky_texture.getSize().y)}}),
+        sf::Vertex({sf::Vector2f{ScreenW, 0.0f}, sf::Color::White, sf::Vector2f{static_cast<float>(xOffset + sky_texture.getSize().x), 0.0f}}),
     };
-    target.draw(sky, 6, sf::PrimitiveType::Triangles, sf::RenderStates(&sky_texture));
-
+    target.draw(sky, 4, sf::PrimitiveType::TriangleFan, sf::RenderStates(&sky_texture));
+    
     // Floor
-    // sf::VertexArray floorPixel{sf::PrimitiveType::Points};
     std::vector<uint8_t> floorPixel(ScreenW * ScreenH * 4);
     for(size_t y= ScreenH / 2; y < ScreenH; y++){
         if(y == ScreenH / 2) continue;
@@ -249,7 +243,6 @@ void Renderer::cast3DNewRay(sf::RenderTarget &target, Player &player, const Map 
             sf::Vector2i cell{floor};
             float textureSize = floor_texture.getSize().x;
             sf::Vector2u texCoords{textureSize * (floor - (sf::Vector2f)cell)};
-            // floorPixel.append(sf::Vertex({sf::Vector2f(x, y), sf::Color::White, texCoords}));
             texCoords.x &= (unsigned)textureSize - 1;
             texCoords.y &= (unsigned)textureSize - 1;
             
