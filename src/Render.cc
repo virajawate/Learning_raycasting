@@ -1,9 +1,18 @@
 #include "Render.h"
 
-Renderer::Renderer() : wall_texture(), wall_sprite(wall_texture) {}
+Renderer::Renderer()
+    : wall_texture(),
+      wall_sprite(wall_texture)
+{
+}
 
 void Renderer::init()
 {
+    if (!floorBuffer.resize({ScreenW, ScreenH}))
+    {
+        throw std::runtime_error("Failed to resize floor buffer");
+    }
+    floorSprite.setTexture(floorBuffer);
     if (!wall_texture.loadFromFile(wall_texture_file))
     {
         std::cerr << "Wall Texture file NOT LOADED." << wall_texture_file << std::endl;
@@ -198,6 +207,7 @@ void Renderer::draw3dview(sf::RenderTarget &target, Player &player, const Map &m
 
 void Renderer::cast3DNewRay(sf::RenderTarget &target, Player &player, const Map &map)
 {
+    const float fov = 60.0f; 
     // Map Info
     const auto &grid = map.getGridColor();
     const float cellSize = map.getCellsize();
@@ -209,7 +219,6 @@ void Renderer::cast3DNewRay(sf::RenderTarget &target, Player &player, const Map 
     sf::Vector2f playerPos(player_pose[0], player_pose[1]);
     float angle = player_pose[2] * PI / 180.0f;
     sf::Vector2f direction(std::cos(angle), std::sin(angle));
-    const float fov = 60.0f;
     const float planeScale = std::tan(fov * PI / 360.0f);
     sf::Vector2f plane(
         -direction.y * planeScale,
@@ -219,9 +228,7 @@ void Renderer::cast3DNewRay(sf::RenderTarget &target, Player &player, const Map 
 
     // Sky
     int xOffset = ScreenW / PLAYER_TURN_SPEED * player_pose[2];
-    while(xOffset < 0){
-        xOffset += sky_texture.getSize().x;
-    }
+    while(xOffset < 0){xOffset += sky_texture.getSize().x;}
 
     sf::Vertex sky[] = {
         sf::Vertex({sf::Vector2f{0.0f, 0.0f}, sf::Color::White, sf::Vector2f{static_cast<float>(xOffset), 0.0f}}),
@@ -230,9 +237,10 @@ void Renderer::cast3DNewRay(sf::RenderTarget &target, Player &player, const Map 
         sf::Vertex({sf::Vector2f{ScreenW, 0.0f}, sf::Color::White, sf::Vector2f{static_cast<float>(xOffset + sky_texture.getSize().x), 0.0f}}),
     };
     target.draw(sky, 4, sf::PrimitiveType::TriangleFan, sf::RenderStates(&sky_texture));
-    
+
     // Floor
-    std::vector<uint8_t> floorPixel(ScreenW * ScreenH * 4);
+    // std::vector<uint8_t> floorPixel(ScreenW * ScreenH * 4);
+    uint8_t floorPixels[(size_t)ScreenW * (size_t)ScreenH * 4]{};
     for(size_t y= ScreenH / 2; y < ScreenH; y++){
         if(y == ScreenH / 2) continue;
         sf::Vector2f rayDirLeft{direction - plane}, rayDirRight{direction + plane};
@@ -247,20 +255,22 @@ void Renderer::cast3DNewRay(sf::RenderTarget &target, Player &player, const Map 
             texCoords.y &= (unsigned)textureSize - 1;
             
             sf::Color color= floor_texture.getPixel(texCoords);
-            floorPixel[(x + y * (size_t)ScreenW) * 4 + 0] = color.r;
-            floorPixel[(x + y * (size_t)ScreenW) * 4 + 1] = color.g;
-            floorPixel[(x + y * (size_t)ScreenW) * 4 + 2] = color.b;
-            floorPixel[(x + y * (size_t)ScreenW) * 4 + 3] = color.a;
+            floorPixels[(x + y * (size_t)ScreenW) * 4 + 0] = color.r;
+            floorPixels[(x + y * (size_t)ScreenW) * 4 + 1] = color.g;
+            floorPixels[(x + y * (size_t)ScreenW) * 4 + 2] = color.b;
+            floorPixels[(x + y * (size_t)ScreenW) * 4 + 3] = color.a;
             floor += floorStep;
         }
     }
+    floorBuffer.update(floorPixels);
+    target.draw(floorSprite);
     
-    sf::Image img;
-    img.resize({static_cast<unsigned> (ScreenW), static_cast<unsigned> (ScreenH)}, {floorPixel.data()});
-    sf::Texture texture;
-    texture.loadFromImage(img);
-    sf::Sprite sprite{texture};
-    target.draw(sprite);
+    // sf::Image img;
+    // img.resize({static_cast<unsigned> (ScreenW), static_cast<unsigned> (ScreenH)}, {floorPixels.data()});
+    // sf::Texture texture;
+    // texture.loadFromImage(img);
+    // sf::Sprite sprite{texture};
+    // target.draw(sprite);
     sf::VertexArray walls(sf::PrimitiveType::Triangles);
     for (int x = 0; x < ScreenW; x++)
     {

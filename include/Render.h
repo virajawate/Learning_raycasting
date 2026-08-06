@@ -10,6 +10,7 @@
 #include <SFML/Graphics/PrimitiveType.hpp>
 #include <SFML/Graphics/RectangleShape.hpp>
 #include <SFML/Graphics/RenderTarget.hpp>
+#include <SFML/Graphics/RenderStates.hpp>
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Graphics/Texture.hpp>
 #include <SFML/Graphics/Vertex.hpp>
@@ -49,10 +50,11 @@ private:
     const size_t MaxRayCastingDepth = 128;
     
 
-    sf::Texture wall_texture, sky_texture;
+    sf::Texture wall_texture, sky_texture, floorBuffer;
+    sf::Sprite wall_sprite;
+    sf::Sprite floorSprite;
     // sf::Texture floor_texture;
     sf::Image floor_texture;
-    sf::Sprite wall_sprite;
     std::string wall_texture_file = "texture/wall_texture.png";
     std::string floor_texture_file = "texture/floor_texture.png";
     std::string sky_texture_file = "texture/sky_texture.png";
