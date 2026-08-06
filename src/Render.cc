@@ -1,51 +1,34 @@
 #include "Render.h"
 
-Renderer::Renderer()
-    : wall_texture(),
-      wall_sprite(wall_texture)
-{
-}
+// Renderer::Renderer() : wall_texture(), wall_sprite(wall_texture) {}
+Renderer::Renderer() = default;
 
 void Renderer::init()
 {
     if (!floorBuffer.resize({ScreenW, ScreenH}))
-    {
-        throw std::runtime_error("Failed to resize floor buffer");
-    }
-    floorSprite.setTexture(floorBuffer);
+        throw std::runtime_error("Failed to create floor buffer.");
+
     if (!wall_texture.loadFromFile(wall_texture_file))
-    {
-        std::cerr << "Wall Texture file NOT LOADED." << wall_texture_file << std::endl;
-        return;
-    }
-    else if (!sky_texture.loadFromFile(sky_texture_file)){
-        std::cerr << "Floor Texture file NOT LOADED." << wall_texture_file << std::endl;
-        return;
-    }
-    else if (!floor_texture.loadFromFile(floor_texture_file)){
-        std::cerr << "Floor Texture file NOT LOADED." << wall_texture_file << std::endl;
-        return;
-    }
-    else
-    {
-        std::cout << "Texture Files Loaded" << std::endl;
-    }
-    sky_texture.setRepeated(true);
+        throw std::runtime_error("Failed to load " + wall_texture_file);
+
+    if (!sky_texture.loadFromFile(sky_texture_file))
+        throw std::runtime_error("Failed to load " + sky_texture_file);
+
+    if (!floor_texture.loadFromFile(floor_texture_file))
+        throw std::runtime_error("Failed to load " + floor_texture_file);
+
     if (wall_texture.getSize().x != wall_texture.getSize().y)
-    {
-        std::cerr << "ERROR : Wall Texture is not square" << std::endl;
-        return;
-    }
-    else if (floor_texture.getSize().x != floor_texture.getSize().y)
-    {
-        std::cerr << "ERROR : Floor Texture is not square" << std::endl;
-        return;
-    }
-    else 
-    {
-        std::cout << "Initialization Complete." << std::endl;
-    }
-    wall_sprite = sf::Sprite(wall_texture);
+        throw std::runtime_error("Wall texture must be square.");
+
+    if (floor_texture.getSize().x != floor_texture.getSize().y)
+        throw std::runtime_error("Floor texture must be square.");
+
+    sky_texture.setRepeated(true);
+    wall_sprite.emplace(wall_texture);
+    floorSprite.emplace(floorBuffer);
+
+    std::cout << "Texture Files Loaded\n";
+    std::cout << "Initialization Complete.\n";
 }
 
 Ray Renderer::castRay(sf::Vector2f start, float angleInDegrees, const Map &map, bool fps_mode = false)
@@ -174,12 +157,20 @@ void Renderer::draw3dview(sf::RenderTarget &target, Player &player, const Map &m
                 {
                     textureX = wall_texture.getSize().x * std::ceil(ray.hitPosition.x / wall_texture.getSize().x) - ray.hitPosition.x;
                 }
-                wall_sprite.setPosition({i * COLUMN_WIDTH, walloffset});
-                wall_sprite.setTextureRect(sf::IntRect(
+                wall_sprite->setPosition({i * COLUMN_WIDTH, walloffset});
+
+                wall_sprite->setTextureRect(sf::IntRect(
                     {textureX, 0},
-                    {(int)(wall_texture.getSize().x / map.getCellsize()), (int)wall_texture.getSize().y}));
-                wall_sprite.setScale({COLUMN_WIDTH, wallHeight / wall_texture.getSize().y});
-                        
+                    {
+                        static_cast<int>(wall_texture.getSize().x / map.getCellsize()),
+                        static_cast<int>(wall_texture.getSize().y)
+                    }));
+
+                wall_sprite->setScale({
+                    COLUMN_WIDTH,
+                    wallHeight / static_cast<float>(wall_texture.getSize().y)
+                });
+
                 if (wallHeight > ScreenH) wallHeight = ScreenH;
                 
                 float brightness = 1.0f - (ray.distance / maxRenderDistance);
@@ -193,8 +184,12 @@ void Renderer::draw3dview(sf::RenderTarget &target, Player &player, const Map &m
                 column.setPosition({i * COLUMN_WIDTH, walloffset});
                 column.setScale({COLUMN_WIDTH, wallHeight});
                 column.setFillColor(sf::Color(fogColor.r, fogColor.g, fogColor.b, fogAlpha * 255));
-                wall_sprite.setColor(sf::Color(255 * shade, 255 * shade, 255 * shade));
-                target.draw(wall_sprite);
+                wall_sprite->setColor(sf::Color(
+                    static_cast<std::uint8_t>(255 * shade),
+                    static_cast<std::uint8_t>(255 * shade),
+                    static_cast<std::uint8_t>(255 * shade)));
+
+                target.draw(*wall_sprite);
                 target.draw(column);
             }
         }
@@ -239,8 +234,8 @@ void Renderer::cast3DNewRay(sf::RenderTarget &target, Player &player, const Map 
     target.draw(sky, 4, sf::PrimitiveType::TriangleFan, sf::RenderStates(&sky_texture));
 
     // Floor
-    // std::vector<uint8_t> floorPixel(ScreenW * ScreenH * 4);
-    uint8_t floorPixels[(size_t)ScreenW * (size_t)ScreenH * 4]{};
+    std::vector<uint8_t> floorPixels(ScreenW * ScreenH * 4);
+
     for(size_t y= ScreenH / 2; y < ScreenH; y++){
         if(y == ScreenH / 2) continue;
         sf::Vector2f rayDirLeft{direction - plane}, rayDirRight{direction + plane};
@@ -262,15 +257,11 @@ void Renderer::cast3DNewRay(sf::RenderTarget &target, Player &player, const Map 
             floor += floorStep;
         }
     }
-    floorBuffer.update(floorPixels);
-    target.draw(floorSprite);
+    floorBuffer.update(floorPixels.data());
+    floorSprite->setTexture(floorBuffer);
+    // Drawing floorSprite caused overload resolution error; skip drawing here.
+    if(floorSprite) target.draw(*floorSprite);
     
-    // sf::Image img;
-    // img.resize({static_cast<unsigned> (ScreenW), static_cast<unsigned> (ScreenH)}, {floorPixels.data()});
-    // sf::Texture texture;
-    // texture.loadFromImage(img);
-    // sf::Sprite sprite{texture};
-    // target.draw(sprite);
     sf::VertexArray walls(sf::PrimitiveType::Triangles);
     for (int x = 0; x < ScreenW; x++)
     {

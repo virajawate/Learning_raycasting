@@ -51,8 +51,10 @@ private:
     
 
     sf::Texture wall_texture, sky_texture, floorBuffer;
-    sf::Sprite wall_sprite;
-    sf::Sprite floorSprite;
+    // sf::Sprite wall_sprite;
+    // sf::Sprite floorSprite;
+    std::optional<sf::Sprite> wall_sprite;
+    std::optional<sf::Sprite> floorSprite;
     // sf::Texture floor_texture;
     sf::Image floor_texture;
     std::string wall_texture_file = "texture/wall_texture.png";
