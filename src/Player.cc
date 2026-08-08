@@ -36,18 +36,26 @@ void Player::draw(sf::RenderTarget &target){
 }
 
 void Player::update(float deltaTime){
+    float updated_turn_speed, updated_move_speed;
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::LShift)){
+        updated_turn_speed = 2.0 * TURN_SPEED;
+        updated_move_speed = 2.0 * MOVE_SPEED;
+    } else {
+        updated_turn_speed = TURN_SPEED;
+        updated_move_speed = MOVE_SPEED;
+    } 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D)){
-        angle += TURN_SPEED * deltaTime;
+        angle += updated_turn_speed * deltaTime;
     } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A)){
-        angle -= TURN_SPEED * deltaTime;
+        angle -= updated_turn_speed * deltaTime;
     } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W)){
         float radians = angle * PI / 180.0f;
-        position.x += MOVE_SPEED * cos(radians) * deltaTime;
-        position.y += MOVE_SPEED * sin(radians) * deltaTime;
+        position.x += updated_move_speed * cos(radians) * deltaTime;
+        position.y += updated_move_speed * sin(radians) * deltaTime;
     } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S)){
         float radians = angle * PI / 180.0f;
-        position.x -= MOVE_SPEED * cos(radians) * deltaTime;
-        position.y -= MOVE_SPEED * sin(radians) * deltaTime;
+        position.x -= updated_move_speed * cos(radians) * deltaTime;
+        position.y -= updated_move_speed * sin(radians) * deltaTime;
     }
 }
 
