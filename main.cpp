@@ -68,6 +68,7 @@ int main() {
       win.display();
     }else if(state == State::Editor){
       Color_map.drawColorGrid(win);
+      player.draw(win);
       win.display();
     }
   }
