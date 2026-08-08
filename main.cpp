@@ -42,6 +42,9 @@ int main() {
   
   Renderer render;
   render.init();
+
+  enum class State { Editor, Game } state = State::Game;
+
   Player player;
   player.set_player_size(PLAYER_SIZE);
   player.set_player_pose(sf::Vector2f(65,65));
@@ -51,33 +54,22 @@ int main() {
     while(const std::optional event = win.pollEvent()){
       if(event->is<sf::Event::Closed>()){
         win.close();
+      } else if (const auto* keyPressed = event->getIf<sf::Event::KeyPressed>()){
+        if(keyPressed->scancode == sf::Keyboard::Scancode::Escape){
+          state = (state == State::Game) ? State::Editor : State::Game;
+        }
       }
     }
 
     player.update(deltatime);
-    
-    // Clear the Window
     win.clear();
-    
-    // Draw the Map
-    // map.draw(win);
-    
-    // Draw the Map
-    // maze_map.draw(win);
-    
-    //Draw the rays
-    // render.drawRays(win, player, maze_map);
-    
-    //Draw the player
-    // player.draw(win);
-    
-    //Render 3D view
-    // render.draw3dview(win, player, Color_map);
-    
-    render.cast3DNewRay(win, player, Color_map);
-
-    // Display in frame
-    win.display();
+    if(state == State::Game){
+      render.cast3DNewRay(win, player, Color_map);
+      win.display();
+    }else if(state == State::Editor){
+      Color_map.drawColorGrid(win);
+      win.display();
+    }
   }
 
   return 0;
