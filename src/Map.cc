@@ -10,7 +10,7 @@
 */
 Map::Map(float cell_size, int width, int height) : cellSize(cell_size), grid(height, std::vector(width, 0)){}
 
-Map::Map(float cell_size, std::vector<std::vector<int>> Grid) : cellSize(cell_size), grid(Grid) {}
+Map::Map(float cell_size, MapGrid Grid) : cellSize(cell_size), grid(Grid) {}
 
 Map::Map(float cell_size, const std::string &filename) : cellSize(cell_size) {
   sf::Image img;
@@ -23,14 +23,13 @@ Map::Map(float cell_size, const std::string &filename) : cellSize(cell_size) {
 
   gridColor = std::vector(img.getSize().y, std::vector(img.getSize().x, sf::Color::Black));
 
-  for(size_t y=0; y<img.getSize().y; y++){
-    for(size_t x=0; x<img.getSize().x; x++){
-      gridColor[y][x] = img.getPixel(sf::Vector2u(
-        static_cast<unsigned>(x), static_cast<unsigned>(y)
-      ));
+  for(unsigned y=0; y<img.getSize().y; y++){
+    for(unsigned x=0; x<img.getSize().x; x++){
+      gridColor[y][x] = img.getPixel({x, y});
     }
   }
 }
+
 void Map::drawColorGrid(sf::RenderTarget& target){
   if(gridColor.empty()){
     return;

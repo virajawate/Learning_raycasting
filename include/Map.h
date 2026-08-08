@@ -9,6 +9,8 @@
 #include <SFML/Graphics/Color.hpp>
 #include <SFML/Graphics/Image.hpp>
 
+typedef std::vector<std::vector<int>>  MapGrid;
+typedef std::vector<std::vector<sf::Color>>  MapColorGrid;
 
 class Map{
 public:
@@ -25,8 +27,8 @@ public:
   float getCellsize() const;
 private:
   // Mapping Grid ROW<COL>
-  std::vector<std::vector<int>> grid;
-  std::vector<std::vector<sf::Color>> gridColor;
+  MapGrid grid;
+  MapColorGrid gridColor;
   // Cell Size in pixels
   float cellSize;
 
