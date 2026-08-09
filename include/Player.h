@@ -13,6 +13,7 @@ class Player {
     void draw(sf::RenderTarget &target);
     void set_player_size(float size);
     void update(float deltaTime);
+    void reset();
 
     private:
     sf::Vector2f position;

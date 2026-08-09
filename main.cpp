@@ -5,6 +5,7 @@
 #include "Map.h"
 #include "Render.h"
 #include "Player.h"
+#include "Editor.h"
 float PLAYER_SIZE = 25.0;
 
 int main() {
@@ -43,6 +44,9 @@ int main() {
   Renderer render;
   render.init();
 
+  Editor editor;
+  editor.init(win);
+
   enum class State { Editor, Game } state = State::Game;
 
   Player player;
@@ -59,15 +63,20 @@ int main() {
           state = (state == State::Game) ? State::Editor : State::Game;
         }
       }
+      if(state == State::Editor){
+        editor.handleEvent(*event);
+      }
     }
 
     player.update(deltatime);
     win.clear();
     if(state == State::Game){
+      win.setView(win.getDefaultView());
       render.cast3DNewRay(win, player, Color_map);
       win.display();
     }else if(state == State::Editor){
       Color_map.drawColorGrid(win);
+      editor.run(win);
       player.draw(win);
       win.display();
     }

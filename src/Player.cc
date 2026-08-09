@@ -67,3 +67,8 @@ void Player::set_player_pose(sf::Vector2f pose){
 void Player::set_player_size(float size){
     player_size = size;
 }
+
+void Player::reset()
+{
+    angle = 0.0f;
+}
