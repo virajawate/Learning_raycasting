@@ -2,6 +2,7 @@
 #include <SFML/Window/Event.hpp>
 #include <SFML/Window/VideoMode.hpp>
 
+#include <imgui-SFML.h>
 #include "Map.h"
 #include "Render.h"
 #include "Player.h"
@@ -20,6 +21,12 @@ int main() {
                       );
   sf::Clock Gametime;
 
+  if(ImGui::SFML::Init(win)){
+    std::cout<<"ImGUI Initialized.\n";
+  } else {
+    std::cerr<<"ImGUI Initialization Failed\n";
+    return 1;
+  }
   // The Maze map grid
   std::vector<std::vector<int>> Maze = {
     {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}, //0

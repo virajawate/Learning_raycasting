@@ -8,13 +8,16 @@ ifeq ($(OS),Windows_NT)
     RM = if exist $(BUILD_DIR) rmdir /S /Q $(BUILD_DIR)
     EXE = .exe
 
-    C_FLAGS = -std=c++17 -MMD -MP -O3 -I./include -IC:/SFML/include
+    C_FLAGS = -std=c++17 -MMD -MP -O3 -I./include -IC:/SFML/include -IC:/Cpp_Libraries/imgui-sfml
     L_FLAGS = -LC:/SFML/lib \
+    		  -LC:/Cpp_Libraries/imgui-sfml/build \
+				-LC:/Cpp_Libraries/imgui \
+				-lImGui-SFML \
+				-limgui \
               -lsfml-graphics \
               -lsfml-window \
-              -lsfml-audio \
               -lsfml-system \
-              -lopengl32
+              -lopengl32 
 else
     MKDIR = mkdir -p $(BUILD_DIR)
     RM = rm -rf $(BUILD_DIR)
@@ -25,7 +28,6 @@ else
 		-L/usr/local/lib \
 		-lsfml-graphics-s \
 		-lsfml-window-s \
-		-lsfml-audio-s \
 		-lsfml-system-s \
 		-lGL \
 		-lX11 \
