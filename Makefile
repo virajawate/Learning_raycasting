@@ -27,16 +27,12 @@ else
     C_FLAGS = -std=c++17 -MMD -MP -O3 -I./include -I/usr/local/include
 	L_FLAGS = \
 		-L/usr/local/lib \
-		-lsfml-graphics-s \
-		-lsfml-window-s \
-		-lsfml-system-s \
 		-lGL \
 		-lX11 \
 		-lXrandr \
 		-lXcursor \
 		-lXi \
 		-lXinerama \
-		-lXxf86vm \
 		-ludev \
 		-lfreetype \
 		-lpthread \
