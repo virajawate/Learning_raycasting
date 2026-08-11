@@ -68,13 +68,12 @@ jobs:
 
           sudo cmake \
             --install /tmp/SFML/build
-
       # --------------------------------------------------------
-      # Build ImGui
+      # Build Dear ImGui
       # --------------------------------------------------------
       - name: Build Dear ImGui
         run: |
-          git clone --depth 1 \
+          git clone --depth 1 --branch v1.91.9b \
             https://github.com/ocornut/imgui.git \
             /tmp/imgui
 
@@ -110,6 +109,7 @@ jobs:
           sudo cp /tmp/imgui/*.h /usr/local/include/imgui/
           sudo cp /tmp/imgui/build/libimgui.a /usr/local/lib/
 
+
       # --------------------------------------------------------
       # Build ImGui-SFML
       # --------------------------------------------------------
@@ -134,37 +134,37 @@ jobs:
           sudo cmake \
             --install /tmp/imgui-sfml/build
 
-      # --------------------------------------------------------
-      # Build application
-      # --------------------------------------------------------
-      - name: Build Raycasting
-        run: |
-          make clean || true
-          make
+          # --------------------------------------------------------
+          # Build application
+          # --------------------------------------------------------
+          - name: Build Raycasting
+            run: |
+              make clean || true
+              make
 
-      # --------------------------------------------------------
-      # Package
-      # --------------------------------------------------------
-      - name: Package Linux build
-        if: startsWith(github.ref, 'refs/tags/v')
-        run: |
-          mkdir -p release/raycasting-linux
-          cp build/raycasting release/raycasting-linux/
-          cp -r map release/raycasting-linux/
-          cp -r texture release/raycasting-linux/
-          cp README.md release/raycasting-linux/
+          # --------------------------------------------------------
+          # Package
+          # --------------------------------------------------------
+          - name: Package Linux build
+            if: startsWith(github.ref, 'refs/tags/v')
+            run: |
+              mkdir -p release/raycasting-linux
+              cp build/raycasting release/raycasting-linux/
+              cp -r map release/raycasting-linux/
+              cp -r texture release/raycasting-linux/
+              cp README.md release/raycasting-linux/
 
-          tar -czf \
-            release/raycasting-linux.tar.gz \
-            -C release \
-            raycasting-linux
+              tar -czf \
+                release/raycasting-linux.tar.gz \
+                -C release \
+                raycasting-linux
 
-      - name: Upload Linux artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: raycasting-linux
-          path: release/raycasting-linux.tar.gz
-          if-no-files-found: ignore
+          - name: Upload Linux artifact
+            uses: actions/upload-artifact@v4
+            with:
+              name: raycasting-linux
+              path: release/raycasting-linux.tar.gz
+              if-no-files-found: ignore
 
 
   # ============================================================
