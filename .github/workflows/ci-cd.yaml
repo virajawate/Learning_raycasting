@@ -89,7 +89,6 @@ jobs:
       # --------------------------------------------------------
       # Build Dear ImGui
       # --------------------------------------------------------
-
       - name: Build Dear ImGui
         run: |
           git clone \
@@ -136,7 +135,6 @@ jobs:
           sudo cp \
             /tmp/imgui/build/libimgui.a \
             /usr/local/lib/
-
       # --------------------------------------------------------
       # Build ImGui-SFML
       # --------------------------------------------------------
@@ -153,7 +151,7 @@ jobs:
             -S /tmp/imgui-sfml \
             -B /tmp/imgui-sfml/build \
             -DCMAKE_BUILD_TYPE=Release \
-            -DSFML_STATIC_LIBRARIES=OFF \
+            -DBUILD_SHARED_LIBS=ON \
             -DIMGUI_DIR=/tmp/imgui
 
           cmake \
