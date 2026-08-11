@@ -123,7 +123,7 @@ jobs:
             -S /tmp/imgui-sfml \
             -B /tmp/imgui-sfml/build \
             -DCMAKE_BUILD_TYPE=Release \
-            -DSFML_STATIC_LIBRARIES=OFF \
+            -DSFML_STATIC_LIBRARIES=ON \
             -DIMGUI_DIR=/tmp/imgui
 
           cmake \
