@@ -57,7 +57,7 @@ jobs:
             -S /tmp/SFML \
             -B /tmp/SFML/build \
             -DCMAKE_BUILD_TYPE=Release \
-            -DBUILD_SHARED_LIBS=ON \
+            -DBUILD_SHARED_LIBS=OFF \
             -DSFML_BUILD_EXAMPLES=OFF \
             -DSFML_BUILD_TEST_SUITE=OFF
 
