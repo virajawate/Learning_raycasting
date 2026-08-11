@@ -57,7 +57,7 @@ jobs:
             -S /tmp/SFML \
             -B /tmp/SFML/build \
             -DCMAKE_BUILD_TYPE=Release \
-            -DBUILD_SHARED_LIBS=OFF \
+            -DBUILD_SHARED_LIBS=ON \
             -DSFML_BUILD_EXAMPLES=OFF \
             -DSFML_BUILD_TEST_SUITE=OFF
 
@@ -115,7 +115,7 @@ jobs:
       # --------------------------------------------------------
       - name: Build ImGui-SFML
         run: |
-          git clone --depth 1 --tags v3.0 \
+          git clone --depth 1 --branch v3.0 \
             https://github.com/SFML/imgui-sfml.git \
             /tmp/imgui-sfml
 
