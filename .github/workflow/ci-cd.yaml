@@ -1,0 +1,263 @@
+name: Raycasting CI/CD
+
+on:
+  push:
+    branches:
+      - main
+
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+
+  # ============================================================
+  # CI - Linux
+  # ============================================================
+  build-linux:
+    name: Build Linux
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            build-essential \
+            cmake \
+            git \
+            libx11-dev \
+            libxrandr-dev \
+            libxcursor-dev \
+            libxi-dev \
+            libxinerama-dev \
+            libgl1-mesa-dev \
+            libudev-dev \
+            libfreetype6-dev \
+            libopenal-dev \
+            libvorbis-dev \
+            libflac-dev
+
+      # --------------------------------------------------------
+      # Build SFML 3
+      # --------------------------------------------------------
+      - name: Build SFML
+        run: |
+          git clone --depth 1 --branch 3.0.1 \
+            https://github.com/SFML/SFML.git \
+            /tmp/SFML
+
+          cmake \
+            -S /tmp/SFML \
+            -B /tmp/SFML/build \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DBUILD_SHARED_LIBS=ON \
+            -DSFML_BUILD_EXAMPLES=OFF \
+            -DSFML_BUILD_TEST_SUITE=OFF
+
+          cmake \
+            --build /tmp/SFML/build \
+            --config Release \
+            -j2
+
+          sudo cmake \
+            --install /tmp/SFML/build
+
+      # --------------------------------------------------------
+      # Build ImGui
+      # --------------------------------------------------------
+      - name: Build Dear ImGui
+        run: |
+          git clone --depth 1 --branch v1.92.2b \
+            https://github.com/ocornut/imgui.git \
+            /tmp/imgui
+
+          mkdir -p /tmp/imgui/build
+
+          g++ -std=c++17 \
+            -I/tmp/imgui \
+            -c /tmp/imgui/imgui.cpp \
+            -o /tmp/imgui/build/imgui.o
+
+          g++ -std=c++17 \
+            -I/tmp/imgui \
+            -c /tmp/imgui/imgui_draw.cpp \
+            -o /tmp/imgui/build/imgui_draw.o
+
+          g++ -std=c++17 \
+            -I/tmp/imgui \
+            -c /tmp/imgui/imgui_tables.cpp \
+            -o /tmp/imgui/build/imgui_tables.o
+
+          g++ -std=c++17 \
+            -I/tmp/imgui \
+            -c /tmp/imgui/imgui_widgets.cpp \
+            -o /tmp/imgui/build/imgui_widgets.o
+
+          ar rcs /tmp/imgui/build/libimgui.a \
+            /tmp/imgui/build/imgui.o \
+            /tmp/imgui/build/imgui_draw.o \
+            /tmp/imgui/build/imgui_tables.o \
+            /tmp/imgui/build/imgui_widgets.o
+
+          sudo mkdir -p /usr/local/include/imgui
+          sudo cp /tmp/imgui/*.h /usr/local/include/imgui/
+          sudo cp /tmp/imgui/build/libimgui.a /usr/local/lib/
+
+      # --------------------------------------------------------
+      # Build ImGui-SFML
+      # --------------------------------------------------------
+      - name: Build ImGui-SFML
+        run: |
+          git clone --depth 1 --branch v3.0 \
+            https://github.com/SFML/imgui-sfml.git \
+            /tmp/imgui-sfml
+
+          cmake \
+            -S /tmp/imgui-sfml \
+            -B /tmp/imgui-sfml/build \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DIMGUI_DIR=/tmp/imgui
+
+          cmake \
+            --build /tmp/imgui-sfml/build \
+            --config Release \
+            -j2
+
+          sudo cmake \
+            --install /tmp/imgui-sfml/build
+
+      # --------------------------------------------------------
+      # Build application
+      # --------------------------------------------------------
+      - name: Build Raycasting
+        run: |
+          make clean || true
+          make
+
+      # --------------------------------------------------------
+      # Package
+      # --------------------------------------------------------
+      - name: Package Linux build
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: |
+          mkdir -p release/raycasting-linux
+          cp build/raycasting release/raycasting-linux/
+          cp -r map release/raycasting-linux/
+          cp -r texture release/raycasting-linux/
+          cp README.md release/raycasting-linux/
+
+          tar -czf \
+            release/raycasting-linux.tar.gz \
+            -C release \
+            raycasting-linux
+
+      - name: Upload Linux artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: raycasting-linux
+          path: release/raycasting-linux.tar.gz
+          if-no-files-found: ignore
+
+
+  # ============================================================
+  # CI - Windows
+  # ============================================================
+  build-windows:
+    name: Build Windows
+    runs-on: windows-2025
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Setup MSYS2
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: MINGW64
+          update: true
+          install: >-
+            git
+            make
+            mingw-w64-x86_64-gcc
+            mingw-w64-x86_64-cmake
+
+      - name: Build
+        shell: msys2 {0}
+        run: |
+          g++ --version
+          make --version
+
+          make clean || true
+          make
+
+      - name: Package Windows build
+        if: startsWith(github.ref, 'refs/tags/v')
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force `
+            -Path release/raycasting-windows
+
+          Copy-Item build/raycasting.exe `
+            release/raycasting-windows/
+
+          Copy-Item -Recurse map `
+            release/raycasting-windows/
+
+          Copy-Item -Recurse texture `
+            release/raycasting-windows/
+
+          Copy-Item README.md `
+            release/raycasting-windows/
+
+          Compress-Archive `
+            -Path release/raycasting-windows `
+            -DestinationPath release/raycasting-windows.zip
+
+      - name: Upload Windows artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: raycasting-windows
+          path: release/raycasting-windows.zip
+          if-no-files-found: ignore
+
+
+  # ============================================================
+  # CD - GitHub Release
+  # ============================================================
+  release:
+    name: Create GitHub Release
+    needs:
+      - build-linux
+      - build-windows
+
+    if: startsWith(github.ref, 'refs/tags/v')
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download Linux artifact
+        uses: actions/download-artifact@v5
+        with:
+          name: raycasting-linux
+          path: release
+
+      - name: Download Windows artifact
+        uses: actions/download-artifact@v5
+        with:
+          name: raycasting-windows
+          path: release
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            release/raycasting-linux.tar.gz
+            release/raycasting-windows.zip
+          generate_release_notes: true
