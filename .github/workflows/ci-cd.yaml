@@ -139,7 +139,7 @@ jobs:
       # Build ImGui-SFML
       # --------------------------------------------------------
 
-      - name: Build ImGui-SFML
+      - name: Build ImGui-SFML    
         run: |
           git clone \
             --depth 1 \

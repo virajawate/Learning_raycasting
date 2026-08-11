@@ -1,71 +1,170 @@
 CC = g++
+
 BIN = raycasting$(EXE)
+
 BUILD_DIR = build
 SRC_DIR = src
 
+# ============================================================
+
+# Platform configuration
+
+# ============================================================
+
 ifeq ($(OS),Windows_NT)
-    MKDIR = if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
-    RM = if exist $(BUILD_DIR) rmdir /S /Q $(BUILD_DIR)
-    EXE = .exe
 
-	C_FLAGS = -std=c++17 -MMD -MP -O3 -I./include -IC:/SFML/include -IC:/Cpp_Libraries/imgui-sfml -IC:/Cpp_Libraries/imgui
+```
+EXE = .exe
 
-	L_FLAGS = -LC:/SFML/lib \
-			-LC:/Cpp_Libraries/imgui-sfml/build \
-			-LC:/Cpp_Libraries/imgui/build \
-			-lImGui-SFML \
-			-limgui \
-			-lsfml-graphics \
-			-lsfml-window \
-			-lsfml-system \
-			-lopengl32 
+# MSYS2 Bash is used by GitHub Actions.
+# Therefore use Unix-style commands even on Windows.
+
+MKDIR = mkdir -p $(BUILD_DIR)
+RM = rm -rf $(BUILD_DIR)
+
+C_FLAGS = \
+    -std=c++17 \
+    -MMD \
+    -MP \
+    -O3 \
+    -I./include \
+    -IC:/SFML/include \
+    -IC:/Cpp_Libraries/imgui \
+    -IC:/Cpp_Libraries/imgui-sfml
+
+L_FLAGS = \
+    -LC:/SFML/lib \
+    -LC:/Cpp_Libraries/imgui/build \
+    -LC:/Cpp_Libraries/imgui-sfml/build \
+    -lImGui-SFML \
+    -limgui \
+    -lsfml-graphics \
+    -lsfml-window \
+    -lsfml-system \
+    -lopengl32
+```
+
 else
-    MKDIR = mkdir -p $(BUILD_DIR)
-    RM = rm -rf $(BUILD_DIR)
-    EXE =
 
-    C_FLAGS = -std=c++17 -MMD -MP -O3 -I./include -I/usr/local/include
-	L_FLAGS = \
-		-L/usr/local/lib \
-		-lGL \
-		-lX11 \
-		-lXrandr \
-		-lXcursor \
-		-lXi \
-		-lXinerama \
-		-ludev \
-		-lfreetype \
-		-lpthread \
-		-ldl
+```
+EXE =
+
+MKDIR = mkdir -p $(BUILD_DIR)
+RM = rm -rf $(BUILD_DIR)
+
+C_FLAGS = \
+    -std=c++17 \
+    -MMD \
+    -MP \
+    -O3 \
+    -I./include \
+    -I/usr/local/include \
+    -I/usr/local/include/imgui
+
+L_FLAGS = \
+    -L/usr/local/lib \
+    -lImGui-SFML \
+    -limgui \
+    -lsfml-graphics \
+    -lsfml-window \
+    -lsfml-system \
+    -lGL \
+    -lX11 \
+    -lXrandr \
+    -lXcursor \
+    -lXi \
+    -lXinerama \
+    -ludev \
+    -lfreetype \
+    -lpthread \
+    -ldl
+```
 
 endif
 
+# ============================================================
+
+# Source files
+
+# ============================================================
+
 SRCS = $(wildcard $(SRC_DIR)/*.cc)
-OBJS = $(SRCS:$(SRC_DIR)/%.cc=$(BUILD_DIR)/%.o) $(BUILD_DIR)/main.o
+
+OBJS = 
+$(SRCS:$(SRC_DIR)/%.cc=$(BUILD_DIR)/%.o) 
+$(BUILD_DIR)/main.o
+
 DEPS = $(OBJS:.o=.d)
 
-all: run
+# ============================================================
 
-run: $(BUILD_DIR)/$(BIN)
-	$(BUILD_DIR)/$(BIN) $(ARGS)
+# Default target
+
+# ============================================================
+
+all: build
+
+# ============================================================
+
+# Build executable
+
+# ============================================================
+
+build: $(BUILD_DIR)/$(BIN)
 
 $(BUILD_DIR)/$(BIN): $(OBJS)
-	$(CC) $^ -o $@ $(L_FLAGS)
+$(CC) $^ -o $@ $(L_FLAGS)
+
+# ============================================================
+
+# Build directory
+
+# ============================================================
+
+$(BUILD_DIR):
+$(MKDIR)
+
+# ============================================================
+
+# Compile source files
+
+# ============================================================
+
+$(BUILD_DIR)/%.o: $(SRC_DIR)/%.cc | $(BUILD_DIR)
+$(CC) $(C_FLAGS) -c $< -o $@
+
+$(BUILD_DIR)/main.o: main.cpp | $(BUILD_DIR)
+$(CC) $(C_FLAGS) -c $< -o $@
+
+# ============================================================
+
+# Dependency files
+
+# ============================================================
 
 -include $(DEPS)
 
-$(BUILD_DIR):
-	$(MKDIR)
+# ============================================================
 
-$(BUILD_DIR)/%.o: $(SRC_DIR)/%.cc | $(BUILD_DIR)
-	$(CC) $(C_FLAGS) -c $< -o $@
+# Clean
 
-$(BUILD_DIR)/main.o: main.cpp | $(BUILD_DIR)
-	$(CC) $(C_FLAGS) -c $< -o $@
+# ============================================================
 
 clean:
-	$(RM)
+$(RM)
+
+# ============================================================
+
+# Rebuild
+
+# ============================================================
 
 rebuild: clean all
 
-.PHONY: all run clean
+# ============================================================
+
+# Phony targets
+
+# ============================================================
+
+.PHONY: all build clean rebuild
