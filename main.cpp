@@ -61,8 +61,11 @@ int main() {
   player.set_player_pose(sf::Vector2f(65,65));
 
   while(win.isOpen()){
-    float deltatime = Gametime.restart().asSeconds();
+    sf::Time dt = Gametime.restart();
+    
+    ImGui::SFML::Update(win, dt);
     while(const std::optional event = win.pollEvent()){
+      ImGui::SFML::ProcessEvent(win, *event);
       if(event->is<sf::Event::Closed>()){
         win.close();
       } else if (const auto* keyPressed = event->getIf<sf::Event::KeyPressed>()){
@@ -73,21 +76,24 @@ int main() {
       if(state == State::Editor){
         editor.handleEvent(*event);
       }
+
     }
 
-    player.update(deltatime);
+
+    player.update(dt.asSeconds());
     win.clear();
     if(state == State::Game){
       win.setView(win.getDefaultView());
       render.cast3DNewRay(win, player, Color_map);
-      win.display();
     }else if(state == State::Editor){
       Color_map.drawColorGrid(win);
       editor.run(win);
       player.draw(win);
-      win.display();
     }
+    ImGui::SFML::Render(win);
+    win.display();
+    win.setTitle("Raycaster | " + std::to_string(1.0f / dt.asSeconds()));
   }
-
+  ImGui::SFML::Shutdown();
   return 0;
 }
