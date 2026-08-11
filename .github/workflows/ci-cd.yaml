@@ -74,7 +74,7 @@ jobs:
       # --------------------------------------------------------
       - name: Build Dear ImGui
         run: |
-          git clone --depth 1 --branch v1.92.2b \
+          git clone --depth 1 \
             https://github.com/ocornut/imgui.git \
             /tmp/imgui
 
@@ -123,6 +123,7 @@ jobs:
             -S /tmp/imgui-sfml \
             -B /tmp/imgui-sfml/build \
             -DCMAKE_BUILD_TYPE=Release \
+            -DSFML_STATIC_LIBRARIES=OFF \
             -DIMGUI_DIR=/tmp/imgui
 
           cmake \
