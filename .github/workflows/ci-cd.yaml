@@ -115,7 +115,7 @@ jobs:
       # --------------------------------------------------------
       - name: Build ImGui-SFML
         run: |
-          git clone --depth 1 \
+          git clone --depth 1 --branch v3.0 \
             https://github.com/SFML/imgui-sfml.git \
             /tmp/imgui-sfml
 
@@ -123,7 +123,7 @@ jobs:
             -S /tmp/imgui-sfml \
             -B /tmp/imgui-sfml/build \
             -DCMAKE_BUILD_TYPE=Release \
-            -DSFML_STATIC_LIBRARIES=ON \
+            -DSFML_STATIC_LIBRARIES=OFF \
             -DIMGUI_DIR=/tmp/imgui
 
           cmake \
