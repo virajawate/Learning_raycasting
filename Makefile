@@ -100,18 +100,12 @@ $(BIN): $(OBJS)
 	$(CC) $^ -o $@ $(L_FLAGS)
 
 
-# Create build directory
-$(BUILD_DIR):
+$(BUILD_DIR)/%.o: $(SRC_DIR)/%.cc
 	$(MKDIR)
-
-
-# Compile src/*.cc
-$(BUILD_DIR)/%.o: $(SRC_DIR)/%.cc | $(BUILD_DIR)
 	$(CC) $(C_FLAGS) -c $< -o $@
 
-
-# Compile main.cpp
-$(BUILD_DIR)/main.o: main.cpp | $(BUILD_DIR)
+$(BUILD_DIR)/main.o: main.cpp
+	$(MKDIR)
 	$(CC) $(C_FLAGS) -c $< -o $@
 
 
