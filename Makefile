@@ -48,10 +48,10 @@ else
               -I/usr/local/include
 
     L_FLAGS = -L/usr/local/lib \
-              -lsfml-graphics-s \
-              -lsfml-window-s \
-              -lsfml-audio-s \
-              -lsfml-system-s \
+              -lsfml-graphics \
+              -lsfml-window \
+              -lsfml-audio \
+              -lsfml-system \
               -lGL \
               -lX11 \
               -lXrandr \

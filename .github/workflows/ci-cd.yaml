@@ -45,6 +45,7 @@ jobs:
             cmake \
             git \
             libx11-dev \
+            libxxf86vm-dev \
             libxrandr-dev \
             libxcursor-dev \
             libxi-dev \
