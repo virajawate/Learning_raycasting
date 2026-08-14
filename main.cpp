@@ -79,7 +79,6 @@ int main() {
 
     }
 
-
     player.update(dt.asSeconds());
     win.clear();
     if(state == State::Game){
@@ -87,7 +86,7 @@ int main() {
       render.cast3DNewRay(win, player, Color_map);
     }else if(state == State::Editor){
       Color_map.drawColorGrid(win);
-      editor.run(win);
+      editor.run(win, Color_map);
       player.draw(win);
     }
     ImGui::SFML::Render(win);

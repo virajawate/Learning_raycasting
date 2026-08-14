@@ -16,12 +16,20 @@ ifeq ($(OS),Windows_NT)
 
     EXE = .exe
 
+    SHELL := cmd.exe
+    .SHELLFLAGS := /C
+
     ifdef MSYSTEM
         MKDIR = mkdir -p $(BUILD_DIR)
         RM = rm -rf $(BUILD_DIR)
     else
-        MKDIR = if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
-        RM = if exist $(BUILD_DIR) rmdir /S /Q $(BUILD_DIR)
+        ifdef COMSPEC
+            MKDIR = $(COMSPEC) /C "if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)"
+            RM = $(COMSPEC) /C "if exist $(BUILD_DIR) rmdir /S /Q $(BUILD_DIR)"
+        else
+            MKDIR = if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
+            RM = if exist $(BUILD_DIR) rmdir /S /Q $(BUILD_DIR)
+        endif
     endif
 
     C_FLAGS = -std=c++17 -MMD -MP -O3 \
@@ -76,7 +84,13 @@ endif
 # Files
 # ============================================================
 
-BIN = $(BUILD_DIR)/$(BIN_NAME)$(EXE)
+ifeq ($(OS),Windows_NT)
+    SEP := \\
+else
+    SEP := /
+endif
+
+BIN = $(BUILD_DIR)$(SEP)$(BIN_NAME)$(EXE)
 
 SRCS = $(wildcard $(SRC_DIR)/*.cc)
 

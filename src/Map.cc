@@ -84,3 +84,9 @@ const std::vector<std::vector<int>> Map::getGrid() const { return grid; }
 const std::vector<std::vector<sf::Color>> Map::getGridColor() const { return gridColor; }
 
 float Map::getCellsize() const { return cellSize; }
+
+void Map::SetMap(int x, int y, sf::Color values){
+  if(y > 0 && y < gridColor.size() && x > 0 && x < gridColor[y].size()){
+    gridColor[y][x] = values; 
+  }
+}
