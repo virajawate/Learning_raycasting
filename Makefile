@@ -16,8 +16,13 @@ ifeq ($(OS),Windows_NT)
 
     EXE = .exe
 
-    MKDIR = if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
-    RM = if exist $(BUILD_DIR) rmdir /S /Q $(BUILD_DIR)
+    ifdef MSYSTEM
+        MKDIR = mkdir -p $(BUILD_DIR)
+        RM = rm -rf $(BUILD_DIR)
+    else
+        MKDIR = if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
+        RM = if exist $(BUILD_DIR) rmdir /S /Q $(BUILD_DIR)
+    endif
 
     C_FLAGS = -std=c++17 -MMD -MP -O3 \
               -I./include \

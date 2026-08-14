@@ -3,12 +3,13 @@
 void Editor::init(sf::RenderWindow &window){view = window.getView();}
 
 void Editor::run(sf::RenderWindow & window){
+    sf::Vector2i mousePos = sf::Mouse::getPosition(window);
     if(sf::Mouse::isButtonPressed(sf::Mouse::Button::Right)){
         if(isFirstMouse){
             lastMousePos = sf::Mouse::getPosition(window);
             isFirstMouse = false;
         } else {
-            sf::Vector2i mousePos = sf::Mouse::getPosition(window);
+            
             sf::Vector2i mouseDelta = mousePos - lastMousePos;
             
             view.setCenter(view.getCenter() - (sf::Vector2f)mouseDelta);
@@ -20,6 +21,7 @@ void Editor::run(sf::RenderWindow & window){
         isFirstMouse = true;
         window.setMouseCursorVisible(true);
     }
+    sf::Vector2i worldPos = window.mapPixelToCoords(mousePos);
     window.setView(view);
 }
 
