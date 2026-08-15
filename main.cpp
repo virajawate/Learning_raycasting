@@ -3,6 +3,7 @@
 #include <SFML/Window/VideoMode.hpp>
 
 #include <imgui-SFML.h>
+#include <imgui.h>
 #include "Map.h"
 #include "Render.h"
 #include "Player.h"
@@ -76,9 +77,9 @@ int main() {
       if(state == State::Editor){
         editor.handleEvent(*event);
       }
-
+      ImGui::SFML::ProcessEvent(win, *event);
     }
-
+    ImGui::ShowDemoWindow();
     player.update(dt.asSeconds());
     win.clear();
     if(state == State::Game){

@@ -19,20 +19,22 @@ void Editor::run(sf::RenderWindow &window, Map &map){
         isFirstMouse = true;
         window.setMouseCursorVisible(true);
     }
-    sf::Vector2f worldPos = window.mapPixelToCoords(mousePos);
-    sf::Vector2i mapPos = (sf::Vector2i)(worldPos/ map.getCellsize());
-    cell.setSize(sf::Vector2f(map.getCellsize(), map.getCellsize()));
-    cell.setPosition((sf::Vector2f)mapPos * map.getCellsize());
-    window.draw(cell);
-    window.setView(view);
-    if(sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)){
-        map.SetMap(
-        mapPos.x,
-        mapPos.y,
-        sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::LShift)
-            ? sf::Color::Black
-            : sf::Color::White
-        );
+    if(ImGui::GetIO().WantCaptureMouse){
+        sf::Vector2f worldPos = window.mapPixelToCoords(mousePos);
+        sf::Vector2i mapPos = (sf::Vector2i)(worldPos/ map.getCellsize());
+        cell.setSize(sf::Vector2f(map.getCellsize(), map.getCellsize()));
+        cell.setPosition((sf::Vector2f)mapPos * map.getCellsize());
+        window.draw(cell);
+        window.setView(view);
+        if(sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)){
+            map.SetMap(
+            mapPos.x,
+            mapPos.y,
+            sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::LShift)
+                ? sf::Color::Black
+                : sf::Color::White
+            );
+        }
     }
 }
 

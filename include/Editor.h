@@ -9,6 +9,8 @@
 #include <SFML/System/Vector2.hpp>
 #include <SFML/Window/Event.hpp>
 #include <SFML/Window/Mouse.hpp>
+#include <imgui-SFML.h>
+#include <imgui.h>
 
 class Editor {
     public:
