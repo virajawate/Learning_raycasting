@@ -19,7 +19,7 @@ void Editor::run(sf::RenderWindow &window, Map &map){
         isFirstMouse = true;
         window.setMouseCursorVisible(true);
     }
-    if(ImGui::GetIO().WantCaptureMouse){
+    if(!ImGui::GetIO().WantCaptureMouse){
         sf::Vector2f worldPos = window.mapPixelToCoords(mousePos);
         sf::Vector2i mapPos = (sf::Vector2i)(worldPos/ map.getCellsize());
         cell.setSize(sf::Vector2f(map.getCellsize(), map.getCellsize()));
