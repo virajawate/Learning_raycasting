@@ -85,6 +85,27 @@ const std::vector<std::vector<sf::Color>> Map::getGridColor() const { return gri
 
 float Map::getCellsize() const { return cellSize; }
 
+void Map::save(const std::filesystem::path &path){
+  std::ofstream out{path, std::ios::out | std::ios::binary};
+  if(!out.is_open()){
+    std::cerr<<"Failed to open file \"" << path << "\" for output.\n"; 
+  }
+  if (gridColor.empty()){
+    return;
+  }
+
+  size_t w = gridColor.size(); 
+  size_t h = gridColor[0].size();
+  out.write(reinterpret_cast<const char *>(&w), sizeof(w));
+  out.write(reinterpret_cast<const char *>(&h), sizeof(h));
+
+  for(size_t y=0; y < gridColor.size(); y++){
+    for(size_t x=0; x < gridColor.size(); x++){
+      out.write(reinterpret_cast<const char *>(&gridColor[y][x]), sizeof(gridColor[y][x]));
+    }
+  }
+}
+
 void Map::SetMap(int x, int y, sf::Color values){
   if(y > 0 && y < gridColor.size() && x > 0 && x < gridColor[y].size()){
     gridColor[y][x] = values; 

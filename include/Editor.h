@@ -16,6 +16,7 @@ class Editor {
     public:
     void init(sf::RenderWindow & window);
     void run(sf::RenderWindow & window, Map &map);
+    
 
     void handleEvent(const sf::Event &event);
     private:

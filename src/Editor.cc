@@ -3,6 +3,15 @@
 void Editor::init(sf::RenderWindow &window){view = window.getView();cell.setFillColor(sf::Color::Green);}
 
 void Editor::run(sf::RenderWindow &window, Map &map){
+    if(ImGui::BeginMainMenuBar()){
+        if(ImGui::BeginMenu("File")){
+            if(ImGui::MenuItem("Save")){
+                map.save("test.map");
+            }
+            ImGui::EndMenu();
+        }
+        ImGui::EndMainMenuBar();
+    }
     sf::Vector2i mousePos = sf::Mouse::getPosition(window);
     if(sf::Mouse::isButtonPressed(sf::Mouse::Button::Right)){
         if(isFirstMouse){
