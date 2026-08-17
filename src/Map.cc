@@ -10,6 +10,7 @@
 */
 Map::Map(float cell_size, int width, int height) : cellSize(cell_size), grid(height, std::vector(width, 0)){}
 
+Map::Map(float cell_size) : cellSize(cell_size), grid() {}
 Map::Map(float cell_size, MapGrid Grid) : cellSize(cell_size), grid(Grid) {}
 
 Map::Map(float cell_size, const std::string &filename) : cellSize(cell_size) {
@@ -85,7 +86,24 @@ const std::vector<std::vector<sf::Color>> Map::getGridColor() const { return gri
 
 float Map::getCellsize() const { return cellSize; }
 
-void Map::save(const std::filesystem::path &path){
+void Map::load(const std::filesystem::path &path){
+  std::ifstream in{path, std::ios::in | std::ios::binary};
+  if(!in.is_open()){
+    std::cerr<<"Failed to open file \"" << path << "\" for output.\n"; 
+  }
+  size_t w, h;
+  in.read(reinterpret_cast<char *>(&w), sizeof(w));
+  in.read(reinterpret_cast<char *>(&h), sizeof(h));
+
+  gridColor = std::vector(h, std::vector<sf::Color>(w, sf::Color::Black));
+  for(size_t y=0; y < gridColor.size(); y++){
+    for(size_t x=0; x < gridColor[y].size(); x++){
+      in.read(reinterpret_cast<char *>(&gridColor[y][x]), sizeof(gridColor[y][x]));
+    }
+  }
+}
+
+void Map::save(const std::filesystem::path &path){  
   std::ofstream out{path, std::ios::out | std::ios::binary};
   if(!out.is_open()){
     std::cerr<<"Failed to open file \"" << path << "\" for output.\n"; 
@@ -100,10 +118,11 @@ void Map::save(const std::filesystem::path &path){
   out.write(reinterpret_cast<const char *>(&h), sizeof(h));
 
   for(size_t y=0; y < gridColor.size(); y++){
-    for(size_t x=0; x < gridColor.size(); x++){
+    for(size_t x=0; x < gridColor[y].size(); x++){
       out.write(reinterpret_cast<const char *>(&gridColor[y][x]), sizeof(gridColor[y][x]));
     }
   }
+  std::cout<<"Map Saved"<<std::endl;
 }
 
 void Map::SetMap(int x, int y, sf::Color values){

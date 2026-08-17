@@ -17,11 +17,13 @@ typedef std::vector<std::vector<sf::Color>>  MapColorGrid;
 class Map{
 public:
   //Constructor with grid and cell dimensions
+  Map(float cellsize);
   Map(float cellsize, int width, int height);
   Map(float cellsize, std::vector<std::vector<int>> Grid);
   Map(float cellsize, const std::string &filename);
   void SetMap(int x, int y, sf::Color values);
   void save(const std::filesystem::path &path);
+  void load(const std::filesystem::path &path);
 
   // Draw cells
   void draw(sf::RenderTarget& target);

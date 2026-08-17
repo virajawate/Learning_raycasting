@@ -47,7 +47,9 @@ int main() {
   // Map map(Cell_size, Length, Width); // Backgroud is [num_cellsxLength,num_cellsxWidth]
   // Map maze_map(Cell_size, Maze);
 
-  Map Color_map(Cell_size, "map/map_1.png");
+  // Map Color_map(Cell_size, "map/map_1.png");
+  Map Color_map{Cell_size};
+  Color_map.load("test.map");
   
   Renderer render;
   render.init();
