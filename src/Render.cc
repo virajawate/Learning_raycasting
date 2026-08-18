@@ -8,23 +8,23 @@ void Renderer::init()
     if (!floorBuffer.resize({ScreenW, ScreenH}))
         throw std::runtime_error("Failed to create floor buffer.");
 
-    if (!wall_texture.loadFromFile(wall_texture_file))
-        throw std::runtime_error("Failed to load " + wall_texture_file);
-
+    // if (!wall_texture.loadFromFile(wall_texture_file))
+    //     throw std::runtime_error("Failed to load " + wall_texture_file);
+    
     if (!sky_texture.loadFromFile(sky_texture_file))
         throw std::runtime_error("Failed to load " + sky_texture_file);
 
     if (!floor_texture.loadFromFile(floor_texture_file))
         throw std::runtime_error("Failed to load " + floor_texture_file);
 
-    if (wall_texture.getSize().x != wall_texture.getSize().y)
-        throw std::runtime_error("Wall texture must be square.");
+    // if (Resources::wall_texture.getSize().x != Resources::wall_texture.getSize().y)
+    //     throw std::runtime_error("Wall texture must be square.");
 
     if (floor_texture.getSize().x != floor_texture.getSize().y)
         throw std::runtime_error("Floor texture must be square.");
 
     sky_texture.setRepeated(true);
-    wall_sprite.emplace(wall_texture);
+    // wall_sprite.emplace(Resources::wall_texture);
     floorSprite.emplace(floorBuffer);
 
     std::cout << "Texture Files Loaded\n";
