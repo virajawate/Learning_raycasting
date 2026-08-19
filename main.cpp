@@ -55,7 +55,6 @@ int main() {
   
   if(!Resources::walltextures.loadFromFile("texture/textures.png"))
     std::cerr << "Failed to load wall_textures from textures.png" << std::endl;
-  
 
   Renderer render;
   render.init();
