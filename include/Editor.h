@@ -2,6 +2,7 @@
 #define _EDITOR_H
 
 #include "Map.h"
+#include "Resources.h"
 
 #include <SFML/Graphics/RectangleShape.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
@@ -16,14 +17,13 @@ class Editor {
     public:
     void init(sf::RenderWindow & window);
     void run(sf::RenderWindow & window, Map &map);
-    
-
     void handleEvent(const sf::Event &event);
     private:
     sf::RectangleShape cell;
-    bool isFirstMouse;
+    bool isFirstMouse{};
     sf::Vector2i lastMousePos;
     sf::View view;
+    int textureNo;
 };
 
 #endif

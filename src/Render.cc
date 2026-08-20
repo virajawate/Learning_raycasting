@@ -119,8 +119,8 @@ Ray Renderer::castRay(sf::Vector2f start, float angleInDegrees, const Map &map, 
         }
         hplayer_loc += offset;
     }
-    bool vertical = (vdist < hdist);
-    return Ray{(vertical ? vplayer_loc : hplayer_loc), (vertical ? hMapPos : vMapPos), std::min(vdist, hdist), hit, vertical};
+    bool verticle = (vdist < hdist);
+    return Ray{(verticle ? vplayer_loc : hplayer_loc), (verticle ? hMapPos : vMapPos), std::min(vdist, hdist), hit, verticle};
 }
 
 void Renderer::draw3dview(sf::RenderTarget &target, Player &player, const Map &map)
@@ -308,7 +308,7 @@ void Renderer::cast3DNewRay(sf::RenderTarget &target, Player &player, const Map 
         }
 
         bool hit = false;
-        bool vertical = false;
+        bool verticle = false;
 
         while (!hit)
         {
@@ -316,13 +316,13 @@ void Renderer::cast3DNewRay(sf::RenderTarget &target, Player &player, const Map 
             {
                 sideDist.x += deltaDist.x;
                 mapPos.x += step.x;
-                vertical = true;
+                verticle = true;
             }
             else
             {
                 sideDist.y += deltaDist.y;
                 mapPos.y += step.y;
-                vertical = false;
+                verticle = false;
             }
 
             if (mapPos.x < 0 ||
@@ -340,7 +340,7 @@ void Renderer::cast3DNewRay(sf::RenderTarget &target, Player &player, const Map 
 
         float perpWallDist;
 
-        if (vertical)
+        if (verticle)
             perpWallDist = sideDist.x - deltaDist.x;
         else
             perpWallDist = sideDist.y - deltaDist.y;
@@ -354,7 +354,7 @@ void Renderer::cast3DNewRay(sf::RenderTarget &target, Player &player, const Map 
 
         float wallX;
 
-        if (vertical)
+        if (verticle)
             wallX = player_loc.y + perpWallDist * rayDir.y;
         else
             wallX = player_loc.x + perpWallDist * rayDir.x;
@@ -363,10 +363,10 @@ void Renderer::cast3DNewRay(sf::RenderTarget &target, Player &player, const Map 
 
         int texX = (int)(wallX * texSize);
 
-        if (vertical && rayDir.x > 0)
+        if (verticle && rayDir.x > 0)
             texX = texSize - texX - 1;
 
-        if (!vertical && rayDir.y < 0)
+        if (!verticle && rayDir.y < 0)
             texX = texSize - texX - 1;
 
         texX = std::clamp(texX, 0, (int)texSize - 1);
@@ -374,7 +374,7 @@ void Renderer::cast3DNewRay(sf::RenderTarget &target, Player &player, const Map 
         float brightness = 1.0f - perpWallDist / maxDistance;
         brightness = std::clamp(brightness, 0.2f, 1.0f);
 
-        if (vertical)
+        if (verticle)
             brightness *= 0.75f;
 
         std::uint8_t c = static_cast<std::uint8_t>(255.0f * brightness);
@@ -400,10 +400,10 @@ void Renderer::cast3DNewRay(sf::RenderTarget &target, Player &player, const Map 
     }
     
     // target.draw(floorPixel, &floor_texture);
-    target.draw(walls, &wall_texture);
+    target.draw(walls, sf::RenderStates{&wall_texture});
 }
 
-void Renderer::cast3DNewRay(sf::RenderTarget &target, Player &player, const Map &map)
+void Renderer::cast3DNewRayGUI(sf::RenderTarget &target, Player &player, const Map &map)
 {
     const float fov = 60.0f; 
     // Map Info
@@ -517,13 +517,13 @@ void Renderer::cast3DNewRay(sf::RenderTarget &target, Player &player, const Map 
             {
                 sideDist.x += deltaDist.x;
                 mapPos.x += step.x;
-                vertical = true;
+                verticle = true;
             }
             else
             {
                 sideDist.y += deltaDist.y;
                 mapPos.y += step.y;
-                vertical = false;
+                verticle = false;
             }
 
             if (mapPos.x < 0 ||
@@ -542,7 +542,7 @@ void Renderer::cast3DNewRay(sf::RenderTarget &target, Player &player, const Map 
 
         float perpWallDist;
 
-        if (vertical)
+        if (verticle)
             perpWallDist = sideDist.x - deltaDist.x;
         else
             perpWallDist = sideDist.y - deltaDist.y;
@@ -556,7 +556,7 @@ void Renderer::cast3DNewRay(sf::RenderTarget &target, Player &player, const Map 
 
         float wallX;
 
-        if (vertical)
+        if (verticle)
             wallX = player_loc.y + perpWallDist * rayDir.y;
         else
             wallX = player_loc.x + perpWallDist * rayDir.x;
@@ -565,10 +565,10 @@ void Renderer::cast3DNewRay(sf::RenderTarget &target, Player &player, const Map 
 
         int texX = (int)(wallX * texSize);
 
-        if (vertical && rayDir.x > 0)
+        if (verticle && rayDir.x > 0)
             texX = texSize - texX - 1;
 
-        if (!vertical && rayDir.y < 0)
+        if (!verticle && rayDir.y < 0)
             texX = texSize - texX - 1;
 
         texX = std::clamp(texX, 0, (int)texSize - 1);
@@ -576,7 +576,7 @@ void Renderer::cast3DNewRay(sf::RenderTarget &target, Player &player, const Map 
         float brightness = 1.0f - perpWallDist / maxDistance;
         brightness = std::clamp(brightness, 0.2f, 1.0f);
 
-        if (vertical)
+        if (verticle)
             brightness *= 0.75f;
 
         std::uint8_t c = static_cast<std::uint8_t>(255.0f * brightness);
@@ -603,7 +603,7 @@ void Renderer::cast3DNewRay(sf::RenderTarget &target, Player &player, const Map 
     
     // target.draw(floorPixel, &floor_texture);
     sf::RenderStates states{&Resources::walltextures};
-    target.draw(walls, &states);
+    target.draw(walls, states);
 }
 
 void Renderer::drawRays(sf::RenderTarget &target, Player &player, const Map &map)

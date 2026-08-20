@@ -91,7 +91,7 @@ int main() {
     win.clear();
     if(state == State::Game){
       win.setView(win.getDefaultView());
-      render.cast3DNewRay(win, player, Color_map);
+      render.cast3DNewRayGUI(win, player, Color_map);
     }else if(state == State::Editor){
       Color_map.drawColorGrid(win);
       editor.run(win, Color_map);
