@@ -539,27 +539,12 @@ void Renderer::cast3DNewRayGUI(sf::RenderTarget &target, Player &player, const M
 
         if (!hit) continue;
 
-        float perpWallDist;
-
-        if (!verticle)
-            perpWallDist = sideDist.x - deltaDist.x;
-        else
-            perpWallDist = sideDist.y - deltaDist.y;
-
+        float perpWallDist = verticle ? sideDist.y - deltaDist.y : sideDist.x - deltaDist.x ;
         perpWallDist = std::max(perpWallDist, 0.001f);
-
         float lineHeight = ScreenH / perpWallDist;
-
         float drawStart = (ScreenH - lineHeight) * 0.5f;
         float drawEnd   = (ScreenH + lineHeight) * 0.5f;
-
-        float wallX;
-
-        if (!verticle)
-            wallX = player_loc.y + perpWallDist * rayDir.y;
-        else
-            wallX = player_loc.x + perpWallDist * rayDir.x;
-
+        float  wallX = verticle ? player_loc.x + perpWallDist * rayDir.x : player_loc.y + perpWallDist * rayDir.y;           
         wallX -= std::floor(wallX);
 
         int texX = (int)(wallX * texSize);
