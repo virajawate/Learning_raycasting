@@ -517,13 +517,13 @@ void Renderer::cast3DNewRayGUI(sf::RenderTarget &target, Player &player, const M
             {
                 sideDist.x += deltaDist.x;
                 mapPos.x += step.x;
-                verticle = true;
+                verticle = false;
             }
             else
             {
                 sideDist.y += deltaDist.y;
                 mapPos.y += step.y;
-                verticle = false;
+                verticle = true;
             }
 
             if (mapPos.x < 0 ||
@@ -537,12 +537,11 @@ void Renderer::cast3DNewRayGUI(sf::RenderTarget &target, Player &player, const M
             depth++;
         }
 
-        if (!hit)
-            continue;
+        if (!hit) continue;
 
         float perpWallDist;
 
-        if (verticle)
+        if (!verticle)
             perpWallDist = sideDist.x - deltaDist.x;
         else
             perpWallDist = sideDist.y - deltaDist.y;
@@ -556,7 +555,7 @@ void Renderer::cast3DNewRayGUI(sf::RenderTarget &target, Player &player, const M
 
         float wallX;
 
-        if (verticle)
+        if (!verticle)
             wallX = player_loc.y + perpWallDist * rayDir.y;
         else
             wallX = player_loc.x + perpWallDist * rayDir.x;
@@ -565,10 +564,10 @@ void Renderer::cast3DNewRayGUI(sf::RenderTarget &target, Player &player, const M
 
         int texX = (int)(wallX * texSize);
 
-        if (verticle && rayDir.x > 0)
+        if (!verticle && rayDir.x > 0)
             texX = texSize - texX - 1;
 
-        if (!verticle && rayDir.y < 0)
+        if (verticle && rayDir.y < 0)
             texX = texSize - texX - 1;
 
         texX = std::clamp(texX, 0, (int)texSize - 1);
@@ -576,7 +575,7 @@ void Renderer::cast3DNewRayGUI(sf::RenderTarget &target, Player &player, const M
         float brightness = 1.0f - perpWallDist / maxDistance;
         brightness = std::clamp(brightness, 0.2f, 1.0f);
 
-        if (verticle)
+        if (!verticle)
             brightness *= 0.75f;
 
         std::uint8_t c = static_cast<std::uint8_t>(255.0f * brightness);
