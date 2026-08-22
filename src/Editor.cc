@@ -14,7 +14,7 @@ void Editor::run(sf::RenderWindow &window, Map &map){
     }
     ImGui::Begin("Editing Options");
     ImGui::Text("Texture No. : ");
-    ImGui::SameLine();
+    // ImGui::SameLine();
     ImGui::InputInt("##tex_no", &textureNo);
 
     int textureSize = Resources::walltextures.getSize().y;
@@ -34,7 +34,6 @@ void Editor::run(sf::RenderWindow &window, Map &map){
         } else {            
             auto mouseDelta = mousePos - lastMousePos;
             view.setCenter(view.getCenter() - (sf::Vector2f)mouseDelta);
-            // window.setView(view);
             sf::Mouse::setPosition(lastMousePos, window);
         }
         window.setMouseCursorVisible(false);
@@ -47,8 +46,8 @@ void Editor::run(sf::RenderWindow &window, Map &map){
         sf::Vector2i mapPos = (sf::Vector2i)(worldPos/ map.getCellsize());
         cell.setSize(sf::Vector2f(map.getCellsize(), map.getCellsize()));
         cell.setPosition((sf::Vector2f)mapPos * map.getCellsize());
-        window.draw(cell);
         window.setView(view);
+        window.draw(cell);
         if(sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)){
             map.SetMap(
             mapPos.x,

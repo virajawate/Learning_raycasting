@@ -9,17 +9,14 @@ void Renderer::init()
     if (!floorBuffer.resize({ScreenW, ScreenH}))
         throw std::runtime_error("Failed to create floor buffer.");
 
-    // if (!wall_texture.loadFromFile(wall_texture_file))
-    //     throw std::runtime_error("Failed to load " + wall_texture_file);
+    if (!wall_texture.loadFromFile(wall_texture_file))
+        throw std::runtime_error("Failed to load " + wall_texture_file);
     
     if (!sky_texture.loadFromFile(sky_texture_file))
         throw std::runtime_error("Failed to load " + sky_texture_file);
 
     if (!floor_texture.loadFromFile(floor_texture_file))
         throw std::runtime_error("Failed to load " + floor_texture_file);
-
-    // if (Resources::wall_texture.getSize().x != Resources::wall_texture.getSize().y)
-    //     throw std::runtime_error("Wall texture must be square.");
 
     if (floor_texture.getSize().x != floor_texture.getSize().y)
         throw std::runtime_error("Floor texture must be square.");
@@ -526,9 +523,9 @@ void Renderer::cast3DNewRayGUI(sf::RenderTarget &target, Player &player, const M
                 verticle = true;
             }
 
-            if (mapPos.x < 0 ||
-                mapPos.y < 0 ||
+            if (mapPos.y < 0 ||
                 mapPos.y >= (int)grid.size() ||
+                mapPos.x < 0 ||
                 mapPos.x >= (int)grid[0].size())
                 break;
 
@@ -536,9 +533,7 @@ void Renderer::cast3DNewRayGUI(sf::RenderTarget &target, Player &player, const M
                 hit = true;
             depth++;
         }
-
         if (!hit) continue;
-
         float perpWallDist = verticle ? sideDist.y - deltaDist.y : sideDist.x - deltaDist.x ;
         perpWallDist = std::max(perpWallDist, 0.001f);
         float lineHeight = ScreenH / perpWallDist;
