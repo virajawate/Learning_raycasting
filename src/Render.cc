@@ -22,7 +22,6 @@ void Renderer::init()
         throw std::runtime_error("Floor texture must be square.");
 
     sky_texture.setRepeated(true);
-    // wall_sprite.emplace(Resources::wall_texture);
     floorSprite.emplace(floorBuffer);
 
     std::cout << "Texture Files Loaded\n";
@@ -335,17 +334,10 @@ void Renderer::cast3DNewRay(sf::RenderTarget &target, Player &player, const Map 
         if (!hit)
             continue;
 
-        float perpWallDist;
-
-        if (verticle)
-            perpWallDist = sideDist.x - deltaDist.x;
-        else
-            perpWallDist = sideDist.y - deltaDist.y;
-
+        float perpWallDist = verticle ? sideDist.x - deltaDist.x : sideDist.y - deltaDist.y;
         perpWallDist = std::max(perpWallDist, 0.001f);
 
         float lineHeight = ScreenH / perpWallDist;
-
         float drawStart = (ScreenH - lineHeight) * 0.5f;
         float drawEnd   = (ScreenH + lineHeight) * 0.5f;
 

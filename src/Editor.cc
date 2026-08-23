@@ -1,6 +1,35 @@
 #include "Editor.h"
 #include <SFML/Graphics/Sprite.hpp>
+
+enum class WallIndex{
+    Red         = 0,
+    Magenta     = 1,
+    Green       = 2,
+    White       = 3,
+    Blue        = 4,
+    Yellow      = 5,
+    Cyan        = 6,
+    Transparent = 7
+};  
+
 void Editor::init(sf::RenderWindow &window){view = window.getView();cell.setFillColor(sf::Color::Green);}
+
+sf::Color getWallColor(WallIndex wall)
+{
+    switch (wall)
+    {
+        case WallIndex::Red:         return sf::Color::Red;
+        case WallIndex::Magenta:     return sf::Color::Magenta;
+        case WallIndex::Green:       return sf::Color::Green;
+        case WallIndex::White:       return sf::Color::White;
+        case WallIndex::Blue:        return sf::Color::Blue;
+        case WallIndex::Yellow:      return sf::Color::Yellow;
+        case WallIndex::Cyan:        return sf::Color::Cyan;
+        case WallIndex::Transparent: return sf::Color::Transparent;
+    }
+
+    return sf::Color::Black;
+}
 
 void Editor::run(sf::RenderWindow &window, Map &map){
     if(ImGui::BeginMainMenuBar()){
@@ -56,6 +85,9 @@ void Editor::run(sf::RenderWindow &window, Map &map){
                 ? sf::Color::Black
                 : sf::Color::White
             );
+            // sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::LShift)
+            // ? getWallColor()
+            // : getWallColor(textureNo)
         }
     }
 }
