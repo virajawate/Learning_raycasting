@@ -23,7 +23,7 @@ class Editor {
     bool isFirstMouse{};
     sf::Vector2i lastMousePos;
     sf::View view;
-    int textureNo;
+    int textureNo = 0;
 };
 
 #endif

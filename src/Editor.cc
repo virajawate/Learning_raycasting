@@ -43,7 +43,6 @@ void Editor::run(sf::RenderWindow &window, Map &map){
     }
     ImGui::Begin("Editing Options");
     ImGui::Text("Texture No. : ");
-    // ImGui::SameLine();
     ImGui::InputInt("##tex_no", &textureNo);
 
     int textureSize = Resources::walltextures.getSize().y;
