@@ -52,6 +52,22 @@ void Map::drawColorGrid(sf::RenderTarget& target){
   }
 }
 
+void Map::drawColorGridTexture(sf::RenderTarget& target){
+  if(gridColor.empty()){
+    return;
+  }
+
+  sf::RectangleShape cell(sf::Vector2f(cellSize * 0.95f, cellSize * 0.95));
+
+  for(size_t y = 0; y < gridColor.size(); y++){
+    for(size_t x = 0; x < gridColor[y].size(); x++){
+      cell.setFillColor(gridColor[y][x]);
+      cell.setPosition(sf::Vector2f(x,y)*cellSize + sf::Vector2f(0.025f*cellSize,0.025f*cellSize));
+      target.draw(cell);
+    }
+  }
+}
+
 void Map::draw(sf::RenderTarget &target){
   // vector grid defines the dimensions for the win
   if (grid.empty()){return;}

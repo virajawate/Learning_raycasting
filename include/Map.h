@@ -28,6 +28,7 @@ public:
   // Draw cells
   void draw(sf::RenderTarget& target);
   void drawColorGrid(sf::RenderTarget& target);
+  void drawColorGridTexture(sf::RenderTarget& target);
   const std::vector<std::vector<int>> getGrid() const;
   const std::vector<std::vector<sf::Color>> getGridColor() const;
   float getCellsize() const;
