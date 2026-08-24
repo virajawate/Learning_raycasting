@@ -50,6 +50,7 @@ int main() {
   // Map maze_map(Cell_size, Maze);
 
   // Map Color_map(Cell_size, "map/map_1.png");
+  
   Map Color_map{Cell_size};
   Color_map.load("test.map");
   
@@ -70,20 +71,15 @@ int main() {
 
   while(win.isOpen()){
     sf::Time dt = Gametime.restart();
-    
     ImGui::SFML::Update(win, dt);
     while(const std::optional event = win.pollEvent()){
       ImGui::SFML::ProcessEvent(win, *event);
       if(event->is<sf::Event::Closed>()){
         win.close();
       } else if (const auto* keyPressed = event->getIf<sf::Event::KeyPressed>()){
-        if(keyPressed->scancode == sf::Keyboard::Scancode::Escape){
-          state = (state == State::Game) ? State::Editor : State::Game;
-        }
+        if(keyPressed->scancode == sf::Keyboard::Scancode::Escape) state = (state == State::Game) ? State::Editor : State::Game;
       }
-      if(state == State::Editor){
-        editor.handleEvent(*event);
-      }
+      if(state == State::Editor) editor.handleEvent(*event);
       ImGui::SFML::ProcessEvent(win, *event);
     }
     ImGui::ShowDemoWindow();
