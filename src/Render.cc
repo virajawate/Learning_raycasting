@@ -270,49 +270,38 @@ void Renderer::cast3DNewRay(sf::RenderTarget &target, Player &player, const Map 
     sf::VertexArray walls(sf::PrimitiveType::Triangles);
     for (int x = 0; x < ScreenW; x++)
     {
+        bool hit = false;
+        bool verticle = false;
+        sf::Vector2i step;
+        sf::Vector2f sideDist;
+        sf::Vector2f deltaDist;
         float cameraX = 2.0f * x / float(ScreenW) - 1.0f;
         sf::Vector2f rayDir = direction + plane * cameraX;
-        sf::Vector2f deltaDist;
 
         deltaDist.x = (rayDir.x == 0.0f)
                           ? std::numeric_limits<float>::infinity()
                           : std::abs(1.0f / rayDir.x);
-
         deltaDist.y = (rayDir.y == 0.0f)
                           ? std::numeric_limits<float>::infinity()
                           : std::abs(1.0f / rayDir.y);
 
-        sf::Vector2i mapPos(
-            (int)player_loc.x,
-            (int)player_loc.y);
+        sf::Vector2i mapPos((int)player_loc.x, (int)player_loc.y);
 
-        sf::Vector2i step;
-        sf::Vector2f sideDist;
-
-        if (rayDir.x < 0)
-        {
+        if (rayDir.x < 0){
             step.x = -1;
             sideDist.x = (player_loc.x - mapPos.x) * deltaDist.x;
-        }
-        else
-        {
+        } else {
             step.x = 1;
             sideDist.x = (mapPos.x + 1.0f - player_loc.x) * deltaDist.x;
         }
 
-        if (rayDir.y < 0)
-        {
+        if (rayDir.y < 0) {
             step.y = -1;
             sideDist.y = (player_loc.y - mapPos.y) * deltaDist.y;
-        }
-        else
-        {
+        } else {
             step.y = 1;
             sideDist.y = (mapPos.y + 1.0f - player_loc.y) * deltaDist.y;
         }
-
-        bool hit = false;
-        bool verticle = false;
 
         while (!hit)
         {
@@ -339,8 +328,7 @@ void Renderer::cast3DNewRay(sf::RenderTarget &target, Player &player, const Map 
                 hit = true;
         }
 
-        if (!hit)
-            continue;
+        if (!hit) continue;
 
         float perpWallDist = verticle ? sideDist.x - deltaDist.x : sideDist.y - deltaDist.y;
         perpWallDist = std::max(perpWallDist, 0.001f);
@@ -349,31 +337,17 @@ void Renderer::cast3DNewRay(sf::RenderTarget &target, Player &player, const Map 
         float drawStart = (ScreenH - lineHeight) * 0.5f;
         float drawEnd   = (ScreenH + lineHeight) * 0.5f;
 
-        float wallX;
-
-        if (verticle)
-            wallX = player_loc.y + perpWallDist * rayDir.y;
-        else
-            wallX = player_loc.x + perpWallDist * rayDir.x;
-
+        float wallX = verticle ? player_loc.y + perpWallDist * rayDir.y : player_loc.x + perpWallDist * rayDir.x;
         wallX -= std::floor(wallX);
-
         int texX = (int)(wallX * texSize);
 
-        if (verticle && rayDir.x > 0)
-            texX = texSize - texX - 1;
-
-        if (!verticle && rayDir.y < 0)
-            texX = texSize - texX - 1;
-
+        if (verticle && rayDir.x > 0) texX = texSize - texX - 1;
+        if (!verticle && rayDir.y < 0) texX = texSize - texX - 1;
         texX = std::clamp(texX, 0, (int)texSize - 1);
 
         float brightness = 1.0f - perpWallDist / maxDistance;
         brightness = std::clamp(brightness, 0.2f, 1.0f);
-
-        if (verticle)
-            brightness *= 0.75f;
-
+        if (verticle) brightness *= 0.75f;
         std::uint8_t c = static_cast<std::uint8_t>(255.0f * brightness);
         sf::Color color(c, c, c);
 
@@ -400,8 +374,7 @@ void Renderer::cast3DNewRay(sf::RenderTarget &target, Player &player, const Map 
     target.draw(walls, sf::RenderStates{&wall_texture});
 }
 
-void Renderer::cast3DNewRayGUI(sf::RenderTarget &target, Player &player, const Map &map)
-{
+void Renderer::cast3DNewRayGUI(sf::RenderTarget &target, Player &player, const Map &map) {
     const float fov = 60.0f; 
     // Map Info
     const auto &grid = map.getGridColor();
@@ -428,11 +401,13 @@ void Renderer::cast3DNewRayGUI(sf::RenderTarget &target, Player &player, const M
     RenderFloor(target, player_loc, direction, plane);
     
     sf::VertexArray walls(sf::PrimitiveType::Triangles);
-    for (int x = 0; x < ScreenW; x++)
-    {
+    for (int x = 0; x < ScreenW; x++) {
+        sf::Vector2i step;
+        sf::Vector2f sideDist;
+        sf::Vector2f deltaDist;
+
         float cameraX = 2.0f * x / float(ScreenW) - 1.0f;
         sf::Vector2f rayDir = direction + plane * cameraX;
-        sf::Vector2f deltaDist;
 
         deltaDist.x = (rayDir.x == 0.0f)
                           ? std::numeric_limits<float>::infinity()
@@ -442,47 +417,21 @@ void Renderer::cast3DNewRayGUI(sf::RenderTarget &target, Player &player, const M
                           ? std::numeric_limits<float>::infinity()
                           : std::abs(1.0f / rayDir.y);
 
-        sf::Vector2i mapPos(
-            (int)player_loc.x,
-            (int)player_loc.y);
-
-        sf::Vector2i step;
-        sf::Vector2f sideDist;
-
-        if (rayDir.x < 0)
-        {
-            step.x = -1;
-            sideDist.x = (player_loc.x - mapPos.x) * deltaDist.x;
-        }
-        else
-        {
-            step.x = 1;
-            sideDist.x = (mapPos.x + 1.0f - player_loc.x) * deltaDist.x;
-        }
-
-        if (rayDir.y < 0)
-        {
-            step.y = -1;
-            sideDist.y = (player_loc.y - mapPos.y) * deltaDist.y;
-        }
-        else
-        {
-            step.y = 1;
-            sideDist.y = (mapPos.y + 1.0f - player_loc.y) * deltaDist.y;
-        }
+        sf::Vector2i mapPos((int)player_loc.x, (int)player_loc.y);
+        step.x = rayDir.x < 0 ? -1 : 1;
+        step.y = rayDir.y < 0 ? -1 : 1;
+        sideDist.x = rayDir.x < 0 ? (player_loc.x - mapPos.x) * deltaDist.x : (mapPos.x + 1.0f - player_loc.x) * deltaDist.x;
+        sideDist.y = rayDir.y < 0 ? (player_loc.y - mapPos.y) * deltaDist.y : (mapPos.y + 1.0f - player_loc.y) * deltaDist.y;
 
         int hit{}, verticle{};
         size_t depth = 0;
         while (hit == 0 && depth < MaxRayCastingDepth)
         {
-            if (sideDist.x < sideDist.y)
-            {
+            if (sideDist.x < sideDist.y) {
                 sideDist.x += deltaDist.x;
                 mapPos.x += step.x;
                 verticle = false;
-            }
-            else
-            {
+            } else {
                 sideDist.y += deltaDist.y;
                 mapPos.y += step.y;
                 verticle = true;
@@ -491,11 +440,10 @@ void Renderer::cast3DNewRayGUI(sf::RenderTarget &target, Player &player, const M
             if (mapPos.y < 0 ||
                 mapPos.y >= (int)grid.size() ||
                 mapPos.x < 0 ||
-                mapPos.x >= (int)grid[0].size())
+                mapPos.x >= (int)grid[0].size()) 
                 break;
 
-            if (grid[mapPos.y][mapPos.x] != sf::Color::Black)
-                hit = true;
+            if (grid[mapPos.y][mapPos.x] != sf::Color::Black) hit = true;
             depth++;
         }
         if (!hit) continue;
@@ -520,8 +468,7 @@ void Renderer::cast3DNewRayGUI(sf::RenderTarget &target, Player &player, const M
         float brightness = 1.0f - perpWallDist / maxDistance;
         brightness = std::clamp(brightness, 0.2f, 1.0f);
 
-        if (!verticle)
-            brightness *= 0.75f;
+        if (!verticle) brightness *= 0.75f;
 
         std::uint8_t c = static_cast<std::uint8_t>(255.0f * brightness);
         sf::Color color(c, c, c);
