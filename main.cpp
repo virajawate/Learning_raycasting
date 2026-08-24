@@ -50,7 +50,6 @@ int main() {
   // Map maze_map(Cell_size, Maze);
 
   // Map Color_map(Cell_size, "map/map_1.png");
-  
   Map Color_map{Cell_size};
   Color_map.load("test.map");
   
@@ -80,7 +79,6 @@ int main() {
         if(keyPressed->scancode == sf::Keyboard::Scancode::Escape) state = (state == State::Game) ? State::Editor : State::Game;
       }
       if(state == State::Editor) editor.handleEvent(*event);
-      ImGui::SFML::ProcessEvent(win, *event);
     }
     ImGui::ShowDemoWindow();
     player.update(dt.asSeconds());
