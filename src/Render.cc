@@ -41,6 +41,36 @@ void Renderer::RenderSky(sf::RenderTarget &target, float player_angle){
     target.draw(sky, 4, sf::PrimitiveType::TriangleFan, sf::RenderStates(&sky_texture));
 }
 
+void Renderer::RenderFloor(sf::RenderTarget &target, sf::Vector2f &player_loc, sf::Vector2f &direction, sf::Vector2f &plane){
+    std::vector<uint8_t> floorPixels(ScreenW * ScreenH * 4);
+
+    for(size_t y= ScreenH / 2; y < ScreenH; y++){
+        if(y == ScreenH / 2) continue;
+        sf::Vector2f rayDirLeft{direction - plane}, rayDirRight{direction + plane};
+        float rowDistance = CAMERA_Z / ((float)y - ScreenH / 2);
+        sf::Vector2f floorStep = {rowDistance * (rayDirRight - rayDirLeft) / static_cast<float>(ScreenW)};
+        sf::Vector2f floor = player_loc + rowDistance * rayDirLeft;
+        for (size_t x = 0; x<ScreenW; x++){
+            sf::Vector2i cell{floor};
+            float textureSize = floor_texture.getSize().x;
+            sf::Vector2u texCoords{textureSize * (floor - (sf::Vector2f)cell)};
+            texCoords.x &= (unsigned)textureSize - 1;
+            texCoords.y &= (unsigned)textureSize - 1;
+            
+            sf::Color color= floor_texture.getPixel(texCoords);
+            floorPixels[(x + y * (size_t)ScreenW) * 4 + 0] = color.r;
+            floorPixels[(x + y * (size_t)ScreenW) * 4 + 1] = color.g;
+            floorPixels[(x + y * (size_t)ScreenW) * 4 + 2] = color.b;
+            floorPixels[(x + y * (size_t)ScreenW) * 4 + 3] = color.a;
+            floor += floorStep;
+        }
+    }
+    floorBuffer.update(floorPixels.data());
+    floorSprite->setTexture(floorBuffer);
+    // Drawing floorSprite caused overload resolution error; skip drawing here.
+    if(floorSprite) target.draw(*floorSprite);
+}
+
 Ray Renderer::castRay(sf::Vector2f start, float angleInDegrees, const Map &map, bool fps_mode = false)
 {
     const auto &grid = map.getGridColor();
@@ -235,33 +265,7 @@ void Renderer::cast3DNewRay(sf::RenderTarget &target, Player &player, const Map 
     RenderSky(target, player_pose[2]);
 
     // Floor
-    std::vector<uint8_t> floorPixels(ScreenW * ScreenH * 4);
-
-    for(size_t y= ScreenH / 2; y < ScreenH; y++){
-        if(y == ScreenH / 2) continue;
-        sf::Vector2f rayDirLeft{direction - plane}, rayDirRight{direction + plane};
-        float rowDistance = CAMERA_Z / ((float)y - ScreenH / 2);
-        sf::Vector2f floorStep = {rowDistance * (rayDirRight - rayDirLeft) / static_cast<float>(ScreenW)};
-        sf::Vector2f floor = player_loc + rowDistance * rayDirLeft;
-        for (size_t x = 0; x<ScreenW; x++){
-            sf::Vector2i cell{floor};
-            float textureSize = floor_texture.getSize().x;
-            sf::Vector2u texCoords{textureSize * (floor - (sf::Vector2f)cell)};
-            texCoords.x &= (unsigned)textureSize - 1;
-            texCoords.y &= (unsigned)textureSize - 1;
-            
-            sf::Color color= floor_texture.getPixel(texCoords);
-            floorPixels[(x + y * (size_t)ScreenW) * 4 + 0] = color.r;
-            floorPixels[(x + y * (size_t)ScreenW) * 4 + 1] = color.g;
-            floorPixels[(x + y * (size_t)ScreenW) * 4 + 2] = color.b;
-            floorPixels[(x + y * (size_t)ScreenW) * 4 + 3] = color.a;
-            floor += floorStep;
-        }
-    }
-    floorBuffer.update(floorPixels.data());
-    floorSprite->setTexture(floorBuffer);
-    // Drawing floorSprite caused overload resolution error; skip drawing here.
-    if(floorSprite) target.draw(*floorSprite);
+    RenderFloor(target, player_loc, direction, plane);
     
     sf::VertexArray walls(sf::PrimitiveType::Triangles);
     for (int x = 0; x < ScreenW; x++)
@@ -421,33 +425,7 @@ void Renderer::cast3DNewRayGUI(sf::RenderTarget &target, Player &player, const M
     RenderSky(target, player_pose[2]);
 
     // Floor
-    std::vector<uint8_t> floorPixels(ScreenW * ScreenH * 4);
-
-    for(size_t y= ScreenH / 2; y < ScreenH; y++){
-        if(y == ScreenH / 2) continue;
-        sf::Vector2f rayDirLeft{direction - plane}, rayDirRight{direction + plane};
-        float rowDistance = CAMERA_Z / ((float)y - ScreenH / 2);
-        sf::Vector2f floorStep = {rowDistance * (rayDirRight - rayDirLeft) / static_cast<float>(ScreenW)};
-        sf::Vector2f floor = player_loc + rowDistance * rayDirLeft;
-        for (size_t x = 0; x<ScreenW; x++){
-            sf::Vector2i cell{floor};
-            float textureSize = floor_texture.getSize().x;
-            sf::Vector2u texCoords{textureSize * (floor - (sf::Vector2f)cell)};
-            texCoords.x &= (unsigned)textureSize - 1;
-            texCoords.y &= (unsigned)textureSize - 1;
-            
-            sf::Color color= floor_texture.getPixel(texCoords);
-            floorPixels[(x + y * (size_t)ScreenW) * 4 + 0] = color.r;
-            floorPixels[(x + y * (size_t)ScreenW) * 4 + 1] = color.g;
-            floorPixels[(x + y * (size_t)ScreenW) * 4 + 2] = color.b;
-            floorPixels[(x + y * (size_t)ScreenW) * 4 + 3] = color.a;
-            floor += floorStep;
-        }
-    }
-    floorBuffer.update(floorPixels.data());
-    floorSprite->setTexture(floorBuffer);
-    // Drawing floorSprite caused overload resolution error; skip drawing here.
-    if(floorSprite) target.draw(*floorSprite);
+    RenderFloor(target, player_loc, direction, plane);
     
     sf::VertexArray walls(sf::PrimitiveType::Triangles);
     for (int x = 0; x < ScreenW; x++)
