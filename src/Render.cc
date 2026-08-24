@@ -28,6 +28,19 @@ void Renderer::init()
     std::cout << "Initialization Complete.\n";
 }
 
+void Renderer::RenderSky(sf::RenderTarget &target, float player_angle){
+    // Sky
+    int xOffset = ScreenW / PLAYER_TURN_SPEED * player_angle;
+    while(xOffset < 0){xOffset += sky_texture.getSize().x;}
+    sf::Vertex sky[] = {
+        sf::Vertex({sf::Vector2f{0.0f, 0.0f}, sf::Color::White, sf::Vector2f{static_cast<float>(xOffset), 0.0f}}),
+        sf::Vertex({sf::Vector2f{0.0f, ScreenH}, sf::Color::White, sf::Vector2f{static_cast<float>(xOffset), static_cast<float>(sky_texture.getSize().y)}}),
+        sf::Vertex({sf::Vector2f{ScreenW, ScreenH}, sf::Color::White, sf::Vector2f{static_cast<float>(xOffset + sky_texture.getSize().x), static_cast<float>(sky_texture.getSize().y)}}),
+        sf::Vertex({sf::Vector2f{ScreenW, 0.0f}, sf::Color::White, sf::Vector2f{static_cast<float>(xOffset + sky_texture.getSize().x), 0.0f}}),
+    };
+    target.draw(sky, 4, sf::PrimitiveType::TriangleFan, sf::RenderStates(&sky_texture));
+}
+
 Ray Renderer::castRay(sf::Vector2f start, float angleInDegrees, const Map &map, bool fps_mode = false)
 {
     const auto &grid = map.getGridColor();
@@ -219,16 +232,7 @@ void Renderer::cast3DNewRay(sf::RenderTarget &target, Player &player, const Map 
     sf::Vector2f player_loc = playerPos / cellSize;
 
     // Sky
-    int xOffset = ScreenW / PLAYER_TURN_SPEED * player_pose[2];
-    while(xOffset < 0){xOffset += sky_texture.getSize().x;}
-
-    sf::Vertex sky[] = {
-        sf::Vertex({sf::Vector2f{0.0f, 0.0f}, sf::Color::White, sf::Vector2f{static_cast<float>(xOffset), 0.0f}}),
-        sf::Vertex({sf::Vector2f{0.0f, ScreenH}, sf::Color::White, sf::Vector2f{static_cast<float>(xOffset), static_cast<float>(sky_texture.getSize().y)}}),
-        sf::Vertex({sf::Vector2f{ScreenW, ScreenH}, sf::Color::White, sf::Vector2f{static_cast<float>(xOffset + sky_texture.getSize().x), static_cast<float>(sky_texture.getSize().y)}}),
-        sf::Vertex({sf::Vector2f{ScreenW, 0.0f}, sf::Color::White, sf::Vector2f{static_cast<float>(xOffset + sky_texture.getSize().x), 0.0f}}),
-    };
-    target.draw(sky, 4, sf::PrimitiveType::TriangleFan, sf::RenderStates(&sky_texture));
+    RenderSky(target, player_pose[2]);
 
     // Floor
     std::vector<uint8_t> floorPixels(ScreenW * ScreenH * 4);
@@ -414,16 +418,7 @@ void Renderer::cast3DNewRayGUI(sf::RenderTarget &target, Player &player, const M
     sf::Vector2f player_loc = playerPos / cellSize;
 
     // Sky
-    int xOffset = ScreenW / PLAYER_TURN_SPEED * player_pose[2];
-    while(xOffset < 0){xOffset += sky_texture.getSize().x;}
-
-    sf::Vertex sky[] = {
-        sf::Vertex({sf::Vector2f{0.0f, 0.0f}, sf::Color::White, sf::Vector2f{static_cast<float>(xOffset), 0.0f}}),
-        sf::Vertex({sf::Vector2f{0.0f, ScreenH}, sf::Color::White, sf::Vector2f{static_cast<float>(xOffset), static_cast<float>(sky_texture.getSize().y)}}),
-        sf::Vertex({sf::Vector2f{ScreenW, ScreenH}, sf::Color::White, sf::Vector2f{static_cast<float>(xOffset + sky_texture.getSize().x), static_cast<float>(sky_texture.getSize().y)}}),
-        sf::Vertex({sf::Vector2f{ScreenW, 0.0f}, sf::Color::White, sf::Vector2f{static_cast<float>(xOffset + sky_texture.getSize().x), 0.0f}}),
-    };
-    target.draw(sky, 4, sf::PrimitiveType::TriangleFan, sf::RenderStates(&sky_texture));
+    RenderSky(target, player_pose[2]);
 
     // Floor
     std::vector<uint8_t> floorPixels(ScreenW * ScreenH * 4);

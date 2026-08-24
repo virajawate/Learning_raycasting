@@ -36,6 +36,7 @@ struct Ray {
 
 class Renderer{
 public:
+    void RenderSky(sf::RenderTarget &target, float player_angle);
     void draw3dview(sf::RenderTarget &target, Player &player, const Map &map);
     void drawRays(sf::RenderTarget &target, Player &player, const Map &map);
     Ray castRay(sf::Vector2f start, float angleInDegrees, const Map &map, bool fps_mode);
