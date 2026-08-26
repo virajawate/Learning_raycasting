@@ -2,6 +2,7 @@
 #include <SFML/Graphics/Sprite.hpp>
 
 enum class WallIndex{
+    Black       = -1;
     Red         = 0,
     Magenta     = 1,
     Green       = 2,
@@ -81,8 +82,8 @@ void Editor::run(sf::RenderWindow &window, Map &map){
             mapPos.x,
             mapPos.y,
             sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::LShift)
-                ? sf::Color::Black
-                : sf::Color::White
+                ? getWallColor(WallIndex::Black)
+                : getWallColor(WallIndex::White)
             );
             // sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::LShift)
             // ? getWallColor()
