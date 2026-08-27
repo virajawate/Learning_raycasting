@@ -13,6 +13,7 @@
 
 typedef std::vector<std::vector<int>>  MapGrid;
 typedef std::vector<std::vector<sf::Color>>  MapColorGrid;
+typedef std::vector<std::vector<sf::Texture>> MapTextureGrid;
 
 class Map{
 public:
