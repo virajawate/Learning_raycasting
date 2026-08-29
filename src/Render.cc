@@ -162,6 +162,29 @@ Ray Renderer::castRay(sf::Vector2f start, float angleInDegrees, const Map &map, 
     return Ray{(verticle ? vplayer_loc : hplayer_loc), (verticle ? hMapPos : vMapPos), std::min(vdist, hdist), hit, verticle};
 }
 
+// NOT USED
+void Renderer::drawRays(sf::RenderTarget &target, Player &player, const Map &map) {
+    try {
+        auto player_pos = player.get_player_pose();
+        sf::Vector2f player_pos_sf = {player_pos[0], player_pos[1]};
+        for (float angle = player_pos[2] - player_fov / 2.0f; angle < player_pos[2] + player_fov / 2.0; angle += 1) {
+            Ray ray = castRay(player_pos_sf, angle, map, false);
+            if (ray.hit) {
+                sf::Vertex line[] = {
+                    {player_pos_sf},
+                    {ray.hitPosition}
+                };
+                target.draw(line, 2, sf::PrimitiveType::Lines);
+            }
+        }
+    }
+    catch (std::exception &e)
+    {
+        printf("%s", e.what());
+    }
+}
+
+// NOT USED
 void Renderer::draw3dview(sf::RenderTarget &target, Player &player, const Map &map)
 {
     try
@@ -240,6 +263,7 @@ void Renderer::draw3dview(sf::RenderTarget &target, Player &player, const Map &m
     }
 }
 
+// NOT USED
 void Renderer::cast3DNewRay(sf::RenderTarget &target, Player &player, const Map &map)
 {
     const float fov = 60.0f; 
@@ -379,7 +403,7 @@ void Renderer::cast3DNewRayGUI(sf::RenderTarget &target, Player &player, const M
     // Map Info
     const auto &grid = map.getGridColor();
     const float cellSize = map.getCellsize();
-    const float texSize = static_cast<float>(wall_texture.getSize().x);
+    const float texSize = static_cast<float>(Resources::walltextures.getSize().x) / 8.0;
     const float maxDistance = MaxRayCastingDepth * cellSize;
 
     // Player Info
@@ -425,8 +449,9 @@ void Renderer::cast3DNewRayGUI(sf::RenderTarget &target, Player &player, const M
 
         int hit{}, verticle{};
         size_t depth = 0;
-        while (hit == 0 && depth < MaxRayCastingDepth)
-        {
+        int textureNo = 0;
+        sf::Color wallColor = sf::Color::Black;
+        while (hit == 0 && depth < MaxRayCastingDepth) {
             if (sideDist.x < sideDist.y) {
                 sideDist.x += deltaDist.x;
                 mapPos.x += step.x;
@@ -436,23 +461,37 @@ void Renderer::cast3DNewRayGUI(sf::RenderTarget &target, Player &player, const M
                 mapPos.y += step.y;
                 verticle = true;
             }
-
-            if (mapPos.y < 0 ||
+            if (mapPos.y < 0 || mapPos.x < 0 ||
                 mapPos.y >= (int)grid.size() ||
-                mapPos.x < 0 ||
-                mapPos.x >= (int)grid[0].size()) 
-                break;
-
-            if (grid[mapPos.y][mapPos.x] != sf::Color::Black) hit = true;
+                mapPos.x >= (int)grid[0].size()) break;
+                
+            if (grid[mapPos.y][mapPos.x] != sf::Color::Black){
+                hit = true;
+                wallColor = grid[mapPos.y][mapPos.x];
+            }
             depth++;
         }
         if (!hit) continue;
+
+        if(wallColor == sf::Color::White){
+            textureNo = 0;
+        }  else if(wallColor == sf::Color::Cyan){
+            textureNo = 1;
+        } else if(wallColor == sf::Color::Red){
+            textureNo = 2;
+        } else if(wallColor == sf::Color::Green){
+            textureNo = 3;
+        } else if(wallColor == sf::Color::Yellow){
+            textureNo = 4;
+        } 
+        if (textureNo < 0)
+            continue;
         float perpWallDist = verticle ? sideDist.y - deltaDist.y : sideDist.x - deltaDist.x ;
         perpWallDist = std::max(perpWallDist, 0.001f);
         float lineHeight = ScreenH / perpWallDist;
         float drawStart = (ScreenH - lineHeight) * 0.5f;
         float drawEnd   = (ScreenH + lineHeight) * 0.5f;
-        float  wallX = verticle ? player_loc.x + perpWallDist * rayDir.x : player_loc.y + perpWallDist * rayDir.y;           
+        float wallX = verticle ? player_loc.x + perpWallDist * rayDir.x : player_loc.y + perpWallDist * rayDir.y;           
         wallX -= std::floor(wallX);
 
         int texX = (int)(wallX * texSize);
@@ -476,10 +515,12 @@ void Renderer::cast3DNewRayGUI(sf::RenderTarget &target, Player &player, const M
         float x0 = (float)x;
         float x1 = x0 + 1.0f;
 
-        sf::Vector2f t0(texX, 0);
-        sf::Vector2f t1(texX + 1, 0);
-        sf::Vector2f t2(texX, texSize);
-        sf::Vector2f t3(texX + 1, texSize);
+        float texOffsetX = textureNo * texSize;
+
+        sf::Vector2f t0(texOffsetX + texX, 0);
+        sf::Vector2f t1(texOffsetX + texX + 1, 0);
+        sf::Vector2f t2(texOffsetX + texX, texSize);
+        sf::Vector2f t3(texOffsetX + texX + 1, texSize);
 
         // Triangle 1
         walls.append({{x0, drawStart}, color, t0});
@@ -495,28 +536,4 @@ void Renderer::cast3DNewRayGUI(sf::RenderTarget &target, Player &player, const M
     // target.draw(floorPixel, &floor_texture);
     sf::RenderStates states{&Resources::walltextures};
     target.draw(walls, states);
-}
-
-void Renderer::drawRays(sf::RenderTarget &target, Player &player, const Map &map)
-{
-    try
-    {
-        auto player_pos = player.get_player_pose();
-        sf::Vector2f player_pos_sf = {player_pos[0], player_pos[1]};
-        for (float angle = player_pos[2] - player_fov / 2.0f; angle < player_pos[2] + player_fov / 2.0; angle += 1)
-        {
-            Ray ray = castRay(player_pos_sf, angle, map, false);
-            if (ray.hit)
-            {
-                sf::Vertex line[] = {
-                    {player_pos_sf},
-                    {ray.hitPosition}};
-                target.draw(line, 2, sf::PrimitiveType::Lines);
-            }
-        }
-    }
-    catch (std::exception &e)
-    {
-        printf("%s", e.what());
-    }
 }
