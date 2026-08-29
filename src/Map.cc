@@ -66,9 +66,7 @@ void Map::drawColorGrid(sf::RenderTarget& target){
   if(gridColor.empty()){
     return;
   }
-
   sf::RectangleShape cell(sf::Vector2f(cellSize * 0.95f, cellSize * 0.95));
-
   for(size_t y = 0; y < gridColor.size(); y++){
     for(size_t x = 0; x < gridColor[y].size(); x++){
       cell.setFillColor(gridColor[y][x]);
