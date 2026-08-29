@@ -52,10 +52,13 @@ int main() {
 
   // Map Color_map(Cell_size, "map/map_1.png");
   Map Color_map{Cell_size};
-  if(std::filesystem::exists("latest.map"))
+  if(std::filesystem::exists("latest.map")){
+    std::cout<<"Loaded Latest Map\n";
     Color_map.load("latest.map");
-  else
+  } else {
+    std::cout<<"Loaded Test Map\n";
     Color_map.load("test.map");
+  }
   
   if(!Resources::walltextures.loadFromFile("texture/textures.png")) std::cerr << "Failed to load wall_textures from textures.png\n";
 
@@ -90,7 +93,7 @@ int main() {
       win.setView(win.getDefaultView());
       render.cast3DNewRayGUI(win, player, Color_map);
     }else if(state == State::Editor){
-      Color_map.drawColorGrid(win);
+      Color_map.drawColorGridTexture(win);
       editor.run(win, Color_map);
       player.draw(win);
     }
