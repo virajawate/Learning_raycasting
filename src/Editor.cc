@@ -36,7 +36,7 @@ void Editor::run(sf::RenderWindow &window, Map &map){
     if(ImGui::BeginMainMenuBar()){
         if(ImGui::BeginMenu("File")){
             if(ImGui::MenuItem("Save")){
-                map.save("test.map");
+                map.save("latest.map");
             }
             ImGui::EndMenu();
         }

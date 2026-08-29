@@ -62,7 +62,7 @@ void Map::drawColorGridTexture(sf::RenderTarget& target){
   for(size_t y = 0; y < gridColor.size(); y++){
     for(size_t x = 0; x < gridColor[y].size(); x++){
       /** Put Texture in Grid */
-      if(gridColor[y][x] > 0){
+      if(gridColor[y][x] != sf::Color::Black){
         /** Load texuter */
       } 
     }

@@ -1,3 +1,4 @@
+#include <filesystem>
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Window/Event.hpp>
 #include <SFML/Window/VideoMode.hpp>
@@ -51,10 +52,12 @@ int main() {
 
   // Map Color_map(Cell_size, "map/map_1.png");
   Map Color_map{Cell_size};
-  Color_map.load("test.map");
+  if(std::filesystem::exists("latest.map"))
+    Color_map.load("latest.map");
+  else
+    Color_map.load("test.map");
   
-  if(!Resources::walltextures.loadFromFile("texture/textures.png"))
-    std::cerr << "Failed to load wall_textures from textures.png" << std::endl;
+  if(!Resources::walltextures.loadFromFile("texture/textures.png")) std::cerr << "Failed to load wall_textures from textures.png\n";
 
   Renderer render;
   render.init();
