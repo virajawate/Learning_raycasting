@@ -68,7 +68,7 @@ int main() {
   Editor editor;
   editor.init(win);
 
-  enum class State { Editor, Game } state = State::Game;
+  enum class State { Editor, Game, Original } state = State::Game;
 
   Player player;
   player.set_player_size(PLAYER_SIZE);
@@ -83,6 +83,7 @@ int main() {
         win.close();
       } else if (const auto* keyPressed = event->getIf<sf::Event::KeyPressed>()){
         if(keyPressed->scancode == sf::Keyboard::Scancode::Escape) state = (state == State::Game) ? State::Editor : State::Game;
+        if(keyPressed->scancode == sf::Keyboard::Scancode::Escape && keyPressed->scancode == sf::Keyboard::Scancode::LShift) state = (state == State::Editor) ? State::Original : State::Editor;
       }
       if(state == State::Editor) editor.handleEvent(*event);
     }
@@ -94,6 +95,11 @@ int main() {
       render.cast3DNewRayGUI(win, player, Color_map);
     }else if(state == State::Editor){
       Color_map.drawColorGridTexture(win);
+      editor.run(win, Color_map);
+      player.draw(win);
+    }
+    }else if(state == State::Original){
+      Color_map.drawColorGrid(win);
       editor.run(win, Color_map);
       player.draw(win);
     }

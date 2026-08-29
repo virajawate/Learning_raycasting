@@ -10,10 +10,12 @@
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/Graphics/Color.hpp>
 #include <SFML/Graphics/Image.hpp>
+#include <SFML/Graphics/Sprite.hpp>
+#include "Resources.h"
 
 typedef std::vector<std::vector<int>>  MapGrid;
 typedef std::vector<std::vector<sf::Color>>  MapColorGrid;
-typedef std::vector<std::vector<sf::Texture>> MapTextureGrid;
+typedef std::vector<std::vector<sf::Sprite>> MapTextureGrid;
 
 class Map{
 public:
@@ -27,8 +29,8 @@ public:
   void load(const std::filesystem::path &path);
 
   // Draw cells
-  void draw(sf::RenderTarget& target);
-  void drawColorGrid(sf::RenderTarget& target);
+  void draw(sf::RenderTarget& target); // NOT USED
+  void drawColorGrid(sf::RenderTarget& target); // NOT USED
   void drawColorGridTexture(sf::RenderTarget& target);
   const std::vector<std::vector<int>> getGrid() const;
   const std::vector<std::vector<sf::Color>> getGridColor() const;
