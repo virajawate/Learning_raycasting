@@ -1,3 +1,4 @@
+#include <algorithm>
 #include "Editor.h"
 #include <SFML/Graphics/Sprite.hpp>
 
@@ -42,9 +43,10 @@ void Editor::run(sf::RenderWindow &window, Map &map){
         }
         ImGui::EndMainMenuBar();
     }
-    ImGui::Begin("Editing Options");
+    ImGui::Begin("Wall Texture Options");
     ImGui::Text("Texture No. : ");
     ImGui::InputInt("##tex_no", &textureNo);
+    textureNo = std::clamp(textureNo, 0, 4);
 
     int textureSize = Resources::walltextures.getSize().y;
     ImGui::Text("Preview :");
