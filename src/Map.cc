@@ -71,12 +71,7 @@ void Map::drawColorGrid(sf::RenderTarget& target){
 
   for(size_t y = 0; y < gridColor.size(); y++){
     for(size_t x = 0; x < gridColor[y].size(); x++){
-      // cell.setFillColor(gridColor[y][x]);
-      if(gridColor[y][x] == sf::Color::Black){
-        cell.setFillColor(sf::Color::Black);
-      } else {
-        cell.setFillColor(sf::Color::White);
-      }
+      cell.setFillColor(gridColor[y][x]);
       cell.setPosition(sf::Vector2f(x,y)*cellSize + sf::Vector2f(0.025f*cellSize,0.025f*cellSize));
       target.draw(cell);
     }

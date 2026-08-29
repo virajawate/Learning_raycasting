@@ -82,8 +82,11 @@ int main() {
       if(event->is<sf::Event::Closed>()){
         win.close();
       } else if (const auto* keyPressed = event->getIf<sf::Event::KeyPressed>()){
-        if(keyPressed->scancode == sf::Keyboard::Scancode::Escape) state = (state == State::Game) ? State::Editor : State::Game;
-        if(keyPressed->scancode == sf::Keyboard::Scancode::Escape && keyPressed->scancode == sf::Keyboard::Scancode::LShift) state = (state == State::Editor) ? State::Original : State::Editor;
+        if(keyPressed->scancode == sf::Keyboard::Scancode::Escape){
+          if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::LShift)) state = (state == State::Editor) ? State::Original : State::Editor;
+          else state = (state == State::Game) ? State::Editor : State::Game;
+
+        }
       }
       if(state == State::Editor) editor.handleEvent(*event);
     }
@@ -97,8 +100,7 @@ int main() {
       Color_map.drawColorGridTexture(win);
       editor.run(win, Color_map);
       player.draw(win);
-    }
-    }else if(state == State::Original){
+    } else if(state == State::Original){
       Color_map.drawColorGrid(win);
       editor.run(win, Color_map);
       player.draw(win);
