@@ -9,6 +9,7 @@ void Editor::run(sf::RenderWindow &window, Map &map){
         if(ImGui::BeginMenu("File")){
             if(ImGui::MenuItem("Save")){
                 map.save("latest.map");
+                map.saveImage("latest.png");
             }
             ImGui::EndMenu();
         }

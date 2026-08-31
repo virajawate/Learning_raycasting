@@ -26,6 +26,7 @@ public:
   Map(float cellsize, const std::string &filename);
   void SetMap(int x, int y, sf::Color values);
   void save(const std::filesystem::path &path);
+  void saveImage(const std::string& filename);
   void load(const std::filesystem::path &path);
 
   // Draw cells
