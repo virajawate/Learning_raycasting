@@ -144,9 +144,7 @@ void Map::save(const std::filesystem::path &path){
   if(!out.is_open()){
     std::cerr<<"Failed to open file \"" << path << "\" for output.\n"; 
   }
-  if (gridColor.empty()){
-    return;
-  }
+  if (gridColor.empty()) return;
 
   size_t w = gridColor.size(); 
   size_t h = gridColor[0].size();
@@ -160,26 +158,20 @@ void Map::save(const std::filesystem::path &path){
   }
   std::cout<<"Map Saved"<<std::endl;
 }
-void Map::saveImage(const std::string& filename)
-{
-    if (gridColor.empty())
-        return;
 
-    const unsigned int height = static_cast<unsigned int>(gridColor.size());
-    const unsigned int width  = static_cast<unsigned int>(gridColor[0].size());
-
-    sf::Image image({width, height}, sf::Color::Black);
-
-    for (unsigned int y = 0; y < height; ++y)
-    {
-        for (unsigned int x = 0; x < width; ++x)
-        {
-            image.setPixel({x, y}, gridColor[y][x]);
-        }
+void Map::saveImage(const std::string& filename) {
+  if (gridColor.empty()) return;
+  const unsigned int height = static_cast<unsigned int>(gridColor.size());
+  const unsigned int width  = static_cast<unsigned int>(gridColor[0].size());
+  sf::Image image({width, height}, sf::Color::Black);
+  for (unsigned int y = 0; y < height; ++y) {
+    for (unsigned int x = 0; x < width; ++x) {
+      image.setPixel({x, y}, gridColor[y][x]);
     }
-
-    image.saveToFile(filename);
+  }
+  image.saveToFile(filename);
 }
+
 void Map::SetMap(int x, int y, sf::Color values){
   if(y > 0 && y < gridColor.size() && x > 0 && x < gridColor[y].size()){
     gridColor[y][x] = values; 
