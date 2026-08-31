@@ -2,7 +2,10 @@
 #include "Editor.h"
 #include <SFML/Graphics/Sprite.hpp>
 
-void Editor::init(sf::RenderWindow &window){view = window.getView();cell.setFillColor(sf::Color::Green);}
+void Editor::init(sf::RenderWindow &window){
+    view = window.getView();
+    cell.setFillColor(sf::Color::Green);
+}
 
 void Editor::run(sf::RenderWindow &window, Map &map){
     if(ImGui::BeginMainMenuBar()){
@@ -25,7 +28,10 @@ void Editor::run(sf::RenderWindow &window, Map &map){
     ImGui::Image(
         sf::Sprite{
             Resources::walltextures,
-            sf::IntRect{{textureNo * textureSize, 0}, {textureSize, textureSize}},
+            sf::IntRect{
+                {textureNo * textureSize, 0}, 
+                {textureSize, textureSize}
+            },
         },
         sf::Vector2f({100.0f, 100.0f}));
     ImGui::End();
