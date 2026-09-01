@@ -81,12 +81,12 @@ void Map::drawColorGridTexture(sf::RenderTarget& target){
     return;
   }
   int textureSize = Resources::walltextures.getSize().y;
-  int textureNo = 0;
-  for(size_t y = 0; y < gridColor.size(); y++){
+  for(size_t y = 0; y < gridColor.size(); y++){ 
     for(size_t x = 0; x < gridColor[y].size(); x++){
       /** Put Texture in Grid */
-      if(gridColor[y][x] == sf::Color::Black){
-        continue;
+      int textureNo = -1;
+      if(gridColor[y][x] == sf::Color::White){
+        textureNo = 0;
       } else if(gridColor[y][x] == sf::Color::Cyan){
         textureNo = 1;
       } else if(gridColor[y][x] == sf::Color::Red){
@@ -96,6 +96,7 @@ void Map::drawColorGridTexture(sf::RenderTarget& target){
       } else if(gridColor[y][x] == sf::Color::Yellow){
         textureNo = 4;
       }
+      if(textureNo < 0) continue;
       sf::Sprite wall{
         Resources::walltextures,
         sf::IntRect{
