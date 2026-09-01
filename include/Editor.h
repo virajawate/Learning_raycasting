@@ -18,6 +18,7 @@ class Editor {
     void init(sf::RenderWindow & window);
     void run(sf::RenderWindow & window, Map &map);
     void handleEvent(const sf::Event &event);
+    sf::Color getColor(int textureNo);
     private:
     sf::RectangleShape cell;
     bool isFirstMouse{};

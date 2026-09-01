@@ -22,6 +22,7 @@ void Editor::run(sf::RenderWindow &window, Map &map){
     ImGui::Text("Texture No. : ");
     ImGui::InputInt("##tex_no", &textureNo);
     textureNo = std::clamp(textureNo, 0, 4);
+    auto SelectedColor = getColor(textureNo);
 
     int textureSize = Resources::walltextures.getSize().y;
     ImGui::Text("Preview :");
@@ -62,7 +63,7 @@ void Editor::run(sf::RenderWindow &window, Map &map){
             mapPos.x,
             mapPos.y,
             sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::LShift)
-                ? sf::Color::Black : sf::Color::White
+                ? sf::Color::Black : SelectedColor
             );
         }
     }
@@ -72,5 +73,29 @@ void Editor::handleEvent(const sf::Event &event){
     if(const auto* mouse_scroll = event.getIf<sf::Event::MouseWheelScrolled>()){
         float zoom = 1.0f - 0.1f * mouse_scroll->delta;
         view.zoom(zoom);
+    }
+}
+
+sf::Color Editor::getColor(int textureNo){
+    switch (textureNo)
+    {
+    case 0:
+        return sf::Color::White;
+        break;
+    case 1:
+        return sf::Color::Cyan;
+        break;
+    case 2:
+        return sf::Color::Red;
+        break;
+    case 3:
+        return sf::Color::Green;
+        break;
+    case 4:
+        return sf::Color::Yellow;
+        break;
+    default:
+        return sf::Color::Black;
+        break;
     }
 }
