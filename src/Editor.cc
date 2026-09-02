@@ -24,7 +24,8 @@ void Editor::run(sf::RenderWindow &window, Map &map){
     }
     if(ImGuiFileDialog::Instance()->Display("OpenDialog")){
         if(ImGuiFileDialog::Instance()->IsOk()){
-            std::cout<<"Here\n";
+            auto savedfileName = ImGuiFileDialog::Instance()->GetFilePathName();
+            map.load(savedfileName);
         }
         ImGuiFileDialog::Instance()->Close();
     }
