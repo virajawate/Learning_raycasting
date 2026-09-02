@@ -36,11 +36,13 @@ ifeq ($(OS),Windows_NT)
               -I./include \
               -IC:/SFML/include \
               -IC:/Cpp_Libraries/imgui-sfml \
+              -IC:/Cpp_Libraries/ImGuiFileDialog \
               -IC:/Cpp_Libraries/imgui
 
     L_FLAGS = -LC:/SFML/lib \
               -LC:/Cpp_Libraries/imgui-sfml/build \
               -LC:/Cpp_Libraries/imgui/build \
+              -LC:/Cpp_Libraries/ImGuiFileDialog/build \
               -lImGui-SFML \
               -limgui \
               -lsfml-graphics \

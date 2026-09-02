@@ -1,5 +1,6 @@
 #include <algorithm>
 #include "Editor.h"
+#include <ImGuiFileDialog.h>
 #include <SFML/Graphics/Sprite.hpp>
 
 void Editor::init(sf::RenderWindow &window){
@@ -10,6 +11,9 @@ void Editor::init(sf::RenderWindow &window){
 void Editor::run(sf::RenderWindow &window, Map &map){
     if(ImGui::BeginMainMenuBar()){
         if(ImGui::BeginMenu("File")){
+            if(ImGui::MenuItem("Open")){
+                ImGuiFileDialog::Instance()->OpenDialog("OpenDialog", "Open", ".map");
+            }
             if(ImGui::MenuItem("Save")){
                 map.save("latest.map");
                 map.saveImage("latest.png");
@@ -18,12 +22,17 @@ void Editor::run(sf::RenderWindow &window, Map &map){
         }
         ImGui::EndMainMenuBar();
     }
+    if(ImGuiFileDialog::Instance()->Display("OpenDialog")){
+        if(ImGuiFileDialog::Instance()->IsOk()){
+            std::cout<<"Here\n";
+        }
+        ImGuiFileDialog::Instance()->Close();
+    }
     ImGui::Begin("Wall Texture Options");
     ImGui::Text("Texture No. : ");
     ImGui::InputInt("##tex_no", &textureNo);
     textureNo = std::clamp(textureNo, 0, 4);
     auto SelectedColor = getColor(textureNo);
-
     int textureSize = Resources::walltextures.getSize().y;
     ImGui::Text("Preview :");
     ImGui::Image(
