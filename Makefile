@@ -34,16 +34,17 @@ ifeq ($(OS),Windows_NT)
 
     C_FLAGS = -std=c++17 -MMD -MP -O3 \
               -I./include \
-              -IC:/SFML/include \
+              -IC:/msys64/ucrt64/include \
               -IC:/Cpp_Libraries/imgui-sfml \
               -IC:/Cpp_Libraries/ImGuiFileDialog \
               -IC:/Cpp_Libraries/imgui
 
-    L_FLAGS = -LC:/SFML/lib \
+    L_FLAGS = -LC:/msys64/ucrt64/lib \
               -LC:/Cpp_Libraries/imgui-sfml/build \
               -LC:/Cpp_Libraries/imgui/build \
-              -LC:/Cpp_Libraries/ImGuiFileDialog/build \
+              -LC:/Cpp_Libraries/ImGuiFileDialog/build-mingw \
               -lImGui-SFML \
+              -lImGuiFileDialog \
               -limgui \
               -lsfml-graphics \
               -lsfml-window \
