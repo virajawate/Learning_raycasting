@@ -399,7 +399,7 @@ void Renderer::cast3DNewRay(sf::RenderTarget &target, Player &player, const Map 
 }
 
 void Renderer::cast3DNewRayGUI(sf::RenderTarget &target, Player &player, const Map &map) {
-    const float fov = 60.0f; 
+    const float fov = 90.0f; 
     // Map Info
     const auto &grid = map.getGridColor();
     const float cellSize = map.getCellsize();
