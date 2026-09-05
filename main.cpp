@@ -54,10 +54,10 @@ int main() {
   Map Color_map{Cell_size};
   if(std::filesystem::exists("latest.map")){
     std::cout<<"Loaded Latest Map\n";
-    Color_map.load("latest.map");
+    Color_map.load("map/latest.map");
   } else {
     std::cout<<"Loaded Test Map\n";
-    Color_map.load("test.map");
+    Color_map.load("map/test.map");
   }
   
   if(!Resources::walltextures.loadFromFile("texture/textures.png")) std::cerr << "Failed to load wall_textures from textures.png\n";

@@ -15,8 +15,8 @@ void Editor::run(sf::RenderWindow &window, Map &map){
                 ImGuiFileDialog::Instance()->OpenDialog("OpenDialog", "Open", ".map");
             }
             if(ImGui::MenuItem("Save")){
-                map.save("latest.map");
-                map.saveImage("latest.png");
+                map.save("map/latest.map");
+                map.saveImage("map/latest.png");
             }
             ImGui::EndMenu();
         }
