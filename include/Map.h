@@ -35,6 +35,8 @@ public:
   void drawColorGridTexture(sf::RenderTarget& target);
   const std::vector<std::vector<int>> getGrid() const;
   const std::vector<std::vector<sf::Color>> getGridColor() const;
+  sf::Color getGridCell(int x, int y) const ;
+  void setGridCell(int x, int y, sf::Color value);
   float getCellsize() const;
 private:
   // Mapping Grid ROW<COL>

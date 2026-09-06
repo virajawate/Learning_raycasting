@@ -121,6 +121,20 @@ void Map::drawColorGridTexture(sf::RenderTarget& target){
 const std::vector<std::vector<int>> Map::getGrid() const { return grid; }
 const std::vector<std::vector<sf::Color>> Map::getGridColor() const { return gridColor; }
 
+sf::Color Map::getGridCell(int x, int y) const{
+  if(y>=0, y<gridColor.size(), x>=0, x<gridColor[y].size()){
+    return gridColor[y][x];
+  }else{
+    return sf::Color::Black;
+  }
+}
+
+void Map::setGridCell(int x, int y, sf::Color value){
+  if(y>=0, y<gridColor.size(), x>=0, x<gridColor[y].size()){
+    gridColor[x][y] = value;
+  }
+}
+
 float Map::getCellsize() const { return cellSize; }
 
 void Map::load(const std::filesystem::path &path){

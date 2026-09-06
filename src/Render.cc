@@ -327,16 +327,12 @@ void Renderer::cast3DNewRay(sf::RenderTarget &target, Player &player, const Map 
             sideDist.y = (mapPos.y + 1.0f - player_loc.y) * deltaDist.y;
         }
 
-        while (!hit)
-        {
-            if (sideDist.x < sideDist.y)
-            {
+        while (!hit) {
+            if (sideDist.x < sideDist.y) {
                 sideDist.x += deltaDist.x;
                 mapPos.x += step.x;
                 verticle = true;
-            }
-            else
-            {
+            } else {
                 sideDist.y += deltaDist.y;
                 mapPos.y += step.y;
                 verticle = false;
@@ -461,14 +457,9 @@ void Renderer::cast3DNewRayGUI(sf::RenderTarget &target, Player &player, const M
                 mapPos.y += step.y;
                 verticle = true;
             }
-            if (mapPos.y < 0 || mapPos.x < 0 ||
-                mapPos.y >= (int)grid.size() ||
-                mapPos.x >= (int)grid[0].size()) break;
-                
-            if (grid[mapPos.y][mapPos.x] != sf::Color::Black){
-                hit = true;
-                wallColor = grid[mapPos.y][mapPos.x];
-            }
+            wallColor = map.getGridCell(mapPos.x, mapPos.y);
+            hit =  wallColor != sf::Color::Black;
+
             depth++;
         }
         if (!hit) continue;
