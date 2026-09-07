@@ -15,12 +15,6 @@ void Renderer::init()
     if (!sky_texture.loadFromFile(sky_texture_file))
         throw std::runtime_error("Failed to load " + sky_texture_file);
 
-    if (!floor_texture.loadFromFile(floor_texture_file))
-        throw std::runtime_error("Failed to load " + floor_texture_file);
-
-    if (floor_texture.getSize().x != floor_texture.getSize().y)
-        throw std::runtime_error("Floor texture must be square.");
-
     sky_texture.setRepeated(true);
     floorSprite.emplace(floorBuffer);
 
@@ -42,46 +36,48 @@ void Renderer::RenderSky(sf::RenderTarget &target, float player_angle){
 }
 
 void Renderer::RenderFloor(sf::RenderTarget &target, sf::Vector2f &player_loc, sf::Vector2f &direction, sf::Vector2f &plane){
-    std::vector<uint8_t> floorPixels(ScreenW * ScreenH * 4);
+    std::vector<uint8_t> floorPixels(ScreenW * ScreenH * 4, 0);
     const int floortexture_id = 6;
-    const int texture_size = Resources::walltextures.getSize().y;
+    const unsigned int texture_size = Resources::walltextures.getSize().y;
+    const sf::Image wallAtlas = Resources::walltextures.copyToImage();
 
-    for(size_t y= ScreenH / 2; y < ScreenH; y++){
-        if(y == ScreenH / 2) continue;
-        sf::Vector2f rayDirLeft{direction - plane}, rayDirRight{direction + plane};
-        float rowDistance = CAMERA_Z / ((float)y - ScreenH / 2);
-        sf::Vector2f floorStep = {rowDistance * (rayDirRight - rayDirLeft) / static_cast<float>(ScreenW)};
+    for (size_t y = ScreenH / 2 + 1; y < ScreenH; ++y) {
+        sf::Vector2f rayDirLeft{direction - plane};
+        sf::Vector2f rayDirRight{direction + plane};
+        const float rowDistance = CAMERA_Z / static_cast<float>(y - ScreenH / 2);
+        const sf::Vector2f floorStep = {
+            rowDistance * (rayDirRight.x - rayDirLeft.x) / static_cast<float>(ScreenW),
+            rowDistance * (rayDirRight.y - rayDirLeft.y) / static_cast<float>(ScreenW)
+        };
         sf::Vector2f floor = player_loc + rowDistance * rayDirLeft;
-        for (size_t x = 0; x<ScreenW; x++){
-            sf::Vector2i cell{
-                static_cast<int>(floor.x),
-                static_cast<int>(floor.y)
-            };
-            sf::Vector2f fractional = floor - floor;
-            int texX = static_cast<int>(fractional.x - texture_size);
-            int texY = static_cast<int>(fractional.y - texture_size);
-            texX &= texture_size - 1;
-            texY &= texture_size - 1;
 
-            int textureX = floortexture_id * texture_size + texX;
-            int textureY = texY;
-            sf::Vector2f delta_floor = floor - floor;
-            sf::Vector2u texCoords{texture_size * delta_floor};
-            texCoords.x &= (unsigned)texture_size - 1;
-            texCoords.y &= (unsigned)texture_size - 1;
-            
-            sf::Color color= floor_texture.getPixel(texCoords);
-            size_t index = (x + y * (size_t)ScreenW) * 4 ;
+        for (size_t x = 0; x < ScreenW; ++x) {
+            double wholeX = 0.0;
+            double wholeY = 0.0;
+            const float fractX = std::modf(floor.x, &wholeX);
+            const float fractY = std::modf(floor.y, &wholeY);
+
+            const unsigned int texX = static_cast<unsigned int>(std::abs(fractX * static_cast<float>(texture_size))) % texture_size;
+            const unsigned int texY = static_cast<unsigned int>(std::abs(fractY * static_cast<float>(texture_size))) % texture_size;
+            const unsigned int atlasX = static_cast<unsigned int>(floortexture_id) * texture_size + texX;
+            const unsigned int atlasY = texY;
+            const sf::Color color = wallAtlas.getPixel({atlasX, atlasY});
+
+            const size_t index = (x + y * static_cast<size_t>(ScreenW)) * 4u;
             floorPixels[index + 0] = color.r;
             floorPixels[index + 1] = color.g;
             floorPixels[index + 2] = color.b;
             floorPixels[index + 3] = color.a;
+
             floor += floorStep;
         }
     }
+
     floorBuffer.update(floorPixels.data());
     floorSprite->setTexture(floorBuffer);
-    if(floorSprite) target.draw(*floorSprite);
+    if (floorSprite) {
+        target.draw(*floorSprite);
+    }
 }
 
 Ray Renderer::castRay(sf::Vector2f start, float angleInDegrees, const Map &map, bool fps_mode = false)

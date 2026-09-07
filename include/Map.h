@@ -44,7 +44,6 @@ private:
   MapColorGrid gridColor;
   // Cell Size in pixels
   float cellSize;
-
 };
 
 

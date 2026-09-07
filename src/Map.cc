@@ -122,16 +122,15 @@ const std::vector<std::vector<int>> Map::getGrid() const { return grid; }
 const std::vector<std::vector<sf::Color>> Map::getGridColor() const { return gridColor; }
 
 sf::Color Map::getGridCell(int x, int y) const{
-  if(y>=0, y<gridColor.size(), x>=0, x<gridColor[y].size()){
+  if (y >= 0 && y < static_cast<int>(gridColor.size()) && x >= 0 && x < static_cast<int>(gridColor[y].size())) {
     return gridColor[y][x];
-  }else{
-    return sf::Color::Black;
   }
+  return sf::Color::Black;
 }
 
 void Map::setGridCell(int x, int y, sf::Color value){
-  if(y>=0, y<gridColor.size(), x>=0, x<gridColor[y].size()){
-    gridColor[x][y] = value;
+  if (y >= 0 && y < static_cast<int>(gridColor.size()) && x >= 0 && x < static_cast<int>(gridColor[y].size())) {
+    gridColor[y][x] = value;
   }
 }
 
@@ -161,8 +160,8 @@ void Map::save(const std::filesystem::path &path){
   }
   if (gridColor.empty()) return;
 
-  size_t w = gridColor.size(); 
-  size_t h = gridColor[0].size();
+  size_t w = gridColor[0].size();
+  size_t h = gridColor.size();
   out.write(reinterpret_cast<const char *>(&w), sizeof(w));
   out.write(reinterpret_cast<const char *>(&h), sizeof(h));
 
