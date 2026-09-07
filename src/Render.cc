@@ -43,6 +43,8 @@ void Renderer::RenderSky(sf::RenderTarget &target, float player_angle){
 
 void Renderer::RenderFloor(sf::RenderTarget &target, sf::Vector2f &player_loc, sf::Vector2f &direction, sf::Vector2f &plane){
     std::vector<uint8_t> floorPixels(ScreenW * ScreenH * 4);
+    const int floortexture_id = 6;
+    const int texture_size = Resources::walltextures.getSize().y;
 
     for(size_t y= ScreenH / 2; y < ScreenH; y++){
         if(y == ScreenH / 2) continue;
@@ -51,23 +53,34 @@ void Renderer::RenderFloor(sf::RenderTarget &target, sf::Vector2f &player_loc, s
         sf::Vector2f floorStep = {rowDistance * (rayDirRight - rayDirLeft) / static_cast<float>(ScreenW)};
         sf::Vector2f floor = player_loc + rowDistance * rayDirLeft;
         for (size_t x = 0; x<ScreenW; x++){
-            sf::Vector2i cell{floor};
-            float textureSize = floor_texture.getSize().x;
-            sf::Vector2u texCoords{textureSize * (floor - (sf::Vector2f)cell)};
-            texCoords.x &= (unsigned)textureSize - 1;
-            texCoords.y &= (unsigned)textureSize - 1;
+            sf::Vector2i cell{
+                static_cast<int>(floor.x),
+                static_cast<int>(floor.y)
+            };
+            sf::Vector2f fractional = floor - floor;
+            int texX = static_cast<int>(fractional.x - texture_size);
+            int texY = static_cast<int>(fractional.y - texture_size);
+            texX &= texture_size - 1;
+            texY &= texture_size - 1;
+
+            int textureX = floortexture_id * texture_size + texX;
+            int textureY = texY;
+            sf::Vector2f delta_floor = floor - floor;
+            sf::Vector2u texCoords{texture_size * delta_floor};
+            texCoords.x &= (unsigned)texture_size - 1;
+            texCoords.y &= (unsigned)texture_size - 1;
             
             sf::Color color= floor_texture.getPixel(texCoords);
-            floorPixels[(x + y * (size_t)ScreenW) * 4 + 0] = color.r;
-            floorPixels[(x + y * (size_t)ScreenW) * 4 + 1] = color.g;
-            floorPixels[(x + y * (size_t)ScreenW) * 4 + 2] = color.b;
-            floorPixels[(x + y * (size_t)ScreenW) * 4 + 3] = color.a;
+            size_t index = (x + y * (size_t)ScreenW) * 4 ;
+            floorPixels[index + 0] = color.r;
+            floorPixels[index + 1] = color.g;
+            floorPixels[index + 2] = color.b;
+            floorPixels[index + 3] = color.a;
             floor += floorStep;
         }
     }
     floorBuffer.update(floorPixels.data());
     floorSprite->setTexture(floorBuffer);
-    // Drawing floorSprite caused overload resolution error; skip drawing here.
     if(floorSprite) target.draw(*floorSprite);
 }
 
@@ -524,7 +537,6 @@ void Renderer::cast3DNewRayGUI(sf::RenderTarget &target, Player &player, const M
         walls.append({{x0, drawEnd}, color, t2});
     }
     
-    // target.draw(floorPixel, &floor_texture);
     sf::RenderStates states{&Resources::walltextures};
     target.draw(walls, states);
 }
