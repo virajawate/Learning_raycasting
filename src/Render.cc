@@ -36,6 +36,8 @@ void Renderer::RenderSky(sf::RenderTarget &target, float player_angle){
     target.draw(sky, 4, sf::PrimitiveType::TriangleFan, sf::RenderStates(&sky_texture));
 }
 
+void Renderer::RenderTexturedSky(){}
+
 void Renderer::RenderFloor(sf::RenderTarget &target, sf::Vector2f &player_loc, sf::Vector2f &direction, sf::Vector2f &plane){
     std::vector<uint8_t> floorPixels(ScreenW * ScreenH * 4, 0);
     const int floortexture_id = 6;

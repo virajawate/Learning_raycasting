@@ -38,6 +38,7 @@ class Renderer{
 public:
     void RenderFloor(sf::RenderTarget &target, sf::Vector2f &player_loc, sf::Vector2f &direction, sf::Vector2f &plane);
     void RenderSky(sf::RenderTarget &target, float player_angle);
+    void RenderTexturedSky();
     void draw3dview(sf::RenderTarget &target, Player &player, const Map &map);
     void drawRays(sf::RenderTarget &target, Player &player, const Map &map);
     Ray castRay(sf::Vector2f start, float angleInDegrees, const Map &map, bool fps_mode);
