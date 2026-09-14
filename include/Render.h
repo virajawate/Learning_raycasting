@@ -38,7 +38,7 @@ class Renderer{
 public:
     void RenderFloor(sf::RenderTarget &target, sf::Vector2f &player_loc, sf::Vector2f &direction, sf::Vector2f &plane);
     void RenderSky(sf::RenderTarget &target, float player_angle);
-    void RenderTexturedSky();
+    void RenderTexturedSky(sf::RenderTarget &target, sf::Vector2f &player_loc, sf::Vector2f &direction, sf::Vector2f &plane);
     void draw3dview(sf::RenderTarget &target, Player &player, const Map &map);
     void drawRays(sf::RenderTarget &target, Player &player, const Map &map);
     Ray castRay(sf::Vector2f start, float angleInDegrees, const Map &map, bool fps_mode);
@@ -54,11 +54,12 @@ private:
     const size_t MaxRayCastingDepth = 128;
     
 
-    sf::Texture wall_texture, sky_texture, floorBuffer;
+    sf::Texture wall_texture, sky_texture, floorBuffer, roofBuffer;
     // sf::Sprite wall_sprite;
     // sf::Sprite floorSprite;
     std::optional<sf::Sprite> wall_sprite;
     std::optional<sf::Sprite> floorSprite;
+    std::optional<sf::Sprite> roofSprite;
     // sf::Texture floor_texture;
     sf::Image floor_texture;
     std::string wall_texture_file = "texture/wall_texture.png";

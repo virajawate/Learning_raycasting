@@ -9,6 +9,9 @@ void Renderer::init()
     if (!floorBuffer.resize({ScreenW, ScreenH}))
         throw std::runtime_error("Failed to create floor buffer.");
 
+    if (!roofBuffer.resize({ScreenW, ScreenH}))
+        throw std::runtime_error("Failed to create roof buffer.");
+
     if (!wall_texture.loadFromFile(wall_texture_file))
         throw std::runtime_error("Failed to load " + wall_texture_file);
     
@@ -17,9 +20,7 @@ void Renderer::init()
 
     sky_texture.setRepeated(true);
     floorSprite.emplace(floorBuffer);
-
-    std::cout << "Texture Files Loaded\n";
-    std::cout << "Initialization Complete.\n";
+    roofSprite.emplace(roofBuffer);
 }
 
 void Renderer::RenderSky(sf::RenderTarget &target, float player_angle){
@@ -36,11 +37,54 @@ void Renderer::RenderSky(sf::RenderTarget &target, float player_angle){
     target.draw(sky, 4, sf::PrimitiveType::TriangleFan, sf::RenderStates(&sky_texture));
 }
 
-void Renderer::RenderTexturedSky(){}
+void Renderer::RenderTexturedSky(sf::RenderTarget &target, sf::Vector2f &player_loc, sf::Vector2f &direction, sf::Vector2f &plane){
+    std::vector<uint8_t> ceilingPixels(ScreenW * ScreenH * 4, 0);
+    const int rooftexture_id = 6;
+    const unsigned int texture_size = Resources::walltextures.getSize().y;
+    const sf::Image wallAtlas = Resources::walltextures.copyToImage();
+
+    for (size_t y = 0; y <  ScreenH / 2; y++) {
+        sf::Vector2f rayDirLeft{direction - plane};
+        sf::Vector2f rayDirRight{direction + plane};
+        const float rowDistance = CAMERA_Z / static_cast<float>((ScreenH / 2) - y);
+        const sf::Vector2f floorStep = {
+            rowDistance * (rayDirRight.x - rayDirLeft.x) / static_cast<float>(ScreenH),
+            rowDistance * (rayDirRight.y - rayDirLeft.y) / static_cast<float>(ScreenH)
+        };
+        sf::Vector2f floor = player_loc + rowDistance * rayDirLeft;
+
+        for (size_t x = 0; x < ScreenW; ++x) {
+            double wholeX = 0.0;
+            double wholeY = 0.0;
+            const float fractX = std::modf(floor.x, &wholeX);
+            const float fractY = std::modf(floor.y, &wholeY);
+
+            const unsigned int texX = static_cast<unsigned int>(std::abs(fractX * static_cast<float>(texture_size))) % texture_size;
+            const unsigned int texY = static_cast<unsigned int>(std::abs(fractY * static_cast<float>(texture_size))) % texture_size;
+            const unsigned int atlasX = static_cast<unsigned int>(rooftexture_id) * texture_size + texX;
+            const unsigned int atlasY = texY;
+            const sf::Color color = wallAtlas.getPixel({atlasX, atlasY});
+ 
+            const size_t index = (x + y * static_cast<size_t>(ScreenW)) * 4u;
+            ceilingPixels[index + 0] = color.r;
+            ceilingPixels[index + 1] = color.g;
+            ceilingPixels[index + 2] = color.b;
+            ceilingPixels[index + 3] = color.a;
+
+            floor += floorStep;
+        }
+    }
+
+    roofBuffer.update(ceilingPixels.data());
+    roofSprite->setTexture(roofBuffer);
+    if (roofSprite) {
+        target.draw(*roofSprite);
+    }
+}
 
 void Renderer::RenderFloor(sf::RenderTarget &target, sf::Vector2f &player_loc, sf::Vector2f &direction, sf::Vector2f &plane){
     std::vector<uint8_t> floorPixels(ScreenW * ScreenH * 4, 0);
-    const int floortexture_id = 6;
+    const int floortexture_id = 7;
     const unsigned int texture_size = Resources::walltextures.getSize().y;
     const sf::Image wallAtlas = Resources::walltextures.copyToImage();
 
@@ -427,8 +471,8 @@ void Renderer::cast3DNewRayGUI(sf::RenderTarget &target, Player &player, const M
     sf::Vector2f player_loc = playerPos / cellSize;
 
     // Sky
-    RenderSky(target, player_pose[2]);
-
+    // RenderSky(target, player_pose[2]);
+    RenderTexturedSky(target, player_loc, direction, plane);
     // Floor
     RenderFloor(target, player_loc, direction, plane);
     
