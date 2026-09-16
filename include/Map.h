@@ -20,6 +20,7 @@ typedef std::vector<std::vector<sf::Sprite>> MapTextureGrid;
 class Map{
 public:
   //Constructor with grid and cell dimensions
+  Map();
   Map(float cellsize);
   Map(float cellsize, int width, int height);
   Map(float cellsize, std::vector<std::vector<int>> Grid);
@@ -32,7 +33,8 @@ public:
   // Draw cells
   void draw(sf::RenderTarget& target); // NOT USED
   void drawColorGrid(sf::RenderTarget& target); // NOT USED
-  void drawColorGridTexture(sf::RenderTarget& target);
+  void drawColorGridTexture(sf::RenderTarget& target); // NOT USED
+  void drawColorGridTexture_new(sf::RenderTarget& target, float cell_size);
   const std::vector<std::vector<int>> getGrid() const;
   const std::vector<std::vector<sf::Color>> getGridColor() const;
   sf::Color getGridCell(int x, int y) const ;

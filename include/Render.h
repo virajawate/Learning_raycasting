@@ -44,6 +44,7 @@ public:
     Ray castRay(sf::Vector2f start, float angleInDegrees, const Map &map, bool fps_mode);
     void cast3DNewRay(sf::RenderTarget &target, Player &player, const Map &map);
     void cast3DNewRayGUI(sf::RenderTarget &target, Player &player, const Map &map);
+    void cast3DNewRayGUI_new(sf::RenderTarget &target, Player &player, const Map &map);
     void init();
     Renderer();
 

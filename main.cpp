@@ -51,7 +51,8 @@ int main() {
   // Map maze_map(Cell_size, Maze);
 
   // Map Color_map(Cell_size, "map/map_1.png");
-  Map Color_map{Cell_size};
+  // Map Color_map{Cell_size};
+  Map Color_map;
   if(std::filesystem::exists("latest.map")){
     std::cout<<"Loaded Latest Map\n";
     Color_map.load("map/latest.map");
@@ -72,7 +73,8 @@ int main() {
 
   Player player;
   player.set_player_size(PLAYER_SIZE);
-  player.set_player_pose(sf::Vector2f(65,65));
+  // player.set_player_pose(sf::Vector2f(65,65));
+  player.set_player_pose(sf::Vector2f(1.5f, 1.5f));
 
   while(win.isOpen()){
     sf::Time dt = Gametime.restart();
@@ -95,9 +97,9 @@ int main() {
     win.clear();
     if(state == State::Game){
       win.setView(win.getDefaultView());
-      render.cast3DNewRayGUI(win, player, Color_map);
+      render.cast3DNewRayGUI_new(win, player, Color_map);
     }else if(state == State::Editor){
-      Color_map.drawColorGridTexture(win);
+      Color_map.drawColorGridTexture_new(win, Cell_size);
       editor.run(win, Color_map);
       player.draw(win);
     } else if(state == State::Original){

@@ -9,7 +9,7 @@
 2 - Call the constructor with Cell Size and the Grid vector
 */
 Map::Map(float cell_size, int width, int height) : cellSize(cell_size), grid(height, std::vector(width, 0)){}
-
+Map::Map() : grid() {}
 Map::Map(float cell_size) : cellSize(cell_size), grid() {}
 Map::Map(float cell_size, MapGrid Grid) : cellSize(cell_size), grid(Grid) {}
 
@@ -76,6 +76,7 @@ void Map::drawColorGrid(sf::RenderTarget& target){
   }
 }
 
+// NOT USED
 void Map::drawColorGridTexture(sf::RenderTarget& target){
   if(gridColor.empty()){
     return;
@@ -117,6 +118,46 @@ void Map::drawColorGridTexture(sf::RenderTarget& target){
   }
 }
 
+void Map::drawColorGridTexture_new(sf::RenderTarget& target, float cell_size){
+  if(gridColor.empty()){
+    return;
+  }
+  int textureSize = Resources::walltextures.getSize().y;
+  for(size_t y = 0; y < gridColor.size(); y++){ 
+    for(size_t x = 0; x < gridColor[y].size(); x++){
+      /** Put Texture in Grid */
+      int textureNo = -1;
+      if(gridColor[y][x] == sf::Color::White){
+        textureNo = 0;
+      } else if(gridColor[y][x] == sf::Color::Cyan){
+        textureNo = 1;
+      } else if(gridColor[y][x] == sf::Color::Red){
+        textureNo = 2;
+      } else if(gridColor[y][x] == sf::Color::Green){
+        textureNo = 3;
+      } else if(gridColor[y][x] == sf::Color::Yellow){
+        textureNo = 4;
+      }
+      if(textureNo < 0) continue;
+      sf::Sprite wall{
+        Resources::walltextures,
+        sf::IntRect{
+          {textureNo * textureSize, 0},
+          {textureSize, textureSize}
+        }
+      };
+      wall.setPosition({
+        static_cast<float>(x) * cell_size,
+        static_cast<float>(y) * cell_size
+      });
+      wall.setScale({
+        cell_size / static_cast<float>(textureSize),
+        cell_size / static_cast<float>(textureSize)
+      });
+      target.draw(wall);
+    }
+  }
+}
 
 const std::vector<std::vector<int>> Map::getGrid() const { return grid; }
 const std::vector<std::vector<sf::Color>> Map::getGridColor() const { return gridColor; }
