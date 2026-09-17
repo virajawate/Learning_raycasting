@@ -4,10 +4,12 @@
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/Graphics/CircleShape.hpp>
 #include <SFML/Window/Keyboard.hpp>
-#include <SFML/Graphics/RectangleShape.hpp>
+#include <SFML/Graphics/RectangleShape.hpp> 
 constexpr float PI = 3.1427;
 constexpr float TURN_SPEED = 25.0f;
 constexpr float MOVE_SPEED = 2.5f;
+constexpr float SCALE = 50.0f;
+
 
 std::vector<float> Player::get_player_pose(){
     /* Player Pose
@@ -25,10 +27,13 @@ std::vector<float> Player::get_player_pose(){
 
 void Player::draw(sf::RenderTarget &target){
     sf::CircleShape circle(player_size);
-    circle.setPosition({position.x-player_size, position.y-player_size});
+    circle.setPosition({
+        position.x * SCALE - 15.0f,
+        position.y * SCALE - 15.0f
+    });
     circle.setFillColor(sf::Color::Blue);
     sf::RectangleShape line(sf::Vector2f(150.0f, 150.0f));
-    line.setPosition(position);
+    line.setPosition({(position.x)* SCALE, (position.y)* SCALE});
     line.setRotation(sf::degrees(angle-45));
     line.setFillColor(sf::Color(0, 255, 0, 125));
     target.draw(line);
