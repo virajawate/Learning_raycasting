@@ -28,8 +28,8 @@ std::vector<float> Player::get_player_pose(){
 void Player::draw(sf::RenderTarget &target){
     sf::CircleShape circle(player_size);
     circle.setPosition({
-        position.x * SCALE - 15.0f,
-        position.y * SCALE - 15.0f
+        position.x * SCALE - 20.0f,
+        position.y * SCALE - 20.0f
     });
     circle.setFillColor(sf::Color::Blue);
     sf::RectangleShape line(sf::Vector2f(150.0f, 150.0f));
@@ -76,6 +76,10 @@ void Player::update(float deltaTime, Map &map){
     if(map.getGridCell(newx, newy) == sf::Color::Black){
         position.x = newx;
         position.y = newy;
+    } else {
+        position.x = newx - 0.5;
+        position.y = newy - 0.5;
+        angle = -angle;
     }
 }
 
