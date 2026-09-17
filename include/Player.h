@@ -3,7 +3,7 @@
 
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <vector>
-
+#include "Map.h"
 constexpr float PLAYER_TURN_SPEED = 100.0f;
 
 class Player {
@@ -12,13 +12,14 @@ class Player {
     void set_player_pose(sf::Vector2f pose);
     void draw(sf::RenderTarget &target);
     void set_player_size(float size);
-    void update(float deltaTime);
+    void update(float deltaTime, Map &map);
     void reset();
 
     private:
     sf::Vector2f position;
     float player_size;
     float angle;
+    float move_x, move_y, move_angle;
 };
 
 #endif // !_PLAYER_H

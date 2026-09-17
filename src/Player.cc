@@ -40,7 +40,7 @@ void Player::draw(sf::RenderTarget &target){
     target.draw(circle);
 }
 
-void Player::update(float deltaTime){
+void Player::update(float deltaTime, Map &map){
     float updated_turn_speed, updated_move_speed;
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::LShift)){
         updated_turn_speed = 2.0 * TURN_SPEED;
@@ -49,18 +49,33 @@ void Player::update(float deltaTime){
         updated_turn_speed = TURN_SPEED;
         updated_move_speed = MOVE_SPEED;
     } 
+    // Reset per-frame values
+    move_x = 0.0f;
+    move_y = 0.0f;
+    move_angle = 0.0f;
+    
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D)){
         angle += updated_turn_speed * deltaTime;
     } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A)){
         angle -= updated_turn_speed * deltaTime;
     } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W)){
         float radians = angle * PI / 180.0f;
-        position.x += updated_move_speed * cos(radians) * deltaTime;
-        position.y += updated_move_speed * sin(radians) * deltaTime;
+        move_x = updated_move_speed * cos(radians) * deltaTime;
+        move_y = updated_move_speed * sin(radians) * deltaTime;
     } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S)){
         float radians = angle * PI / 180.0f;
-        position.x -= updated_move_speed * cos(radians) * deltaTime;
-        position.y -= updated_move_speed * sin(radians) * deltaTime;
+        move_x = updated_move_speed * cos(radians) * deltaTime;
+        move_y = updated_move_speed * sin(radians) * deltaTime;
+    } else {
+        move_x = 0.0;
+        move_y = 0.0;
+    }
+
+    auto newx = position.x + move_x;
+    auto newy = position.y + move_y;
+    if(map.getGridCell(newx, newy) == sf::Color::Black){
+        position.x = newx;
+        position.y = newy;
     }
 }
 

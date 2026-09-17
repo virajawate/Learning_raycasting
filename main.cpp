@@ -93,7 +93,7 @@ int main() {
       if(state == State::Editor) editor.handleEvent(*event);
     }
     ImGui::ShowDemoWindow();
-    player.update(dt.asSeconds());
+    player.update(dt.asSeconds(), Color_map);
     win.clear();
     if(state == State::Game){
       win.setView(win.getDefaultView());
