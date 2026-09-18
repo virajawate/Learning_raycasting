@@ -1,7 +1,6 @@
 #include "Render.h"
 #include "Resources.h"
 
-// Renderer::Renderer() : wall_texture(), wall_sprite(wall_texture) {}
 Renderer::Renderer() = default;
 
 void Renderer::init()
@@ -23,9 +22,8 @@ void Renderer::init()
     roofSprite.emplace(roofBuffer);
 }
 
+// NOT USED
 void Renderer::RenderSky(sf::RenderTarget &target, float player_angle){
-    // Sky
-    // Add Custom Texture
     int xOffset = ScreenW / PLAYER_TURN_SPEED * player_angle;
     while(xOffset < 0){xOffset += sky_texture.getSize().x;}
     sf::Vertex sky[] = {
