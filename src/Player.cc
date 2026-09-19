@@ -52,7 +52,6 @@ void Player::update(float deltaTime, Map &map){
     // Reset per-frame values
     move_x = 0.0f;
     move_y = 0.0f;
-    move_angle = 0.0f;
     
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D)){
         angle += updated_turn_speed * deltaTime;

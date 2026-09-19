@@ -6,7 +6,6 @@
 class Resources {
     public:
     static sf::Texture walltextures;
-
 };
 
 #endif // !_RESOURCE_H

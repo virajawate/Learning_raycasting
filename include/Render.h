@@ -53,21 +53,15 @@ private:
     const float PI = 3.1427;
     const size_t player_fov = 60;
     const size_t MaxRayCastingDepth = 128;
-    
 
     sf::Texture wall_texture, sky_texture, floorBuffer, roofBuffer;
-    // sf::Sprite wall_sprite;
-    // sf::Sprite floorSprite;
     std::optional<sf::Sprite> wall_sprite;
     std::optional<sf::Sprite> floorSprite;
     std::optional<sf::Sprite> roofSprite;
-    // sf::Texture floor_texture;
     sf::Image floor_texture;
     std::string wall_texture_file = "texture/wall_texture.png";
     std::string floor_texture_file = "texture/floor_texture.png";
     std::string sky_texture_file = "texture/sky_texture.png";
-
-    
 };
 
 #endif // !_RENDERER_H
