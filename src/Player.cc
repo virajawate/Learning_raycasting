@@ -63,8 +63,8 @@ void Player::update(float deltaTime, Map &map){
         move_y = updated_move_speed * sin(radians) * deltaTime;
     } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S)){
         float radians = angle * PI / 180.0f;
-        move_x = updated_move_speed * cos(radians) * deltaTime;
-        move_y = updated_move_speed * sin(radians) * deltaTime;
+        move_x = -updated_move_speed * cos(radians) * deltaTime;
+        move_y = -updated_move_speed * sin(radians) * deltaTime;
     } else {
         move_x = 0.0;
         move_y = 0.0;
@@ -75,11 +75,7 @@ void Player::update(float deltaTime, Map &map){
     if(map.getGridCell(newx, newy) == sf::Color::Black){
         position.x = newx;
         position.y = newy;
-    } else {
-        position.x = newx - 0.5;
-        position.y = newy - 0.5;
-        angle = -angle;
-    }
+    } 
 }
 
 void Player::set_player_pose(sf::Vector2f pose){
