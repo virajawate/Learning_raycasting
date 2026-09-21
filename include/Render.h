@@ -20,9 +20,9 @@
 #include "Player.h"
 #include "Map.h"
 
-constexpr unsigned int ScreenW = 1280;
-constexpr unsigned int ScreenH = 720;
-constexpr unsigned int NUM_RAYS = 800;
+constexpr unsigned int ScreenW = 2400;
+constexpr unsigned int ScreenH = 1200;
+constexpr unsigned int NUM_RAYS = 1200;
 constexpr float CAMERA_Z = 0.5f * ScreenH;
 constexpr float COLUMN_WIDTH = ScreenW / (float)NUM_RAYS;
 
