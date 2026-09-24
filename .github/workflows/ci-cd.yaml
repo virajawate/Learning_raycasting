@@ -227,163 +227,163 @@ jobs:
   # CI - Windows
   # ============================================================
 
-  build-windows:
-    name: Build Windows
-    runs-on: windows-2025
+  # build-windows:
+  #   name: Build Windows
+  #   runs-on: windows-2025
 
-    steps:
-      # --------------------------------------------------------
-      # Checkout
-      # --------------------------------------------------------
+  #   steps:
+  #    # --------------------------------------------------------
+  #    # Checkout
+  #    # --------------------------------------------------------
 
-      - name: Checkout repository
-        uses: actions/checkout@v6
+  #     - name: Checkout repository
+  #       uses: actions/checkout@v6
 
-      # --------------------------------------------------------
-      # Setup MSYS2
-      # --------------------------------------------------------
+  #     # --------------------------------------------------------
+  #     # Setup MSYS2
+  #     # --------------------------------------------------------
 
-      - name: Setup MSYS2
-        uses: msys2/setup-msys2@v2
+  #     - name: Setup MSYS2
+  #       uses: msys2/setup-msys2@v2
 
-        with:
-          msystem: MINGW64
-          update: true
+  #       with:
+  #         msystem: MINGW64
+  #         update: true
 
-          install: >-
-            git
-            make
-            mingw-w64-x86_64-gcc
-            mingw-w64-x86_64-cmake
+  #         install: >-
+  #           git
+  #           make
+  #           mingw-w64-x86_64-gcc
+  #           mingw-w64-x86_64-cmake
 
-      # --------------------------------------------------------
-      # Verify toolchain
-      # --------------------------------------------------------
+  #     # --------------------------------------------------------
+  #     # Verify toolchain
+  #     # --------------------------------------------------------
 
-      - name: Verify Windows toolchain
-        shell: msys2 {0}
-        run: |
-          g++ --version
-          cmake --version
-          make --version
+  #     - name: Verify Windows toolchain
+  #       shell: msys2 {0}
+  #       run: |
+  #         g++ --version
+  #         cmake --version
+  #         make --version
 
-      # --------------------------------------------------------
-      # Build Raycasting
-      # --------------------------------------------------------
+  #     # --------------------------------------------------------
+  #     # Build Raycasting
+  #     # --------------------------------------------------------
 
-      - name: Build Raycasting
-        shell: msys2 {0}
-        run: |
-          make clean || true
-          make build
+  #     - name: Build Raycasting
+  #       shell: msys2 {0}
+  #       run: |
+  #         make clean || true
+  #         make build
 
-      # --------------------------------------------------------
-      # Verify executable
-      # --------------------------------------------------------
+  #     # --------------------------------------------------------
+  #     # Verify executable
+  #     # --------------------------------------------------------
 
-      - name: Verify Windows executable
-        shell: msys2 {0}
-        run: |
-          test -f build/raycasting.exe
-          file build/raycasting.exe
+  #     - name: Verify Windows executable
+  #       shell: msys2 {0}
+  #       run: |
+  #         test -f build/raycasting.exe
+  #         file build/raycasting.exe
 
-      # --------------------------------------------------------
-      # Package Windows release
-      # --------------------------------------------------------
+  #     # --------------------------------------------------------
+  #     # Package Windows release
+  #     # --------------------------------------------------------
 
-      - name: Package Windows build
-        if: startsWith(github.ref, 'refs/tags/v')
-        shell: pwsh
-        run: |
-          New-Item `
-            -ItemType Directory `
-            -Force `
-            -Path release/raycasting-windows
+  #     - name: Package Windows build
+  #       if: startsWith(github.ref, 'refs/tags/v')
+  #       shell: pwsh
+  #       run: |
+  #         New-Item `
+  #           -ItemType Directory `
+  #           -Force `
+  #           -Path release/raycasting-windows
 
-          Copy-Item `
-            build/raycasting.exe `
-            release/raycasting-windows/
+  #         Copy-Item `
+  #           build/raycasting.exe `
+  #           release/raycasting-windows/
 
-          Copy-Item `
-            -Recurse `
-            map `
-            release/raycasting-windows/
+  #         Copy-Item `
+  #           -Recurse `
+  #           map `
+  #           release/raycasting-windows/
 
-          Copy-Item `
-            -Recurse `
-            texture `
-            release/raycasting-windows/
+  #         Copy-Item `
+  #           -Recurse `
+  #           texture `
+  #           release/raycasting-windows/
 
-          Copy-Item `
-            README.md `
-            release/raycasting-windows/
+  #         Copy-Item `
+  #           README.md `
+  #           release/raycasting-windows/
 
-          Compress-Archive `
-            -Path release/raycasting-windows `
-            -DestinationPath release/raycasting-windows.zip
+  #         Compress-Archive `
+  #           -Path release/raycasting-windows `
+  #           -DestinationPath release/raycasting-windows.zip
 
-      # --------------------------------------------------------
-      # Upload Windows artifact
-      # --------------------------------------------------------
+  #     # --------------------------------------------------------
+  #     # Upload Windows artifact
+  #     # --------------------------------------------------------
 
-      - name: Upload Windows artifact
-        if: startsWith(github.ref, 'refs/tags/v')
-        uses: actions/upload-artifact@v4
+  #     - name: Upload Windows artifact
+  #       if: startsWith(github.ref, 'refs/tags/v')
+  #       uses: actions/upload-artifact@v4
 
-        with:
-          name: raycasting-windows
-          path: release/raycasting-windows.zip
-          if-no-files-found: error
+  #       with:
+  #         name: raycasting-windows
+  #         path: release/raycasting-windows.zip
+  #         if-no-files-found: error
 
 
-  # ============================================================
-  # CD - GitHub Release
-  # ============================================================
+  # # ============================================================
+  # # CD - GitHub Release
+  # # ============================================================
 
-  release:
-    name: Create GitHub Release
+  # release:
+  #   name: Create GitHub Release
 
-    needs:
-      - build-linux
-      - build-windows
+  #   needs:
+  #     - build-linux
+  #     - build-windows
 
-    if: startsWith(github.ref, 'refs/tags/v')
+  #   if: startsWith(github.ref, 'refs/tags/v')
 
-    runs-on: ubuntu-24.04
+  #   runs-on: ubuntu-24.04
 
-    steps:
-      # --------------------------------------------------------
-      # Download Linux artifact
-      # --------------------------------------------------------
+  #   steps:
+  #     # --------------------------------------------------------
+  #     # Download Linux artifact
+  #     # --------------------------------------------------------
 
-      - name: Download Linux artifact
-        uses: actions/download-artifact@v5
+  #     - name: Download Linux artifact
+  #       uses: actions/download-artifact@v5
 
-        with:
-          name: raycasting-linux
-          path: release
+  #       with:
+  #         name: raycasting-linux
+  #         path: release
 
-      # --------------------------------------------------------
-      # Download Windows artifact
-      # --------------------------------------------------------
+  #     # --------------------------------------------------------
+  #     # Download Windows artifact
+  #     # --------------------------------------------------------
 
-      - name: Download Windows artifact
-        uses: actions/download-artifact@v5
+  #     - name: Download Windows artifact
+  #       uses: actions/download-artifact@v5
 
-        with:
-          name: raycasting-windows
-          path: release
+  #       with:
+  #         name: raycasting-windows
+  #         path: release
 
-      # --------------------------------------------------------
-      # Create GitHub Release
-      # --------------------------------------------------------
+  #     # --------------------------------------------------------
+  #     # Create GitHub Release
+  #     # --------------------------------------------------------
 
-      - name: Create GitHub Release
-        uses: softprops/action-gh-release@v2
+  #     - name: Create GitHub Release
+  #       uses: softprops/action-gh-release@v2
 
-        with:
-          files: |
-            release/raycasting-linux.tar.gz
-            release/raycasting-windows.zip
+  #       with:
+  #         files: |
+  #           release/raycasting-linux.tar.gz
+  #           release/raycasting-windows.zip
 
-          generate_release_notes: true
+  #         generate_release_notes: true
