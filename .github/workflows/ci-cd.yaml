@@ -30,7 +30,7 @@ jobs:
       # --------------------------------------------------------
 
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
 
       # --------------------------------------------------------
       # Dependencies
@@ -272,17 +272,6 @@ jobs:
           path: release
 
       # --------------------------------------------------------
-      # Download Windows artifact
-      # --------------------------------------------------------
-
-      - name: Download Windows artifact
-        uses: actions/download-artifact@v5
-
-        with:
-          name: raycasting-windows
-          path: release
-
-      # --------------------------------------------------------
       # Create GitHub Release
       # --------------------------------------------------------
 
@@ -292,6 +281,5 @@ jobs:
         with:
           files: |
             release/raycasting-linux.tar.gz
-            release/raycasting-windows.zip
 
           generate_release_notes: true
