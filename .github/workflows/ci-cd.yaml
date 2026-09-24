@@ -136,6 +136,31 @@ jobs:
           sudo cp \
             /tmp/imgui/build/libimgui.a \
             /usr/local/lib/
+
+      # --------------------------------------------------------
+      # Build ImGuiFileDialog
+      # --------------------------------------------------------
+      - name: Build ImGuiFileDialog
+        run: |
+          git clone \
+            --depth 1 \
+            https://github.com/aiekick/ImGuiFileDialog.git \
+            /tmp/ImGuiFileDialog
+
+          sudo mkdir -p /usr/local/include/ImGuiFileDialog
+
+          sudo cp \
+            /tmp/ImGuiFileDialog/ImGuiFileDialog.h \
+            /usr/local/include/
+
+          sudo cp \
+            /tmp/ImGuiFileDialog/ImGuiFileDialog.cpp \
+            /usr/local/include/ImGuiFileDialog/
+
+          sudo cp \
+            /tmp/ImGuiFileDialog/ImGuiFileDialog.h \
+            /usr/local/include/ImGuiFileDialog/
+      
       # --------------------------------------------------------
       # Build ImGui-SFML
       # --------------------------------------------------------
