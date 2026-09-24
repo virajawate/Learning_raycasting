@@ -64,6 +64,8 @@ else
               -I/usr/local/include
 
     L_FLAGS = -L/usr/local/lib \
+              -lImGui-SFML \
+              -limgui \
               -lsfml-graphics \
               -lsfml-window \
               -lsfml-audio \
@@ -95,9 +97,11 @@ endif
 
 BIN = $(BUILD_DIR)$(SEP)$(BIN_NAME)$(EXE)
 
-SRCS = $(wildcard $(SRC_DIR)/*.cc)
+SRCS = $(wildcard $(SRC_DIR)/*.cc) \
+       $(wildcard $(SRC_DIR)/*.cpp)
 
-OBJS = $(SRCS:$(SRC_DIR)/%.cc=$(BUILD_DIR)/%.o) \
+OBJS = $(patsubst $(SRC_DIR)/%.cc,$(BUILD_DIR)/%.o,$(filter %.cc,$(SRCS))) \
+       $(patsubst $(SRC_DIR)/%.cpp,$(BUILD_DIR)/%.o,$(filter %.cpp,$(SRCS))) \
        $(BUILD_DIR)/main.o
 
 DEPS = $(OBJS:.o=.d)
@@ -125,7 +129,9 @@ $(BIN): $(OBJS)
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.cc
 	$(MKDIR)
 	$(CC) $(C_FLAGS) -c $< -o $@
-
+$(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp
+	$(MKDIR)
+	$(CC) $(C_FLAGS) -c $< -o $@    
 $(BUILD_DIR)/main.o: main.cpp
 	$(MKDIR)
 	$(CC) $(C_FLAGS) -c $< -o $@
