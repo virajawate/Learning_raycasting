@@ -245,168 +245,53 @@ jobs:
           path: release/raycasting-linux.tar.gz
           if-no-files-found: error
 
-
   # ============================================================
-  # CI - Windows
+  # CD - GitHub Release
   # ============================================================
 
-  # build-windows:
-  #   name: Build Windows
-  #   runs-on: windows-2025
+  release:
+    name: Create GitHub Release
 
-  #   steps:
-  #    # --------------------------------------------------------
-  #    # Checkout
-  #    # --------------------------------------------------------
+    needs:
+      - build-linux
 
-  #     - name: Checkout repository
-  #       uses: actions/checkout@v6
+    if: startsWith(github.ref, 'refs/tags/v')
 
-  #     # --------------------------------------------------------
-  #     # Setup MSYS2
-  #     # --------------------------------------------------------
+    runs-on: ubuntu-24.04
 
-  #     - name: Setup MSYS2
-  #       uses: msys2/setup-msys2@v2
+    steps:
+      # --------------------------------------------------------
+      # Download Linux artifact
+      # --------------------------------------------------------
 
-  #       with:
-  #         msystem: MINGW64
-  #         update: true
+      - name: Download Linux artifact
+        uses: actions/download-artifact@v5
 
-  #         install: >-
-  #           git
-  #           make
-  #           mingw-w64-x86_64-gcc
-  #           mingw-w64-x86_64-cmake
+        with:
+          name: raycasting-linux
+          path: release
 
-  #     # --------------------------------------------------------
-  #     # Verify toolchain
-  #     # --------------------------------------------------------
+      # --------------------------------------------------------
+      # Download Windows artifact
+      # --------------------------------------------------------
 
-  #     - name: Verify Windows toolchain
-  #       shell: msys2 {0}
-  #       run: |
-  #         g++ --version
-  #         cmake --version
-  #         make --version
+      - name: Download Windows artifact
+        uses: actions/download-artifact@v5
 
-  #     # --------------------------------------------------------
-  #     # Build Raycasting
-  #     # --------------------------------------------------------
+        with:
+          name: raycasting-windows
+          path: release
 
-  #     - name: Build Raycasting
-  #       shell: msys2 {0}
-  #       run: |
-  #         make clean || true
-  #         make build
+      # --------------------------------------------------------
+      # Create GitHub Release
+      # --------------------------------------------------------
 
-  #     # --------------------------------------------------------
-  #     # Verify executable
-  #     # --------------------------------------------------------
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
 
-  #     - name: Verify Windows executable
-  #       shell: msys2 {0}
-  #       run: |
-  #         test -f build/raycasting.exe
-  #         file build/raycasting.exe
+        with:
+          files: |
+            release/raycasting-linux.tar.gz
+            release/raycasting-windows.zip
 
-  #     # --------------------------------------------------------
-  #     # Package Windows release
-  #     # --------------------------------------------------------
-
-  #     - name: Package Windows build
-  #       if: startsWith(github.ref, 'refs/tags/v')
-  #       shell: pwsh
-  #       run: |
-  #         New-Item `
-  #           -ItemType Directory `
-  #           -Force `
-  #           -Path release/raycasting-windows
-
-  #         Copy-Item `
-  #           build/raycasting.exe `
-  #           release/raycasting-windows/
-
-  #         Copy-Item `
-  #           -Recurse `
-  #           map `
-  #           release/raycasting-windows/
-
-  #         Copy-Item `
-  #           -Recurse `
-  #           texture `
-  #           release/raycasting-windows/
-
-  #         Copy-Item `
-  #           README.md `
-  #           release/raycasting-windows/
-
-  #         Compress-Archive `
-  #           -Path release/raycasting-windows `
-  #           -DestinationPath release/raycasting-windows.zip
-
-  #     # --------------------------------------------------------
-  #     # Upload Windows artifact
-  #     # --------------------------------------------------------
-
-  #     - name: Upload Windows artifact
-  #       if: startsWith(github.ref, 'refs/tags/v')
-  #       uses: actions/upload-artifact@v4
-
-  #       with:
-  #         name: raycasting-windows
-  #         path: release/raycasting-windows.zip
-  #         if-no-files-found: error
-
-
-  # # ============================================================
-  # # CD - GitHub Release
-  # # ============================================================
-
-  # release:
-  #   name: Create GitHub Release
-
-  #   needs:
-  #     - build-linux
-  #     - build-windows
-
-  #   if: startsWith(github.ref, 'refs/tags/v')
-
-  #   runs-on: ubuntu-24.04
-
-  #   steps:
-  #     # --------------------------------------------------------
-  #     # Download Linux artifact
-  #     # --------------------------------------------------------
-
-  #     - name: Download Linux artifact
-  #       uses: actions/download-artifact@v5
-
-  #       with:
-  #         name: raycasting-linux
-  #         path: release
-
-  #     # --------------------------------------------------------
-  #     # Download Windows artifact
-  #     # --------------------------------------------------------
-
-  #     - name: Download Windows artifact
-  #       uses: actions/download-artifact@v5
-
-  #       with:
-  #         name: raycasting-windows
-  #         path: release
-
-  #     # --------------------------------------------------------
-  #     # Create GitHub Release
-  #     # --------------------------------------------------------
-
-  #     - name: Create GitHub Release
-  #       uses: softprops/action-gh-release@v2
-
-  #       with:
-  #         files: |
-  #           release/raycasting-linux.tar.gz
-  #           release/raycasting-windows.zip
-
-  #         generate_release_notes: true
+          generate_release_notes: true
