@@ -61,7 +61,7 @@ int main() {
     Color_map.load("map/test.map");
   }
   
-  if(!Resources::walltextures.loadFromFile("texture/textures.png")) std::cerr << "Failed to load wall_textures from textures.png\n";
+  if(!Resources::walltextures.loadFromFile("texture/wolftextures.png")) std::cerr << "Failed to load wall_textures from textures.png\n";
 
   Renderer render;
   render.init();
