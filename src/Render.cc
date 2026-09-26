@@ -662,8 +662,10 @@ void Renderer::cast3DNewRayGUI_new(sf::RenderTarget &target, Player &player, con
             textureNo = 3;
         } else if(wallColor == sf::Color::Yellow){
             textureNo = 4;
-        } else {
+        } else  if(wallColor == sf::Color(255,26,0,255)){
             textureNo = 5;
+        } else {
+            textureNo = 6;
         }
         if (textureNo < 0)
             continue;

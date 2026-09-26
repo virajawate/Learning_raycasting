@@ -32,7 +32,7 @@ void Editor::new_run(sf::RenderWindow &window, Map &map){
     ImGui::Begin("Wall Texture Options");
     ImGui::Text("Texture No. : ");
     ImGui::InputInt("##tex_no", &textureNo);
-    textureNo = std::clamp(textureNo, 0, 4);
+    textureNo = std::clamp(textureNo, 0, 10);
     auto SelectedColor = getColor(textureNo);
     int textureSize = Resources::walltextures.getSize().y;
     ImGui::Text("Preview :");
@@ -78,7 +78,6 @@ void Editor::new_run(sf::RenderWindow &window, Map &map){
     }
 }
 
-// NOT USED
 void Editor::run(sf::RenderWindow &window, Map &map){
     if(ImGui::BeginMainMenuBar()){
         if(ImGui::BeginMenu("File")){
