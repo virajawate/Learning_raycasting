@@ -587,7 +587,7 @@ void Renderer::cast3DNewRayGUI_new(sf::RenderTarget &target, Player &player, con
     const float fov = 90.0f; 
     // Map Info
     const auto &grid = map.getGridColor();
-    const float texSize = static_cast<float>(Resources::walltextures.getSize().x) / 8.0;
+    const float texSize = static_cast<float>(Resources::walltextures.getSize().x) / 11.0;
     const float maxDistance = MaxRayCastingDepth;
 
     // Player Info
@@ -662,7 +662,9 @@ void Renderer::cast3DNewRayGUI_new(sf::RenderTarget &target, Player &player, con
             textureNo = 3;
         } else if(wallColor == sf::Color::Yellow){
             textureNo = 4;
-        } 
+        } else {
+            textureNo = 5;
+        }
         if (textureNo < 0)
             continue;
         float perpWallDist = verticle ? sideDist.y - deltaDist.y : sideDist.x - deltaDist.x ;
