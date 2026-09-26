@@ -8,7 +8,7 @@ void Editor::init(sf::RenderWindow &window){
     cell.setFillColor(sf::Color::Green);
 }
 
-void Editor::new_run(sf::RenderWindow &window, Map &map){
+void Editor::new_run(sf::RenderWindow &window, Map &map, float cellSize){
     if(ImGui::BeginMainMenuBar()){
         if(ImGui::BeginMenu("File")){
             if(ImGui::MenuItem("Open")){
@@ -61,11 +61,12 @@ void Editor::new_run(sf::RenderWindow &window, Map &map){
         isFirstMouse = true;
         window.setMouseCursorVisible(true);
     }
+    window.setView(view);
     if(!ImGui::GetIO().WantCaptureMouse){
         sf::Vector2f worldPos = window.mapPixelToCoords(mousePos);
-        sf::Vector2i mapPos = (sf::Vector2i)(worldPos);
-        cell.setPosition((sf::Vector2f)mapPos);
-        window.setView(view);
+        sf::Vector2i mapPos = (sf::Vector2i)(worldPos / cellSize);
+        cell.setSize(sf::Vector2f(cellSize, cellSize));
+        cell.setPosition((sf::Vector2f)mapPos * cellSize);
         window.draw(cell);
         if(sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)){
             map.SetMap(
@@ -131,12 +132,12 @@ void Editor::run(sf::RenderWindow &window, Map &map){
         isFirstMouse = true;
         window.setMouseCursorVisible(true);
     }
+    window.setView(view);
     if(!ImGui::GetIO().WantCaptureMouse){
         sf::Vector2f worldPos = window.mapPixelToCoords(mousePos);
         sf::Vector2i mapPos = (sf::Vector2i)(worldPos/ map.getCellsize());
         cell.setSize(sf::Vector2f(map.getCellsize(), map.getCellsize()));
         cell.setPosition((sf::Vector2f)mapPos * map.getCellsize());
-        window.setView(view);
         window.draw(cell);
         if(sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)){
             map.SetMap(
@@ -173,6 +174,9 @@ sf::Color Editor::getColor(int textureNo){
         break;
     case 4:
         return sf::Color::Yellow;
+        break;
+    case 5:
+        return sf::Color(255,26,0,255);
         break;
     default:
         return sf::Color::Black;

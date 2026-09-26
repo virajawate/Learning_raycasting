@@ -17,7 +17,7 @@ class Editor {
     public:
     void init(sf::RenderWindow & window);
     void run(sf::RenderWindow & window, Map &map);
-    void new_run(sf::RenderWindow &window, Map &map);
+    void new_run(sf::RenderWindow &window, Map &map,float cellSize);
     void handleEvent(const sf::Event &event);
     sf::Color getColor(int textureNo);
     private:

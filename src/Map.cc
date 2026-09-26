@@ -230,7 +230,8 @@ void Map::saveImage(const std::string& filename) {
 }
 
 void Map::SetMap(int x, int y, sf::Color values){
-  if(y > 0 && y < gridColor.size() && x > 0 && x < gridColor[y].size()){
+  if(y >= 0 && y < static_cast<int>(gridColor.size()) &&
+     x >= 0 && x < static_cast<int>(gridColor[y].size())){
     gridColor[y][x] = values; 
   }
 }

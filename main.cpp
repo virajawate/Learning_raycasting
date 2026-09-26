@@ -100,11 +100,11 @@ int main() {
       render.cast3DNewRayGUI_new(win, player, Color_map);
     }else if(state == State::Editor){
       Color_map.drawColorGridTexture_new(win, Cell_size);
-      editor.new_run(win, Color_map);
+      editor.new_run(win, Color_map, Cell_size);
       player.draw(win);
     } else if(state == State::Original){
       Color_map.drawColorGrid(win, Cell_size);
-      editor.new_run(win, Color_map);
+      editor.new_run(win, Color_map, Cell_size);
       player.draw(win);
     }
     ImGui::SFML::Render(win);
