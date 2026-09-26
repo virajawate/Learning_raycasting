@@ -32,7 +32,7 @@ public:
 
   // Draw cells
   void draw(sf::RenderTarget& target); // NOT USED
-  void drawColorGrid(sf::RenderTarget& target); // NOT USED
+  void drawColorGrid(sf::RenderTarget& target, float cell_size); // NOT USED
   void drawColorGridTexture(sf::RenderTarget& target); // NOT USED
   void drawColorGridTexture_new(sf::RenderTarget& target, float cell_size);
   const std::vector<std::vector<int>> getGrid() const;

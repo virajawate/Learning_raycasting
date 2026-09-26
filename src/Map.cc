@@ -61,9 +61,9 @@ void Map::draw(sf::RenderTarget &target){
   }
 }
 
-// NOT USED
-void Map::drawColorGrid(sf::RenderTarget& target){
+void Map::drawColorGrid(sf::RenderTarget& target, float cellSize){
   if(gridColor.empty()){
+    std::cout<<"MapEmpty"<<std::endl;
     return;
   }
   sf::RectangleShape cell(sf::Vector2f(cellSize * 0.95f, cellSize * 0.95));
@@ -137,6 +137,8 @@ void Map::drawColorGridTexture_new(sf::RenderTarget& target, float cell_size){
         textureNo = 3;
       } else if(gridColor[y][x] == sf::Color::Yellow){
         textureNo = 4;
+      } else if(gridColor[y][x] == sf::Color(255, 26, 0, 255)){
+        textureNo = 5;
       }
       if(textureNo < 0) continue;
       sf::Sprite wall{
