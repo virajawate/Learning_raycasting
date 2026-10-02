@@ -6,8 +6,8 @@
 #include <SFML/Window/Keyboard.hpp>
 #include <SFML/Graphics/RectangleShape.hpp> 
 constexpr float PI = 3.1427;
-constexpr float TURN_SPEED = 100.0f;
-constexpr float MOVE_SPEED = 3.0f;
+constexpr float TURN_SPEED = 30.0f;
+constexpr float MOVE_SPEED = 3.5f;
 constexpr float SCALE = 50.0f;
 
 std::vector<float> Player::get_player_pose(){
