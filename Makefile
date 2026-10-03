@@ -61,7 +61,9 @@ else
 
     C_FLAGS = -std=c++17 -MMD -MP -O3 \
               -I./include \
-              -I/usr/local/include
+              -I/usr/local/include \
+              -I/usr/include \
+              -I/temp
 
     L_FLAGS = -L/usr/local/lib \
               -lImGui-SFML \
