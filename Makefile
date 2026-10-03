@@ -45,14 +45,21 @@ ifeq ($(OS),Windows_NT)
               -LC:/Cpp_Libraries/ImGuiFileDialog/build-mingw \
               -lImGui-SFML \
               -lImGuiFileDialog \
-              -limgui \
               -lsfml-graphics \
               -lsfml-window \
               -lsfml-audio \
               -lsfml-system \
               -lopengl32
 
+    # Windows sources
+    EXTRA_SRCS =
+    EXTRA_OBJS =
+
 else
+
+    # ========================================================
+    # Linux Configuration
+    # ========================================================
 
     EXE =
 
@@ -63,11 +70,11 @@ else
               -I./include \
               -I/usr/local/include \
               -I/usr/include \
-              -I/temp
+              -I/tmp/imgui \
+              -I/tmp/ImGuiFileDialog
 
     L_FLAGS = -L/usr/local/lib \
               -lImGui-SFML \
-              -limgui \
               -lsfml-graphics \
               -lsfml-window \
               -lsfml-audio \
@@ -83,6 +90,21 @@ else
               -lfreetype \
               -lpthread \
               -ldl
+
+    # Dear ImGui
+    EXTRA_SRCS = \
+        /tmp/imgui/imgui.cpp \
+        /tmp/imgui/imgui_draw.cpp \
+        /tmp/imgui/imgui_tables.cpp \
+        /tmp/imgui/imgui_widgets.cpp \
+        /tmp/ImGuiFileDialog/ImGuiFileDialog.cpp
+
+    EXTRA_OBJS = \
+        $(BUILD_DIR)/imgui.o \
+        $(BUILD_DIR)/imgui_draw.o \
+        $(BUILD_DIR)/imgui_tables.o \
+        $(BUILD_DIR)/imgui_widgets.o \
+        $(BUILD_DIR)/ImGuiFileDialog.o
 
 endif
 
@@ -104,7 +126,8 @@ SRCS = $(wildcard $(SRC_DIR)/*.cc) \
 
 OBJS = $(patsubst $(SRC_DIR)/%.cc,$(BUILD_DIR)/%.o,$(filter %.cc,$(SRCS))) \
        $(patsubst $(SRC_DIR)/%.cpp,$(BUILD_DIR)/%.o,$(filter %.cpp,$(SRCS))) \
-       $(BUILD_DIR)/main.o
+       $(BUILD_DIR)/main.o \
+       $(EXTRA_OBJS)
 
 DEPS = $(OBJS:.o=.d)
 
@@ -123,23 +146,66 @@ all: build
 build: $(BIN)
 
 
+# ============================================================
 # Link
+# ============================================================
+
 $(BIN): $(OBJS)
 	$(CC) $^ -o $@ $(L_FLAGS)
 
 
+# ============================================================
+# Project Source Compilation
+# ============================================================
+
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.cc
 	$(MKDIR)
 	$(CC) $(C_FLAGS) -c $< -o $@
+
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp
 	$(MKDIR)
-	$(CC) $(C_FLAGS) -c $< -o $@    
+	$(CC) $(C_FLAGS) -c $< -o $@
+
 $(BUILD_DIR)/main.o: main.cpp
 	$(MKDIR)
 	$(CC) $(C_FLAGS) -c $< -o $@
 
 
-# Dependency files
+# ============================================================
+# Linux - Dear ImGui / ImGuiFileDialog
+# ============================================================
+
+ifeq ($(OS),Windows_NT)
+
+else
+
+$(BUILD_DIR)/imgui.o: /tmp/imgui/imgui.cpp
+	$(MKDIR)
+	$(CC) $(C_FLAGS) -c $< -o $@
+
+$(BUILD_DIR)/imgui_draw.o: /tmp/imgui/imgui_draw.cpp
+	$(MKDIR)
+	$(CC) $(C_FLAGS) -c $< -o $@
+
+$(BUILD_DIR)/imgui_tables.o: /tmp/imgui/imgui_tables.cpp
+	$(MKDIR)
+	$(CC) $(C_FLAGS) -c $< -o $@
+
+$(BUILD_DIR)/imgui_widgets.o: /tmp/imgui/imgui_widgets.cpp
+	$(MKDIR)
+	$(CC) $(C_FLAGS) -c $< -o $@
+
+$(BUILD_DIR)/ImGuiFileDialog.o: /tmp/ImGuiFileDialog/ImGuiFileDialog.cpp
+	$(MKDIR)
+	$(CC) $(C_FLAGS) -c $< -o $@
+
+endif
+
+
+# ============================================================
+# Dependency Files
+# ============================================================
+
 -include $(DEPS)
 
 
