@@ -108,6 +108,10 @@ else
 
 endif
 
+ifeq ($(DEBUG),1)
+    C_FLAGS := $(filter-out -O3,$(C_FLAGS)) -O0 -g
+endif
+
 
 # ============================================================
 # Files
@@ -233,7 +237,16 @@ rebuild: clean build
 
 
 # ============================================================
+# DEBUG BUILD
+# ============================================================
+
+debug:
+	$(MAKE) clean
+	$(MAKE) DEBUG=1 build
+
+
+# ============================================================
 # PHONY
 # ============================================================
 
-.PHONY: all build run clean rebuild
+.PHONY: all build run clean rebuild debug
