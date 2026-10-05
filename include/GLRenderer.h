@@ -6,6 +6,7 @@
 #include "Editor.h"
 #include "Map.h"
 #include "Player.h"
+#include "Sprite.h"
 
 class GLRenderer {
 public:
@@ -13,7 +14,7 @@ public:
     ~GLRenderer();
 
     void init();
-    void drawGame(sf::RenderWindow& window, const Player& player, const Map& map);
+    void drawGame(sf::RenderWindow& window, const Player& player, const Map& map, const std::vector<Sprites> &sprites);
     void drawEditor(sf::RenderWindow& window, const Map& map, const Player& player,
                     const Editor& editor, float cellSize, bool textured);
 

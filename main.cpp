@@ -11,6 +11,8 @@
 #include "Player.h"
 #include "Editor.h"
 #include "GLRenderer.h"
+#include "Sprite.h"
+
 float PLAYER_SIZE = 25.0;
 
 int main() {
@@ -74,6 +76,9 @@ int main() {
 
   Editor editor;
   editor.init(win);
+  std::vector<Sprites> sprites = {
+    {{5.0f, 5.0f}},    
+  };
 
   enum class State { Editor, Game, Original } state = State::Game;
 
@@ -104,9 +109,9 @@ int main() {
     if(state == State::Game){
       win.setView(win.getDefaultView());
 #ifdef _WIN32
-      render.cast3DNewRayGUI_new(win, player, Color_map);
+      render.cast3DRay(win, player, Color_map, sprites);
 #else
-      glRender.drawGame(win, player, Color_map);
+      glRender.drawGame(win, player, Color_map, sprites);
 #endif
     }else if(state == State::Editor){
 #ifdef _WIN32

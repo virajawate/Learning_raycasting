@@ -10,6 +10,7 @@
 #include <vector>
 #include "Resources.h"
 #include "Render.h"
+#include "Sprite.h"
 
 namespace {
 constexpr float PI = 3.14159265358979323846f;
@@ -126,7 +127,7 @@ void GLRenderer::beginFrame(sf::RenderWindow& window) {
     glDisable(GL_BLEND);
 }
 
-void GLRenderer::drawGame(sf::RenderWindow& window, const Player& player, const Map& map) {
+void GLRenderer::drawGame(sf::RenderWindow& window, const Player& player, const Map& map, const std::vector<Sprites> &sprites) {
     beginFrame(window);
     const auto pose = player.get_player_pose();
     const float angle = pose[2] * PI / 180.0f;
@@ -140,6 +141,8 @@ void GLRenderer::drawGame(sf::RenderWindow& window, const Player& player, const 
 
     glEnable(GL_TEXTURE_2D);
     const float maxDistance = 128.0f;
+    std::array<float, ScreenW> zBuffer;
+    zBuffer.fill(std::numeric_limits<float>::infinity());
     for (int x = 0; x < static_cast<int>(ScreenW); ++x) {
         const float cameraX = 2.0f * x / static_cast<float>(ScreenW) - 1.0f;
         const sf::Vector2f rayDirection = direction + plane * cameraX;
@@ -173,6 +176,7 @@ void GLRenderer::drawGame(sf::RenderWindow& window, const Player& player, const 
         int tile = textureIndex(wallColor);
         if (tile < 0) tile = 6;
         const float distance = std::max(vertical ? sideX - deltaX : sideY - deltaY, 0.001f);
+        zBuffer[static_cast<std::size_t>(x)] = distance;
         const float wallHeight = ScreenH / distance;
         const float top = (ScreenH - wallHeight) * 0.5f;
         const float bottom = (ScreenH + wallHeight) * 0.5f;
@@ -195,6 +199,46 @@ void GLRenderer::drawGame(sf::RenderWindow& window, const Player& player, const 
     }
     glColor4ub(255, 255, 255, 255);
     glDisable(GL_TEXTURE_2D);
+
+    const float determinant = plane.x * direction.y - direction.x * plane.y;
+    if (determinant == 0.0f)
+        return;
+    const float inverseDeterminant = 1.0f / determinant;
+    for (const auto& sprite : sprites) {
+        const sf::Vector2f relativePosition(
+            sprite.position.x - playerPosition.x,
+            sprite.position.y - playerPosition.y);
+        const float transformX = inverseDeterminant *
+            (direction.y * relativePosition.x - direction.x * relativePosition.y);
+        const float transformY = inverseDeterminant *
+            (-plane.y * relativePosition.x + plane.x * relativePosition.y);
+        if (transformY <= 0.001f)
+            continue;
+
+        const int screenX = static_cast<int>(
+            ScreenW * 0.5f * (1.0f + transformX / transformY));
+        const int spriteSize = static_cast<int>(std::abs(ScreenH / transformY));
+        if (spriteSize == 0)
+            continue;
+
+        const int startX = std::max(screenX - spriteSize / 2, 0);
+        const int endX = std::min(screenX + spriteSize / 2, static_cast<int>(ScreenW));
+        const float top = std::max(
+            (ScreenH - static_cast<float>(spriteSize)) * 0.5f, 0.0f);
+        const float bottom = std::min(
+            (ScreenH + static_cast<float>(spriteSize)) * 0.5f,
+            static_cast<float>(ScreenH));
+
+        glColor4ub(255, 255, 255, 255);
+        glBegin(GL_LINES);
+        for (int x = startX; x < endX; ++x) {
+            if (transformY < zBuffer[static_cast<std::size_t>(x)]) {
+                glVertex2f(static_cast<float>(x), top);
+                glVertex2f(static_cast<float>(x), bottom);
+            }
+        }
+        glEnd();
+    }
 }
 
 void GLRenderer::drawTexturedMap(const Map& map, float cellSize) {

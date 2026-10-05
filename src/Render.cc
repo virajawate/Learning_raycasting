@@ -1,6 +1,6 @@
 #include "Render.h"
 #include "Resources.h"
-
+#include "Sprite.h"
 Renderer::Renderer() = default;
 
 void Renderer::init()
@@ -718,4 +718,172 @@ void Renderer::cast3DNewRayGUI_new(sf::RenderTarget &target, Player &player, con
     
     sf::RenderStates states{&Resources::walltextures};
     target.draw(walls, states);
+}
+
+void Renderer::cast3DRay(sf::RenderTarget &target, Player &player, const Map &map, const std::vector<Sprites> &sprites) {
+    const float fov = 90.0f; 
+    // Map Info
+    const auto &grid = map.getGridColor();
+    const float texSize = static_cast<float>(Resources::walltextures.getSize().x) / 11.0;
+    const float maxDistance = MaxRayCastingDepth;
+
+    // Player Info
+    auto player_pose = player.get_player_pose();
+    sf::Vector2f playerPos(player_pose[0], player_pose[1]);
+    float angle = player_pose[2] * PI / 180.0f;
+    sf::Vector2f direction(std::cos(angle), std::sin(angle));
+    const float planeScale = std::tan(fov * PI / 360.0f);
+    sf::Vector2f plane(
+        -direction.y * planeScale,
+        direction.x * planeScale
+    );
+    sf::Vector2f player_loc = playerPos;
+
+    // Sky
+    // RenderSky(target, player_pose[2]);
+    RenderTexturedSky(target, player_loc, direction, plane);
+    // Floor
+    RenderFloor(target, player_loc, direction, plane);
+    
+    sf::VertexArray walls(sf::PrimitiveType::Triangles);
+    std::fill(std::begin(zBuffer), std::end(zBuffer), std::numeric_limits<float>::infinity());
+    for (int x = 0; x < ScreenW; x++) {
+        sf::Vector2i step;
+        sf::Vector2f sideDist;
+        sf::Vector2f deltaDist;
+
+        float cameraX = 2.0f * x / float(ScreenW) - 1.0f;
+        sf::Vector2f rayDir = direction + plane * cameraX;
+
+        deltaDist.x = (rayDir.x == 0.0f)
+                          ? std::numeric_limits<float>::infinity()
+                          : std::abs(1.0f / rayDir.x);
+
+        deltaDist.y = (rayDir.y == 0.0f)
+                          ? std::numeric_limits<float>::infinity()
+                          : std::abs(1.0f / rayDir.y);
+
+        sf::Vector2i mapPos((int)player_loc.x, (int)player_loc.y);
+        step.x = rayDir.x < 0 ? -1 : 1;
+        step.y = rayDir.y < 0 ? -1 : 1;
+        sideDist.x = rayDir.x < 0 ? (player_loc.x - mapPos.x) * deltaDist.x : (mapPos.x + 1.0f - player_loc.x) * deltaDist.x;
+        sideDist.y = rayDir.y < 0 ? (player_loc.y - mapPos.y) * deltaDist.y : (mapPos.y + 1.0f - player_loc.y) * deltaDist.y;
+
+        int hit{}, verticle{};
+        size_t depth = 0;
+        int textureNo = 0;
+        sf::Color wallColor = sf::Color::Black;
+        while (hit == 0 && depth < MaxRayCastingDepth) {
+            if (sideDist.x < sideDist.y) {
+                sideDist.x += deltaDist.x;
+                mapPos.x += step.x;
+                verticle = false;
+            } else {
+                sideDist.y += deltaDist.y;
+                mapPos.y += step.y;
+                verticle = true;
+            }
+            wallColor = map.getGridCell(mapPos.x, mapPos.y);
+            hit =  wallColor != sf::Color::Black;
+
+            depth++;
+        }
+        if (!hit) continue;
+
+        if(wallColor == sf::Color::White){
+            textureNo = 0;
+        }  else if(wallColor == sf::Color::Cyan){
+            textureNo = 1;
+        } else if(wallColor == sf::Color::Red){
+            textureNo = 2;
+        } else if(wallColor == sf::Color::Green){
+            textureNo = 3;
+        } else if(wallColor == sf::Color::Yellow){
+            textureNo = 4;
+        } else  if(wallColor == sf::Color(255,26,0,255)){
+            textureNo = 5;
+        } else {
+            textureNo = 6;
+        }
+        if (textureNo < 0)
+            continue;
+        float perpWallDist = verticle ? sideDist.y - deltaDist.y : sideDist.x - deltaDist.x ;
+        perpWallDist = std::max(perpWallDist, 0.001f);
+        float lineHeight = ScreenH / perpWallDist;
+        float drawStart = (ScreenH - lineHeight) * 0.5f;
+        float drawEnd   = (ScreenH + lineHeight) * 0.5f;
+        float wallX = verticle ? player_loc.x + perpWallDist * rayDir.x : player_loc.y + perpWallDist * rayDir.y;           
+        wallX -= std::floor(wallX);
+
+        int texX = (int)(wallX * texSize);
+
+        if (!verticle && rayDir.x > 0)
+            texX = texSize - texX - 1;
+
+        if (verticle && rayDir.y < 0)
+            texX = texSize - texX - 1;
+
+        texX = std::clamp(texX, 0, (int)texSize - 1);
+
+        float brightness = 1.0f - perpWallDist / maxDistance;
+        brightness = std::clamp(brightness, 0.2f, 1.0f);
+
+        if (!verticle) brightness *= 0.75f;
+
+        std::uint8_t c = static_cast<std::uint8_t>(255.0f * brightness);
+        sf::Color color(c, c, c);
+
+        float x0 = (float)x;
+        float x1 = x0 + 1.0f;
+
+        float texOffsetX = textureNo * texSize;
+
+        sf::Vector2f t0(texOffsetX + texX, 0);
+        sf::Vector2f t1(texOffsetX + texX + 1, 0);
+        sf::Vector2f t2(texOffsetX + texX, texSize);
+        sf::Vector2f t3(texOffsetX + texX + 1, texSize);
+
+        // Triangle 1
+        walls.append({{x0, drawStart}, color, t0});
+        walls.append({{x1, drawStart}, color, t1});
+        walls.append({{x0, drawEnd}, color, t2});
+
+        // Triangle 2
+        walls.append({{x1, drawStart}, color, t1});
+        walls.append({{x1, drawEnd}, color, t3});
+        walls.append({{x0, drawEnd}, color, t2});
+        zBuffer[x] = perpWallDist;
+    }
+    
+    sf::RenderStates states{&Resources::walltextures};
+    target.draw(walls, states);
+    sf::VertexArray sprtieCols{sf::PrimitiveType::Lines};
+    for(const auto &sprite : sprites){
+        sf::Vector2f spritePos{
+            sprite.position.x - player_pose[0],
+            sprite.position.y - player_pose[1]
+        };
+        float Det = plane.x * direction.x - plane.y * direction.y;
+        float inv_Det = 1.0f / Det;
+        sf::Vector2f transformed{
+            inv_Det * (direction.y * spritePos.x - direction.x * spritePos.y),
+            inv_Det * (-plane.y * spritePos.x + plane.x * spritePos.y),
+        };
+
+        if (transformed.y <= 0.0f)
+            continue;
+
+        int screenX = static_cast<int>(ScreenW / 2.0f * (1.0f + transformed.x / transformed.y));
+        int spriteSize = std::abs(ScreenH / transformed.y);
+        int drawStart = std::max(-spriteSize / 2 + screenX, 0);
+        int drawEnd = std::min(spriteSize / 2 + screenX, static_cast<int>(ScreenW));
+
+        for(int i = drawStart; i < drawEnd; i++){
+            if(transformed.y < zBuffer[i]){
+                sprtieCols.append({{static_cast<float>(i), -spriteSize / 2.0f + ScreenH / 2.0f}});
+                sprtieCols.append({{static_cast<float>(i), spriteSize / 2.0f + ScreenH / 2.0f}});
+            }
+        }
+    }
+    target.draw(sprtieCols);
 }

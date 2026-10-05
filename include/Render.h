@@ -19,6 +19,7 @@
 #include <SFML/Network/Packet.hpp>
 #include "Player.h"
 #include "Map.h"
+#include "Sprite.h"
 
 constexpr unsigned int ScreenW = 2400;
 constexpr unsigned int ScreenH = 1200;
@@ -45,6 +46,7 @@ public:
     void cast3DNewRay(sf::RenderTarget &target, Player &player, const Map &map);
     void cast3DNewRayGUI(sf::RenderTarget &target, Player &player, const Map &map);
     void cast3DNewRayGUI_new(sf::RenderTarget &target, Player &player, const Map &map);
+    void cast3DRay(sf::RenderTarget &target, Player &player, const Map &map, const std::vector<Sprites> &sprites);
     void init();
     Renderer();
 
@@ -53,6 +55,7 @@ private:
     const float PI = 3.1427;
     const size_t player_fov = 60;
     const size_t MaxRayCastingDepth = 128;
+    float zBuffer[(size_t)ScreenW];
 
     sf::Texture wall_texture, sky_texture, floorBuffer, roofBuffer;
     std::optional<sf::Sprite> wall_sprite;
