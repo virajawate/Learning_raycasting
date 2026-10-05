@@ -10,6 +10,7 @@
 #include "Resources.h"
 #include "Player.h"
 #include "Editor.h"
+#include "GLRenderer.h"
 float PLAYER_SIZE = 25.0;
 
 int main() {
@@ -64,7 +65,12 @@ int main() {
   if(!Resources::walltextures.loadFromFile("texture/wolftextures.gif")) std::cerr << "Failed to load wall_textures from textures.png\n";
 
   Renderer render;
+#ifdef _WIN32
   render.init();
+#else
+  GLRenderer glRender;
+  glRender.init();
+#endif
 
   Editor editor;
   editor.init(win);
@@ -97,15 +103,29 @@ int main() {
     win.clear();
     if(state == State::Game){
       win.setView(win.getDefaultView());
+#ifdef _WIN32
       render.cast3DNewRayGUI_new(win, player, Color_map);
+#else
+      glRender.drawGame(win, player, Color_map);
+#endif
     }else if(state == State::Editor){
+#ifdef _WIN32
       Color_map.drawColorGridTexture_new(win, Cell_size);
       editor.new_run(win, Color_map, Cell_size);
       player.draw(win);
+#else
+      editor.new_run(win, Color_map, Cell_size);
+      glRender.drawEditor(win, Color_map, player, editor, Cell_size, true);
+#endif
     } else if(state == State::Original){
+#ifdef _WIN32
       Color_map.drawColorGrid(win, Cell_size);
       editor.new_run(win, Color_map, Cell_size);
       player.draw(win);
+#else
+      editor.new_run(win, Color_map, Cell_size);
+      glRender.drawEditor(win, Color_map, player, editor, Cell_size, false);
+#endif
     }
     ImGui::SFML::Render(win);
     win.display();

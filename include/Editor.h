@@ -17,15 +17,19 @@ class Editor {
     public:
     void init(sf::RenderWindow & window);
     void run(sf::RenderWindow & window, Map &map);
-    void new_run(sf::RenderWindow &window, Map &map,float cellSize);
+    void new_run(sf::RenderWindow &window, Map &map, float cellSize);
     void handleEvent(const sf::Event &event);
     sf::Color getColor(int textureNo);
+    const sf::View& getView() const;
+    sf::Vector2f getCellPosition() const;
+    bool hasPreview() const;
     private:
     sf::RectangleShape cell;
     bool isFirstMouse{};
     sf::Vector2i lastMousePos;
     sf::View view;
     int textureNo = 0;
+    bool previewVisible{};
 };
 
 #endif

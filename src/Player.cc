@@ -10,7 +10,7 @@ constexpr float TURN_SPEED = 30.0f;
 constexpr float MOVE_SPEED = 3.5f;
 constexpr float SCALE = 50.0f;
 
-std::vector<float> Player::get_player_pose(){
+std::vector<float> Player::get_player_pose() const{
     /* Player Pose
         Pose -> X
         Pose -> Y

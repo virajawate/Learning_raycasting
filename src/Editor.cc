@@ -67,7 +67,11 @@ void Editor::new_run(sf::RenderWindow &window, Map &map, float cellSize){
         sf::Vector2i mapPos = (sf::Vector2i)(worldPos / cellSize);
         cell.setSize(sf::Vector2f(cellSize, cellSize));
         cell.setPosition((sf::Vector2f)mapPos * cellSize);
+#ifdef _WIN32
         window.draw(cell);
+#else
+        previewVisible = true;
+#endif
         if(sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)){
             map.SetMap(
             mapPos.x,
@@ -76,6 +80,10 @@ void Editor::new_run(sf::RenderWindow &window, Map &map, float cellSize){
                 ? sf::Color::Black : SelectedColor
             );
         }
+    } else {
+#ifndef _WIN32
+        previewVisible = false;
+#endif
     }
 }
 
@@ -135,7 +143,7 @@ void Editor::run(sf::RenderWindow &window, Map &map){
     window.setView(view);
     if(!ImGui::GetIO().WantCaptureMouse){
         sf::Vector2f worldPos = window.mapPixelToCoords(mousePos);
-        sf::Vector2i mapPos = (sf::Vector2i)(worldPos/ map.getCellsize());
+        sf::Vector2i mapPos = (sf::Vector2i)(worldPos / map.getCellsize());
         cell.setSize(sf::Vector2f(map.getCellsize(), map.getCellsize()));
         cell.setPosition((sf::Vector2f)mapPos * map.getCellsize());
         window.draw(cell);
@@ -183,3 +191,7 @@ sf::Color Editor::getColor(int textureNo){
         break;
     }
 }
+
+const sf::View& Editor::getView() const { return view; }
+sf::Vector2f Editor::getCellPosition() const { return cell.getPosition(); }
+bool Editor::hasPreview() const { return previewVisible; }
