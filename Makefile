@@ -66,12 +66,15 @@ else
     MKDIR = mkdir -p $(BUILD_DIR)
     RM = rm -rf $(BUILD_DIR)
 
+    IMGUI_FILE_DIALOG_DIR := $(if $(wildcard /tmp/ImGuiFileDialog/ImGuiFileDialog.cpp),/tmp/ImGuiFileDialog,/home/viraj_awate/Deps_lib/ImGuiFileDialog)
+    IMGUI_SFML_DIR := /home/viraj_awate/Deps_lib/imgui-sfml
+
     C_FLAGS = -std=c++17 -MMD -MP -O3 \
               -I./include \
+              -I$(IMGUI_FILE_DIALOG_DIR) \
               -I/usr/local/include \
               -I/usr/include \
-              -I/tmp/imgui \
-              -I/tmp/ImGuiFileDialog
+              -I$(IMGUI_SFML_DIR)
 
     L_FLAGS = -L/usr/local/lib \
               -lImGui-SFML \
@@ -91,20 +94,12 @@ else
               -lpthread \
               -ldl
 
-    # Dear ImGui
+    # ImGuiFileDialog
     EXTRA_SRCS = \
-        /tmp/imgui/imgui.cpp \
-        /tmp/imgui/imgui_draw.cpp \
-        /tmp/imgui/imgui_tables.cpp \
-        /tmp/imgui/imgui_widgets.cpp \
-        /tmp/ImGuiFileDialog/ImGuiFileDialog.cpp
+        $(IMGUI_FILE_DIALOG_DIR)/ImGuiFileDialog.cpp
 
     EXTRA_OBJS = \
-        $(BUILD_DIR)/imgui.o \
-        $(BUILD_DIR)/imgui_draw.o \
-        $(BUILD_DIR)/imgui_tables.o \
-        $(BUILD_DIR)/imgui_widgets.o \
-        $(BUILD_DIR)/ImGuiFileDialog.o
+        $(BUILD_DIR)/ImGuiFileDialog_external.o
 
 endif
 
@@ -176,30 +171,14 @@ $(BUILD_DIR)/main.o: main.cpp
 
 
 # ============================================================
-# Linux - Dear ImGui / ImGuiFileDialog
+# Linux - ImGuiFileDialog
 # ============================================================
 
 ifeq ($(OS),Windows_NT)
 
 else
 
-$(BUILD_DIR)/imgui.o: /tmp/imgui/imgui.cpp
-	$(MKDIR)
-	$(CC) $(C_FLAGS) -c $< -o $@
-
-$(BUILD_DIR)/imgui_draw.o: /tmp/imgui/imgui_draw.cpp
-	$(MKDIR)
-	$(CC) $(C_FLAGS) -c $< -o $@
-
-$(BUILD_DIR)/imgui_tables.o: /tmp/imgui/imgui_tables.cpp
-	$(MKDIR)
-	$(CC) $(C_FLAGS) -c $< -o $@
-
-$(BUILD_DIR)/imgui_widgets.o: /tmp/imgui/imgui_widgets.cpp
-	$(MKDIR)
-	$(CC) $(C_FLAGS) -c $< -o $@
-
-$(BUILD_DIR)/ImGuiFileDialog.o: /tmp/ImGuiFileDialog/ImGuiFileDialog.cpp
+$(BUILD_DIR)/ImGuiFileDialog_external.o: $(IMGUI_FILE_DIALOG_DIR)/ImGuiFileDialog.cpp
 	$(MKDIR)
 	$(CC) $(C_FLAGS) -c $< -o $@
 
