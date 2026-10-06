@@ -6,6 +6,7 @@
 class Sprites {
     public:
     sf::Vector2f position;
+    int textureIndex = 8;
 };
 
 #endif // !_SPRITE_H_

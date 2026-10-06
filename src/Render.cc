@@ -583,6 +583,7 @@ void Renderer::cast3DNewRayGUI(sf::RenderTarget &target, Player &player, const M
     target.draw(walls, states);
 }
 
+// NOT USED
 void Renderer::cast3DNewRayGUI_new(sf::RenderTarget &target, Player &player, const Map &map) {
     const float fov = 90.0f; 
     // Map Info
@@ -652,21 +653,9 @@ void Renderer::cast3DNewRayGUI_new(sf::RenderTarget &target, Player &player, con
         }
         if (!hit) continue;
 
-        if(wallColor == sf::Color::White){
-            textureNo = 0;
-        }  else if(wallColor == sf::Color::Cyan){
-            textureNo = 1;
-        } else if(wallColor == sf::Color::Red){
-            textureNo = 2;
-        } else if(wallColor == sf::Color::Green){
-            textureNo = 3;
-        } else if(wallColor == sf::Color::Yellow){
-            textureNo = 4;
-        } else  if(wallColor == sf::Color(255,26,0,255)){
-            textureNo = 5;
-        } else {
+        textureNo = Resources::wallTextureIndex(wallColor);
+        if (textureNo < 0)
             textureNo = 6;
-        }
         if (textureNo < 0)
             continue;
         float perpWallDist = verticle ? sideDist.y - deltaDist.y : sideDist.x - deltaDist.x ;
@@ -790,21 +779,9 @@ void Renderer::cast3DRay(sf::RenderTarget &target, Player &player, const Map &ma
         }
         if (!hit) continue;
 
-        if(wallColor == sf::Color::White){
-            textureNo = 0;
-        }  else if(wallColor == sf::Color::Cyan){
-            textureNo = 1;
-        } else if(wallColor == sf::Color::Red){
-            textureNo = 2;
-        } else if(wallColor == sf::Color::Green){
-            textureNo = 3;
-        } else if(wallColor == sf::Color::Yellow){
-            textureNo = 4;
-        } else  if(wallColor == sf::Color(255,26,0,255)){
-            textureNo = 5;
-        } else {
+        textureNo = Resources::wallTextureIndex(wallColor);
+        if (textureNo < 0)
             textureNo = 6;
-        }
         if (textureNo < 0)
             continue;
         float perpWallDist = verticle ? sideDist.y - deltaDist.y : sideDist.x - deltaDist.x ;
@@ -817,11 +794,9 @@ void Renderer::cast3DRay(sf::RenderTarget &target, Player &player, const Map &ma
 
         int texX = (int)(wallX * texSize);
 
-        if (!verticle && rayDir.x > 0)
-            texX = texSize - texX - 1;
+        if (!verticle && rayDir.x > 0) texX = texSize - texX - 1;
 
-        if (verticle && rayDir.y < 0)
-            texX = texSize - texX - 1;
+        if (verticle && rayDir.y < 0) texX = texSize - texX - 1;
 
         texX = std::clamp(texX, 0, (int)texSize - 1);
 
@@ -857,33 +832,64 @@ void Renderer::cast3DRay(sf::RenderTarget &target, Player &player, const Map &ma
     
     sf::RenderStates states{&Resources::walltextures};
     target.draw(walls, states);
-    sf::VertexArray sprtieCols{sf::PrimitiveType::Lines};
+    sf::VertexArray spriteVertices{sf::PrimitiveType::Triangles};
+    const float spriteTextureSize =
+        static_cast<float>(Resources::walltextures.getSize().x) / 11.0f;
     for(const auto &sprite : sprites){
+        if (sprite.textureIndex < 0 || sprite.textureIndex >= 11)
+            continue;
+
         sf::Vector2f spritePos{
             sprite.position.x - player_pose[0],
             sprite.position.y - player_pose[1]
         };
-        float Det = plane.x * direction.x - plane.y * direction.y;
-        float inv_Det = 1.0f / Det;
+        const float determinant = plane.x * direction.y - direction.x * plane.y;
+        if (determinant == 0.0f)
+            continue;
+        const float inverseDeterminant = 1.0f / determinant;
         sf::Vector2f transformed{
-            inv_Det * (direction.y * spritePos.x - direction.x * spritePos.y),
-            inv_Det * (-plane.y * spritePos.x + plane.x * spritePos.y),
+            inverseDeterminant * (direction.y * spritePos.x - direction.x * spritePos.y),
+            inverseDeterminant * (-plane.y * spritePos.x + plane.x * spritePos.y),
         };
 
-        if (transformed.y <= 0.0f)
+        if (transformed.y <= 0.001f)
             continue;
 
-        int screenX = static_cast<int>(ScreenW / 2.0f * (1.0f + transformed.x / transformed.y));
-        int spriteSize = std::abs(ScreenH / transformed.y);
-        int drawStart = std::max(-spriteSize / 2 + screenX, 0);
-        int drawEnd = std::min(spriteSize / 2 + screenX, static_cast<int>(ScreenW));
+        const float screenX = ScreenW * 0.5f *
+            (1.0f + transformed.x / transformed.y);
+        const float spriteSize = std::abs(ScreenH / transformed.y);
+        if (spriteSize <= 0.0f)
+            continue;
 
-        for(int i = drawStart; i < drawEnd; i++){
-            if(transformed.y < zBuffer[i]){
-                sprtieCols.append({{static_cast<float>(i), -spriteSize / 2.0f + ScreenH / 2.0f}});
-                sprtieCols.append({{static_cast<float>(i), spriteSize / 2.0f + ScreenH / 2.0f}});
+        const float left = screenX - spriteSize * 0.5f;
+        const float top = (ScreenH - spriteSize) * 0.5f;
+        const float drawTop = std::max(top, 0.0f);
+        const float drawBottom = std::min(top + spriteSize, static_cast<float>(ScreenH));
+        const int drawStart = std::max(static_cast<int>(std::floor(left)), 0);
+        const int drawEnd = std::min(
+            static_cast<int>(std::ceil(left + spriteSize)), static_cast<int>(ScreenW));
+        const float texTop = (drawTop - top) / spriteSize * spriteTextureSize;
+        const float texBottom = (drawBottom - top) / spriteSize * spriteTextureSize;
+        const float textureOffsetX = sprite.textureIndex * spriteTextureSize;
+
+        for (int x = drawStart; x < drawEnd; ++x) {
+            if (transformed.y < zBuffer[static_cast<std::size_t>(x)]) {
+                const float texLeft = textureOffsetX +
+                    (static_cast<float>(x) - left) / spriteSize * spriteTextureSize;
+                const float texRight = textureOffsetX +
+                    (static_cast<float>(x + 1) - left) / spriteSize * spriteTextureSize;
+                const float x0 = static_cast<float>(x);
+                const float x1 = static_cast<float>(x + 1);
+                const sf::Color color = sf::Color::White;
+                spriteVertices.append({{x0, drawTop}, color, {texLeft, texTop}});
+                spriteVertices.append({{x1, drawTop}, color, {texRight, texTop}});
+                spriteVertices.append({{x0, drawBottom}, color, {texLeft, texBottom}});
+                spriteVertices.append({{x1, drawTop}, color, {texRight, texTop}});
+                spriteVertices.append({{x1, drawBottom}, color, {texRight, texBottom}});
+                spriteVertices.append({{x0, drawBottom}, color, {texLeft, texBottom}});
             }
         }
     }
-    target.draw(sprtieCols);
+    sf::RenderStates spriteStates{&Resources::walltextures};
+    target.draw(spriteVertices, spriteStates);
 }

@@ -204,7 +204,14 @@ void GLRenderer::drawGame(sf::RenderWindow& window, const Player& player, const 
     if (determinant == 0.0f)
         return;
     const float inverseDeterminant = 1.0f / determinant;
+    glEnable(GL_TEXTURE_2D);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     for (const auto& sprite : sprites) {
+        if (sprite.textureIndex < 0 ||
+            sprite.textureIndex >= static_cast<int>(textures.size()))
+            continue;
+
         const sf::Vector2f relativePosition(
             sprite.position.x - playerPosition.x,
             sprite.position.y - playerPosition.y);
@@ -228,17 +235,27 @@ void GLRenderer::drawGame(sf::RenderWindow& window, const Player& player, const 
         const float bottom = std::min(
             (ScreenH + static_cast<float>(spriteSize)) * 0.5f,
             static_cast<float>(ScreenH));
-
+        const float textureTop =
+            (top - (ScreenH - static_cast<float>(spriteSize)) * 0.5f) /
+            static_cast<float>(spriteSize);
+        const float textureBottom =
+            (bottom - (ScreenH - static_cast<float>(spriteSize)) * 0.5f) /
+            static_cast<float>(spriteSize);
+        glBindTexture(GL_TEXTURE_2D, textures[static_cast<std::size_t>(sprite.textureIndex)]);
         glColor4ub(255, 255, 255, 255);
-        glBegin(GL_LINES);
         for (int x = startX; x < endX; ++x) {
             if (transformY < zBuffer[static_cast<std::size_t>(x)]) {
-                glVertex2f(static_cast<float>(x), top);
-                glVertex2f(static_cast<float>(x), bottom);
+                const float textureLeft = static_cast<float>(x - (screenX - spriteSize / 2)) /
+                    static_cast<float>(spriteSize);
+                const float textureRight = static_cast<float>(x + 1 - (screenX - spriteSize / 2)) /
+                    static_cast<float>(spriteSize);
+                texturedQuad(static_cast<float>(x), top, static_cast<float>(x + 1), bottom,
+                             textureLeft, textureTop, textureRight, textureBottom);
             }
         }
-        glEnd();
     }
+    glDisable(GL_BLEND);
+    glDisable(GL_TEXTURE_2D);
 }
 
 void GLRenderer::drawTexturedMap(const Map& map, float cellSize) {
