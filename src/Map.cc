@@ -85,18 +85,7 @@ void Map::drawColorGridTexture(sf::RenderTarget& target){
   for(size_t y = 0; y < gridColor.size(); y++){ 
     for(size_t x = 0; x < gridColor[y].size(); x++){
       /** Put Texture in Grid */
-      int textureNo = -1;
-      if(gridColor[y][x] == sf::Color::White){
-        textureNo = 0;
-      } else if(gridColor[y][x] == sf::Color::Cyan){
-        textureNo = 1;
-      } else if(gridColor[y][x] == sf::Color::Red){
-        textureNo = 2;
-      } else if(gridColor[y][x] == sf::Color::Green){
-        textureNo = 3;
-      } else if(gridColor[y][x] == sf::Color::Yellow){
-        textureNo = 4;
-      }
+      const int textureNo = Resources::wallTextureIndex(gridColor[y][x]);
       if(textureNo < 0) continue;
       sf::Sprite wall{
         Resources::walltextures,
@@ -126,20 +115,7 @@ void Map::drawColorGridTexture_new(sf::RenderTarget& target, float cell_size){
   for(size_t y = 0; y < gridColor.size(); y++){ 
     for(size_t x = 0; x < gridColor[y].size(); x++){
       /** Put Texture in Grid */
-      int textureNo = -1;
-      if(gridColor[y][x] == sf::Color::White){
-        textureNo = 0;
-      } else if(gridColor[y][x] == sf::Color::Cyan){
-        textureNo = 1;
-      } else if(gridColor[y][x] == sf::Color::Red){
-        textureNo = 2;
-      } else if(gridColor[y][x] == sf::Color::Green){
-        textureNo = 3;
-      } else if(gridColor[y][x] == sf::Color::Yellow){
-        textureNo = 4;
-      } else if(gridColor[y][x] == sf::Color(255, 26, 0, 255)){
-        textureNo = 5;
-      }
+      const int textureNo = Resources::wallTextureIndex(gridColor[y][x]);
       if(textureNo < 0) continue;
       sf::Sprite wall{
         Resources::walltextures,

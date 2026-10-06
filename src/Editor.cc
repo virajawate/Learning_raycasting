@@ -111,7 +111,7 @@ void Editor::run(sf::RenderWindow &window, Map &map){
     ImGui::Begin("Wall Texture Options");
     ImGui::Text("Texture No. : ");
     ImGui::InputInt("##tex_no", &textureNo);
-    textureNo = std::clamp(textureNo, 0, 4);
+    textureNo = std::clamp(textureNo, 0, 10);
     auto SelectedColor = getColor(textureNo);
     int textureSize = Resources::walltextures.getSize().y;
     ImGui::Text("Preview :");
@@ -166,30 +166,7 @@ void Editor::handleEvent(const sf::Event &event){
 }
 
 sf::Color Editor::getColor(int textureNo){
-    switch (textureNo)
-    {
-    case 0:
-        return sf::Color::White;
-        break;
-    case 1:
-        return sf::Color::Cyan;
-        break;
-    case 2:
-        return sf::Color::Red;
-        break;
-    case 3:
-        return sf::Color::Green;
-        break;
-    case 4:
-        return sf::Color::Yellow;
-        break;
-    case 5:
-        return sf::Color(255,26,0,255);
-        break;
-    default:
-        return sf::Color::Black;
-        break;
-    }
+    return Resources::wallTextureColor(textureNo);
 }
 
 const sf::View& Editor::getView() const { return view; }

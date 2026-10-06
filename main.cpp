@@ -64,7 +64,7 @@ int main() {
     Color_map.load("map/test.map");
   }
   
-  if(!Resources::walltextures.loadFromFile("texture/wolftextures.gif")) std::cerr << "Failed to load wall_textures from textures.png\n";
+  if(!Resources::walltextures.loadFromFile("texture/wolftextures.png")) std::cerr << "Failed to load wall_textures from textures.png\n";
 
   Renderer render;
 #ifdef _WIN32
@@ -77,7 +77,9 @@ int main() {
   Editor editor;
   editor.init(win);
   std::vector<Sprites> sprites = {
-    {{5.0f, 5.0f}},    
+    {{5.0f, 5.0f}, 8},
+    {{10.0f, 10.0f}, 9},
+    {{15.0f, 15.0f}, 10}
   };
 
   enum class State { Editor, Game, Original } state = State::Game;
