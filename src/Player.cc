@@ -11,12 +11,6 @@ constexpr float MOVE_SPEED = 3.5f;
 constexpr float SCALE = 50.0f;
 
 std::vector<float> Player::get_player_pose() const{
-    /* Player Pose
-        Pose -> X
-        Pose -> Y
-        Pose -> Orientation
-    */
-
     std::vector<float> player_pose;
     player_pose.push_back(position.x);
     player_pose.push_back(position.y);
